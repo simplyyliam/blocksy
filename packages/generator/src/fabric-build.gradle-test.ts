@@ -26,7 +26,7 @@ describe.each(FABRIC_VERSIONS)("Fabric $minecraft", ({ minecraft }) => {
     }
 
     const windows = process.platform === "win32"
-    execFileSync(windows ? "cmd.exe" : "./gradlew", windows ? ["/c", "gradlew.bat", "build"] : ["build"], {
+    execFileSync(windows ? "cmd.exe" : "./gradlew", windows ? ["/c", join(dir, "gradlew.bat"), "build"] : ["build"], {
       cwd: dir,
       stdio: "inherit",
     })
