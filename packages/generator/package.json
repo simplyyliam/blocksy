@@ -7,5 +7,12 @@
   "types": "src/index.ts",
   "scripts": {
     "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@blocksy/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@blocksy/target-fabric": "workspace:*",
+    "zod": "^4.6.7"
   }
 }
