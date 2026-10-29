@@ -1,11 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "enables the default permissions",
-  "windows": [
-    "main"
-  ],
-  "permissions": [
-    "core:default"
-  ]
+  "description": "What the main window may do: Blocksy's own commands, folder/file pickers, and opening links or folders in the OS.",
+  "windows": ["main"],
+  "permissions": ["core:default", "dialog:default", "opener:default"]
 }
