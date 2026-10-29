@@ -3,3 +3,12 @@
 
 /** This package's name. Exists for now to prove workspace linking works. */
 export const PACKAGE_NAME = "@blocksy/core"
+
+export * from "./registry.ts"
+export * from "./registries.ts"
+export * from "./modules.ts"
+export * from "./project.ts"
+export * from "./migrations.ts"
+export * from "./commands.ts"
+export * from "./project-commands.ts"
+export * from "./events.ts"
