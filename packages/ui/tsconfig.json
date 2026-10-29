@@ -5,7 +5,13 @@
     "composite": true,
     "emitDeclarationOnly": true,
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    // React components that run in the webview.
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": []
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Workspace packages this one imports. tsc -b checks them first.
+  "references": [{ "path": "../core" }]
 }
