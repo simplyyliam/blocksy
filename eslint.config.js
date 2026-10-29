@@ -38,6 +38,9 @@ export default tseslint.config(
     },
   },
 
+  // Status bar views export a view object ({ id, when, View }), not a component, on purpose.
+  { files: ["apps/desktop/src/features/status-bar/*-view.tsx"], rules: { "react-refresh/only-export-components": "off" } },
+
   // Import boundaries between apps and packages.
   {
     files: ["{apps,packages}/**/*.{ts,tsx}"],
