@@ -1,0 +1,10 @@
+{
+  // Root tooling files that run in Node (test config).
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["vitest.config.ts"]
+}

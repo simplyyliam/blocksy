@@ -1,0 +1,9 @@
+{
+  // Solution file: compiles nothing itself, it just lists every project.
+  // `pnpm typecheck` runs `tsc -b`, which checks each one in dependency order.
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    { "path": "./apps/desktop" }
+  ]
+}
