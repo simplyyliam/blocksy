@@ -20,6 +20,9 @@ function useElapsed() {
 }
 
 export function FirstBuild() {
+  // Reads the shared logLines buffer, which changes outside React: opt out of the
+  // React Compiler's caching so every logVersion change redraws.
+  "use no memo"
   const step = useGradle((s) => s.step)
   useGradle((s) => s.logVersion) // redraw as output arrives
   const openLog = useNavigation((s) => s.setBottomPanel)

@@ -18,6 +18,7 @@ function tone(line: LogLine, modId: string | undefined) {
 
 // `version` only changes for the last chunk, so memo() skips all the others.
 const Chunk = memo(function Chunk({ index, modId }: { index: number; version: number; modId?: string }) {
+  "use no memo"
   const lines = logLines.slice(index * CHUNK, (index + 1) * CHUNK)
   return (
     <div>
@@ -31,6 +32,9 @@ const Chunk = memo(function Chunk({ index, modId }: { index: number; version: nu
 })
 
 export function BuildLog() {
+  // Reads the shared logLines buffer, which changes outside React: opt out of the
+  // React Compiler's caching so every logVersion change redraws.
+  "use no memo"
   const version = useGradle((s) => s.logVersion)
   const task = useGradle((s) => s.task)
   const modId = useProject((s) => s.current?.doc.modId)
