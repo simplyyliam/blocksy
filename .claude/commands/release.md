@@ -18,7 +18,7 @@ Paths: the repo is a pnpm-workspaces monorepo. The Tauri app is `apps/desktop/`,
 - `.private/` must be ignored: `git check-ignore -q .private/updater/blocksy-updater.key` must succeed, and `git ls-files .private` must print nothing. Otherwise stop: the signing key could be committed.
 - Run every check and stop if any fails:
   - in `apps/desktop/src-tauri/`: `cargo check`, `cargo clippy --all-targets`, `cargo test`
-  - in the root: `pnpm -r typecheck`, `pnpm -r build`, `pnpm lint`, `pnpm -r test`
+  - in the root: `pnpm typecheck`, `pnpm build`, `pnpm lint`, `pnpm test`
 - Clippy or lint warnings don't fail the build: list them and ask whether to go on.
 - `cargo test` regenerates `apps/desktop/src/shared/bindings.ts`. If any check leaves the tree dirty, stop: the bindings or generated files were out of date and need their own commit first.
 
