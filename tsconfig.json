@@ -1,9 +1,18 @@
 {
   // Solution file: compiles nothing itself, it just lists every project.
   // `pnpm typecheck` runs `tsc -b`, which checks each one in dependency order.
+  // Adding a package? Add one line here too.
   "files": [],
   "references": [
     { "path": "./tsconfig.node.json" },
-    { "path": "./apps/desktop" }
+    { "path": "./apps/desktop" },
+    { "path": "./packages/core" },
+    { "path": "./packages/generator" },
+    { "path": "./packages/targets/fabric" },
+    { "path": "./packages/model-studio" },
+    { "path": "./packages/gui-studio" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/docs" },
+    { "path": "./packages/bench" }
   ]
 }

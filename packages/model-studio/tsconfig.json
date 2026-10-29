@@ -1,0 +1,11 @@
+{
+  // Composite = other projects can reference this one; declarations go to dist/.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src"]
+}
