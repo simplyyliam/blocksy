@@ -10,6 +10,9 @@ import globals from "globals"
 // Element types (defined below) that count as packages.
 const PACKAGES = ["core", "target", "element", "node", "package"]
 
+// The only files of a package others may import: its index (and the ui stylesheet).
+const ENTRY = "src/{index.ts,styles.css}"
+
 export default tseslint.config(
   // Never lint build output or generated files.
   { ignores: ["**/dist/**", "**/target/**", "**/node_modules/**", "**/src-tauri/gen/**"] },
@@ -57,13 +60,13 @@ export default tseslint.config(
           // Apps may import any package.
           {
             from: { element: { type: "app" } },
-            allow: { to: { element: { types: { anyOf: PACKAGES }, fileInternalPath: "src/index.ts" } } },
+            allow: { to: { element: { types: { anyOf: PACKAGES }, fileInternalPath: ENTRY } } },
           },
           // core imports no other @blocksy package, so nothing is allowed for it.
           // Other packages may import core and each other, but never an app.
           {
             from: { element: { types: { anyOf: PACKAGES.filter((t) => t !== "core") } } },
-            allow: { to: { element: { types: { anyOf: PACKAGES }, fileInternalPath: "src/index.ts" } } },
+            allow: { to: { element: { types: { anyOf: PACKAGES }, fileInternalPath: ENTRY } } },
           },
         ],
       }],

@@ -1,0 +1,146 @@
+/* Blocksy design system styles. The app imports this once (apps/desktop/src/index.css).
+   Every colour, radius, font, size and shadow below points at a theme token (--b-*),
+   set at runtime by applyTheme(). Tailwind's own palette is removed, so only
+   Blocksy tokens can be used (plan rule 9). */
+@import "tailwindcss";
+@import "@fontsource-variable/dm-sans";
+@import "@fontsource-variable/jetbrains-mono";
+
+/* Scan this package's components for class names. */
+@source "./";
+
+@theme {
+  --color-*: initial;
+  --radius-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --shadow-*: initial;
+}
+
+@theme inline {
+  --color-bg: var(--b-bg);
+  --color-surface: var(--b-surface);
+  --color-surface-hover: var(--b-surface-hover);
+  --color-surface-pressed: var(--b-surface-pressed);
+  --color-field: var(--b-field);
+  --color-subtle: var(--b-subtle);
+  --color-popover: var(--b-popover);
+  --color-overlay: var(--b-overlay);
+  --color-fg: var(--b-fg);
+  --color-fg-muted: var(--b-fg-muted);
+  --color-fg-faint: var(--b-fg-faint);
+  --color-line: var(--b-line);
+  --color-line-subtle: var(--b-line-subtle);
+  --color-accent: var(--b-accent);
+  --color-accent-hover: var(--b-accent-hover);
+  --color-on-accent: var(--b-on-accent);
+  --color-focus: var(--b-focus);
+  --color-success: var(--b-success);
+  --color-warning: var(--b-warning);
+  --color-danger: var(--b-danger);
+  --color-project: var(--b-project);
+  --color-transparent: transparent;
+
+  --font-sans: var(--b-font-sans);
+  --font-mono: var(--b-font-mono);
+
+  --text-xs: var(--b-text-xs);
+  --text-xs--line-height: 1.4;
+  --text-sm: var(--b-text-sm);
+  --text-sm--line-height: 1.45;
+  --text-base: var(--b-text-base);
+  --text-base--line-height: 1.45;
+  --text-md: var(--b-text-md);
+  --text-md--line-height: 1.45;
+  --text-lg: var(--b-text-lg);
+  --text-lg--line-height: 1.4;
+  --text-xl: var(--b-text-xl);
+  --text-xl--line-height: 1.3;
+  --text-2xl: var(--b-text-2xl);
+  --text-2xl--line-height: 1.25;
+
+  --radius-xs: var(--b-radius-xs);
+  --radius-sm: var(--b-radius-sm);
+  --radius-md: var(--b-radius-md);
+  --radius-lg: var(--b-radius-lg);
+  --radius-xl: var(--b-radius-xl);
+  --radius-2xl: var(--b-radius-2xl);
+  --radius-3xl: var(--b-radius-3xl);
+  --radius-full: 9999px;
+
+  --shadow-sm: var(--b-shadow-sm);
+  --shadow-md: var(--b-shadow-md);
+  --shadow-lg: var(--b-shadow-lg);
+
+  --ease-out: var(--b-ease-out);
+  --ease-in-out: var(--b-ease-in-out);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--b-bg);
+    color: var(--b-fg);
+    font-family: var(--b-font-sans);
+    font-size: var(--b-text-base);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-optical-sizing: auto;
+    /* A desktop app, not a web page: chrome text is not selectable. */
+    user-select: none;
+    cursor: default;
+    overflow: hidden;
+  }
+
+  input,
+  textarea,
+  [data-selectable] {
+    user-select: text;
+  }
+
+  button {
+    cursor: default;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--b-focus);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--b-focus);
+  }
+
+  /* Quiet, thin scrollbars that only show what they need to. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--b-line) transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* The moving stripe of an indeterminate Progress bar. */
+@keyframes blocksy-indeterminate {
+  from {
+    left: -33%;
+  }
+  to {
+    left: 100%;
+  }
+}
