@@ -7,5 +7,7 @@
     "outDir": "dist",
     "rootDir": "src"
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Workspace packages this one imports. tsc -b checks them first.
+  "references": [{ "path": "../../core" }]
 }

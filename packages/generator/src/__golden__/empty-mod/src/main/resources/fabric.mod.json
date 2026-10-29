@@ -1,0 +1,24 @@
+{
+	"schemaVersion": 1,
+	"id": "aetheric_storage_engineering",
+	"version": "${version}",
+	"name": "Aetheric Storage Engineering",
+	"description": "Made with Blocksy.",
+	"authors": [],
+	"license": "All-Rights-Reserved",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.example.aetheric_storage_engineering.AethericStorageEngineering"
+		],
+		"client": [
+			"com.example.aetheric_storage_engineering.client.AethericStorageEngineeringClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

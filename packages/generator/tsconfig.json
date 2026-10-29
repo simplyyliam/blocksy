@@ -5,7 +5,11 @@
     "composite": true,
     "emitDeclarationOnly": true,
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    // Tests hash binary files with node:crypto.
+    "types": ["node"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Workspace packages this one imports. tsc -b checks them first.
+  "references": [{ "path": "../core" }, { "path": "../targets/fabric" }]
 }

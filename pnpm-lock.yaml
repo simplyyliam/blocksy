@@ -134,13 +134,28 @@ importers:
 
   packages/docs: {}
 
-  packages/generator: {}
+  packages/generator:
+    dependencies:
+      '@blocksy/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@blocksy/target-fabric':
+        specifier: workspace:*
+        version: link:../targets/fabric
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
 
   packages/gui-studio: {}
 
   packages/model-studio: {}
 
-  packages/targets/fabric: {}
+  packages/targets/fabric:
+    dependencies:
+      '@blocksy/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/ui: {}
 

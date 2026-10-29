@@ -4,8 +4,13 @@
 import type { z } from "zod"
 import type { Element, Project } from "./project.ts"
 
-/** One file the generator writes. Text files use `contents`, binary files `base64`. */
-export type GeneratedFile = { path: string; contents: string } | { path: string; base64: string }
+/**
+ * One file the generator writes. Text files use `contents`, binary files `base64`.
+ * `executable` marks scripts (like gradlew) that need run permission on macOS/Linux.
+ */
+export type GeneratedFile = ({ path: string; contents: string } | { path: string; base64: string }) & {
+  executable?: boolean
+}
 
 /** One Minecraft version a loader target supports, with its pinned toolchain. */
 export interface TargetVersion {

@@ -10,6 +10,7 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:gradle": "vitest run --config vitest.gradle.config.ts",
     "bench": "node -e \"console.log('bench comes in v0.1')\""
   },
   "devDependencies": {
