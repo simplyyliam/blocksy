@@ -12,5 +12,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Workspace packages this app imports. tsc -b checks them first.
+  "references": [{ "path": "../../packages/core" }]
 }
