@@ -32,10 +32,10 @@ export function Progress({ value, className }: { value?: number; className?: str
   return (
     <div className={cn("relative h-1 w-full overflow-hidden rounded-full bg-surface", className)} role="progressbar">
       {value === undefined ? (
-        <div className="absolute inset-y-0 w-1/3 animate-[blocksy-indeterminate_1.4s_var(--b-ease-in-out)_infinite] rounded-full bg-accent" />
+        <div className="absolute inset-y-0 w-1/3 animate-[blocksy-indeterminate_1.4s_var(--b-ease-in-out)_infinite] rounded-full bg-brand" />
       ) : (
         <div
-          className="h-full rounded-full bg-accent transition-[width] duration-300 ease-out"
+          className="h-full rounded-full bg-brand transition-[width] duration-300 ease-out"
           style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
         />
       )}

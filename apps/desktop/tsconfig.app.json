@@ -3,7 +3,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "lib": ["ES2023", "DOM"],
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
     "allowArbitraryExtensions": true,
     "jsx": "react-jsx",
@@ -14,5 +14,10 @@
   },
   "include": ["src"],
   // Workspace packages this app imports. tsc -b checks them first.
-  "references": [{ "path": "../../packages/core" }]
+  "references": [
+    { "path": "../../packages/core" },
+    { "path": "../../packages/generator" },
+    { "path": "../../packages/targets/fabric" },
+    { "path": "../../packages/ui" }
+  ]
 }
