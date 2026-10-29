@@ -1,0 +1,87 @@
+// One ESLint config for the whole monorepo. `pnpm lint` runs it from the root.
+// The important part is the import boundaries (plan section 2.2, rule 4).
+import js from "@eslint/js"
+import tseslint from "typescript-eslint"
+import reactHooks from "eslint-plugin-react-hooks"
+import reactRefresh from "eslint-plugin-react-refresh"
+import boundaries from "eslint-plugin-boundaries"
+import globals from "globals"
+
+// Element types (defined below) that count as packages.
+const PACKAGES = ["core", "target", "element", "node", "package"]
+
+export default tseslint.config(
+  // Never lint build output or generated files.
+  { ignores: ["**/dist/**", "**/target/**", "**/node_modules/**", "**/src-tauri/gen/**"] },
+
+  // Base rules for all JS and TS files.
+  js.configs.recommended,
+  tseslint.configs.recommended,
+
+  // React rules for the desktop app (ported from the old oxlint config).
+  {
+    files: ["apps/desktop/src/**/*.{ts,tsx}"],
+    languageOptions: { globals: globals.browser },
+    plugins: { "react-hooks": reactHooks, "react-refresh": reactRefresh },
+    rules: {
+      "react-hooks/rules-of-hooks": "error",
+      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+    },
+  },
+
+  // Import boundaries between apps and packages.
+  {
+    files: ["{apps,packages}/**/*.{ts,tsx}"],
+    plugins: { boundaries },
+    settings: {
+      // Resolve `@blocksy/core` the way TypeScript does, to packages/core/src.
+      "import/resolver": { typescript: { project: "tsconfig.json" } },
+      // Each folder below is one "element". First match wins, so specific ones come first.
+      "boundaries/elements": [
+        { type: "app", pattern: "apps/*" },
+        { type: "core", pattern: "packages/core" },
+        { type: "target", pattern: "packages/targets/*" },
+        { type: "element", pattern: "packages/elements/*" },
+        { type: "node", pattern: "packages/nodes/*" },
+        { type: "package", pattern: "packages/*" },
+      ],
+    },
+    rules: {
+      // Who may import whom. Anything not allowed here is an error.
+      // Every allow also requires the file to be the package's src/index.ts,
+      // so nobody reaches into another package's internal files.
+      // (Imports between files inside the same package are not checked.)
+      "boundaries/dependencies": ["error", {
+        default: "disallow",
+        policies: [
+          // Apps may import any package.
+          {
+            from: { element: { type: "app" } },
+            allow: { to: { element: { types: { anyOf: PACKAGES }, fileInternalPath: "src/index.ts" } } },
+          },
+          // core imports no other @blocksy package, so nothing is allowed for it.
+          // Other packages may import core and each other, but never an app.
+          {
+            from: { element: { types: { anyOf: PACKAGES.filter((t) => t !== "core") } } },
+            allow: { to: { element: { types: { anyOf: PACKAGES }, fileInternalPath: "src/index.ts" } } },
+          },
+        ],
+      }],
+    },
+  },
+
+  // v0.1 turns this on: frontend code must use the generated bindings
+  // (apps/desktop/src/shared/bindings.ts), never Tauri's `invoke` directly.
+  // {
+  //   files: ["apps/desktop/src/**/*.{ts,tsx}"],
+  //   ignores: ["apps/desktop/src/shared/bindings.ts"],
+  //   rules: {
+  //     "no-restricted-imports": ["error", {
+  //       paths: [{ name: "@tauri-apps/api/core", importNames: ["invoke"], message: "Use commands from shared/bindings.ts instead." }],
+  //     }],
+  //   },
+  // },
+
+  // Config files run in Node.
+  { files: ["*.{js,ts}", "apps/*/*.{js,ts}"], languageOptions: { globals: globals.node } },
+)

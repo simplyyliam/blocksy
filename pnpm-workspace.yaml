@@ -6,3 +6,8 @@ packages:
   - packages/targets/*
   - packages/elements/*
   - packages/nodes/*
+
+# pnpm 10 blocks dependency install scripts unless listed. unrs-resolver's
+# script only downloads a native binary it already ships, so we skip it.
+ignoredBuiltDependencies:
+  - unrs-resolver
