@@ -33,10 +33,10 @@ export function Choice({ value, options, onChange, ...rest }: ChoiceProps) {
           disabled={option.disabled}
           title={option.note}
           className={cn(
-            "h-10 w-[158px] rounded-full bg-field px-4 text-left text-base text-fg outline-none",
+            "h-[38px] w-[158px] rounded-full bg-field px-4 text-left text-base text-fg outline-none",
             "transition-[background-color,box-shadow,color] duration-150 ease-out hover:bg-surface-hover",
             "focus-visible:shadow-[0_0_0_3px_var(--b-focus)]",
-            "data-[pressed]:shadow-[inset_0_0_0_1.5px_var(--b-fg)]",
+            "data-[pressed]:shadow-[inset_0_0_0_1px_var(--b-line)]",
             "data-[disabled]:pointer-events-auto data-[disabled]:text-fg-faint data-[disabled]:hover:bg-field",
           )}
         >

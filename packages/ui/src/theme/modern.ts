@@ -14,7 +14,6 @@ export const modernTheme: Theme = {
     "surface-pressed": "#e1e1e1",
     field: "#eeeeee", // text inputs and selects
     subtle: "#f7f7f7", // quiet buttons (Cancel)
-    popover: "#ffffff",
     overlay: "rgb(17 17 17 / 0.16)", // behind dialogs
 
     // Text
@@ -27,9 +26,9 @@ export const modernTheme: Theme = {
     "line-subtle": "#ebebeb",
 
     // Accent and status
-    accent: "#5093ff", // Create button
-    "accent-hover": "#3d84f7",
-    "on-accent": "#ffffff",
+    brand: "#5093ff", // Create button
+    "brand-hover": "#3d84f7",
+    "on-brand": "#ffffff",
     focus: "rgb(80 147 255 / 0.45)",
     success: "#2f9e5b",
     warning: "#d98b14",

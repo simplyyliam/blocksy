@@ -16,7 +16,7 @@ export const buttonStyles = cva(
         /** Grey pill: header actions, status chips (App.png). */
         pill: "bg-surface text-fg hover:bg-surface-hover active:bg-surface-pressed",
         /** Blue: the one main action of a screen (Create). */
-        primary: "bg-accent text-on-accent hover:bg-accent-hover disabled:bg-accent/50 disabled:text-on-accent",
+        primary: "bg-brand text-on-brand hover:bg-brand-hover disabled:bg-brand/50 disabled:text-on-brand",
         /** Quiet with a hairline: secondary dialog actions (Cancel). */
         quiet: "bg-subtle text-fg shadow-[inset_0_0_0_1px_var(--b-line-subtle)] hover:bg-surface",
         /** No background until hovered: nav rows, icon buttons. */
