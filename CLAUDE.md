@@ -8,7 +8,8 @@ live docs, while teaching Java along the way. It scales from one block to a full
 - Before any release work: `docs/release/blocksy-release-plan.md` (the source of truth).
 - Before any UI work: `docs/design/`. The look to match now is `home-page(redesign).jpg`:
   calm, borderless, icon rail, good typography and space (13px base type, smooth motion).
-  add-project.png is my Figma design for New project. Release-specific references are
+  add-project.png is my Figma design for New project. Design editors (project editor, Model
+  Studio, GUI Studio) follow `visual-editor(assets).jpg`: floating white cards on a grey canvas. Release-specific references are
   noted in the plan (project editor v0.2, Model Studio v0.5, sign-in window v0.7).
 - Build only what the current release covers; ideas for later releases go into their
   section of `docs/release/blocksy-release-plan.md` as notes, not code.
@@ -68,12 +69,19 @@ docs/                    plan, ADRs (decisions/), design inspiration, perf resul
   props/className where a component is used (`size="sm"` for 32px pills, `--sidebar-width`).
 - AI Elements (elements.ai-sdk.dev) are shadcn registry items: add them the same way, they
   land in `packages/ui/src/components/ai-elements/`.
+- **Make it alive (every release).** Before building a release's UI, research small shadcn-registry
+  libraries that add life (assistant-ui Dot Matrix, Magic UI, Animate UI, React Bits, motion
+  primitives, pixel/matrix loaders) and use the best fit where it helps: loaders, status, empty
+  states, canvas backdrops, success moments. Respect reduced motion; keep them small. Picks so far
+  (v0.2): Dot Matrix (status), Dot Pattern (canvas backdrop), Confetti (first in-game success).
 - Blocksy-only components (no shadcn equivalent) live in `packages/ui/src/components/`
   (e.g. `PixelLoader`, `ElapsedTime`); third-party libraries get a thin adapter there.
 
 ## Frontend structure (apps/desktop/src)
 
-- `app/` root and module registration · `pages/` full views · `shared/` bindings, stores, helpers
+- `app/` root, module registration, `router.tsx` and `layouts/` (react-router: AppLayout with the
+  icon rail, ProjectLayout without it; pages render in `<Outlet>`s, ADR 0007)
+- `pages/` full views · `shared/` bindings, stores, helpers
 - `widgets/` are the parent bodies (sidebar, header, status-bar, bottom-panel); `features/`
   hold what goes inside them, grouped by widget name. Example: `widgets/status-bar/statusbar.tsx`
   renders the pieces in `features/status-bar/`. A feature never edits another feature.
@@ -104,3 +112,7 @@ docs/                    plan, ADRs (decisions/), design inspiration, perf resul
 - I'm a junior developer and a visual learner: explain decisions in plain words,
   use diagrams or tables when they help, and keep code small and commented.
 - Every task ends with a **STATUS / CHECKS / NEEDS YOUR DECISION** block.
+- Before that block, at the end of release work: run `/code-review` and `/security-review` on the
+  branch (fix what they find), and run the end-to-end test in the real app (create a project, Build,
+  Run, check the release's "Done when" in game). Report all three under CHECKS.
+- Release work keeps `CHECKPOINT.md` current as it goes, so a new session can pick up where the last stopped.

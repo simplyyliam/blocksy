@@ -18,6 +18,7 @@ fn specta_builder() -> Builder<tauri::Wry> {
         .commands(collect_commands![
             files::default_projects_dir,
             files::write_project_files,
+            files::remove_project_files,
             files::read_text_file,
             files::write_text_file,
             files::path_exists,

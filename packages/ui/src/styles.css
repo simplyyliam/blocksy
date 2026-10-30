@@ -5,6 +5,10 @@
 @import "tailwindcss";
 @import "@fontsource-variable/dm-sans";
 @import "@fontsource-variable/jetbrains-mono";
+/* Minecraft theme font: Pixelify Sans by Stefie Justprince, SIL Open Font License 1.1. */
+@import "@fontsource/pixelify-sans/400.css";
+@import "@fontsource/pixelify-sans/500.css";
+@import "@fontsource/pixelify-sans/600.css";
 /* shadcn/ui: enter/exit animations and the data-open/data-closed variants its components use. */
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -185,6 +189,7 @@
   --color-background: var(--background);
   --radius-4xl: var(--b-radius-4xl);
   --radius-dialog: var(--b-radius-dialog);
+  --radius-pill: var(--b-radius-pill);
 }
 
 :root {
@@ -241,4 +246,64 @@
   45% {
     opacity: 0.18;
   }
+}
+
+/* --- Code colours ---
+   Shiki (the Code tab and docs code blocks) uses its css-variables theme; each colour
+   points at a theme token, so code follows Modern and Minecraft like everything else. */
+:root {
+  --shiki-foreground: var(--b-fg);
+  --shiki-background: transparent;
+  --shiki-token-keyword: var(--b-code-keyword);
+  --shiki-token-string: var(--b-code-string);
+  --shiki-token-string-expression: var(--b-code-string);
+  --shiki-token-comment: var(--b-code-comment);
+  --shiki-token-function: var(--b-code-function);
+  --shiki-token-constant: var(--b-code-constant);
+  --shiki-token-parameter: var(--b-fg);
+  --shiki-token-punctuation: var(--b-fg-muted);
+  --shiki-token-link: var(--b-brand);
+}
+
+/* --- Minecraft theme ---
+   Theme art and bevels only: every value is a token from theme/minecraft.ts, and the
+   rules never change sizes or layout (plan section 5). Modern sets these tokens to none. */
+[data-theme="minecraft"] body {
+  background-image: var(--b-texture-app);
+  background-size: 64px 64px; /* 32px art at 2x: chunky pixels */
+  image-rendering: pixelated;
+  -webkit-font-smoothing: auto;
+  /* Pixelify Sans has no "fi"/"fl" ligature glyphs: draw the letters one by one. */
+  font-variant-ligatures: none;
+}
+
+[data-theme="minecraft"] [data-slot="sidebar-inner"] {
+  background-image: var(--b-texture-panel);
+  background-size: 64px 64px;
+  image-rendering: pixelated;
+}
+
+/* Raised, chunky buttons: light top-left edge, dark bottom-right, a pixel outline. */
+[data-theme="minecraft"] [data-slot="button"]:is(.bg-primary, .bg-secondary, .bg-background, .bg-subtle) {
+  box-shadow: var(--b-bevel);
+}
+[data-theme="minecraft"] [data-slot="button"]:is(.bg-primary, .bg-secondary, .bg-background, .bg-subtle):active {
+  box-shadow: var(--b-bevel-pressed);
+  translate: 0 1px;
+}
+
+/* Fields look pressed into the surface. */
+[data-theme="minecraft"] :is([data-slot="input"], [data-slot="select-trigger"], textarea) {
+  box-shadow: var(--b-bevel-pressed);
+}
+
+/* A strip of grass along the top of things marked data-grass-edge (docs footer, ...). */
+[data-theme="minecraft"] [data-grass-edge]::before {
+  content: "";
+  display: block;
+  height: 8px;
+  margin-bottom: 12px;
+  background-image: var(--b-texture-edge);
+  background-size: 32px 8px;
+  image-rendering: pixelated;
 }

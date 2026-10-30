@@ -94,6 +94,9 @@ docs/                     this plan, ADRs (decisions/), design inspiration (desi
 - [ ] Golden tests cover every new template; migrations exist for any format change
 - [ ] Bindings are regenerated and committed; no frontend code calls `invoke` directly
 - [ ] Lint boundaries, type checks and tests pass
+- [ ] `/code-review` and `/security-review` run on the release branch, findings fixed or explained
+- [ ] End-to-end test in the real app: create, Build, Run, and the in-game "Done when" check
+- [ ] "Make it alive": small lively components (loaders, status, backdrops, success moments) researched and used where they fit (CLAUDE.md)
 
 ### 2.5 Rust and frontend bindings (tauri-specta)
 
@@ -434,7 +437,7 @@ Entries live in `packages/docs/community.json` with title, URL, creator, type, l
 
 When each v1.0 test first becomes passable: **item** from 0.4, **block** from 0.5, **full mod** from 0.12.
 
-Every `/goal` prompt ends with a STATUS / CHECKS / NEEDS YOUR DECISION report, so the output only needs pasting back when something fails.
+Every `/goal` prompt keeps `CHECKPOINT.md` up to date (so a new session can continue) and ends with a STATUS / CHECKS / NEEDS YOUR DECISION report, so the output only needs pasting back when something fails.
 
 ---
 
@@ -463,6 +466,8 @@ Scope: the pnpm-workspaces monorepo layout from section 2.3; registries for elem
 Out of scope: blocks, items, nodes, 3D views, NeoForge, GitHub sign-in.
 Rules: never bundle Minecraft code or assets. Keep code small and commented, and explain each piece to me as you build it. I will run the bench on my reference machine (Ryzen 5 7430U, integrated graphics, 4K monitor); make it one command.
 Done when: an empty mod launches from Run and shows in the mod list, a dummy element type can be added by creating one folder plus one registration line (proven by a test), cold start meets the section 4 budget, the baseline is recorded, and an installed 0.1.0 updates itself to a test 0.1.1 release.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -490,6 +495,8 @@ Decided 2026-10-30 (Liam). The app's main face stays calm: the icon rail (Home, 
 - **The status bar lives only here**, as plain text and icons (VS Code / macOS menu bar style, no pills): loader and version, Java, build and game state, update note, Build log toggle. Home and Docs have none.
 - **Project overview page.** The v0.1 project details screen (mod ID, Java package, Minecraft, loader, Java, folder) moves into the editor as its own "Overview" page in the project tree, not the first thing you see when opening a project.
 - The same layout hosts Model Studio (0.5), the Blueprint canvas (0.4) and GUI Studio (0.9) as pages of the project.
+- **Routing (decided 2026-10-30, ADR 0007).** `react-router-dom` with layout routes and `<Outlet>`s: `AppLayout` (icon rail) for Home and Docs, `ProjectLayout` for `/project/:projectId`. Inside a project the icon rail is hidden; a back button at the top left, beside the project breadcrumb, returns to Home. Later editors become child routes of `ProjectLayout`.
+- **Editor look (decided 2026-10-30).** Design editors follow `docs/design/visual-editor(assets).jpg`: white rounded cards floating over a soft grey canvas, Title-case section headers with a hairline between sections and a "+" on the right, list rows with icons on small square tiles, segmented controls, a project header card. Loaders wherever something takes time (3D previews, Docs, builds).
 
 **Done when:** the block shows in its creative tab, places, and drops itself with the right tool; opening a project from Home shows the project editor with the status bar; every screen works in both themes.
 
@@ -498,6 +505,8 @@ Decided 2026-10-30 (Liam). The app's main face stays calm: the icon rail (Home, 
 Scope: a Block element module (schema, editor panel, templates, Docs reference page, tests) with name, hardness, blast resistance, required tool, light level, sound type and map colour; project sidebar tree; 16x16 PNG texture import with a live React Three Fiber block preview that renders on demand; generated Java registration plus blockstate, block and item models, loot table and lang entry (prefer Fabric data generation); a Creative tab element; a read-only Code tab; the Minecraft theme baseline as a token set with original pixel-art assets and an openly licensed pixel font (no Mojang textures or font in the app UI); the Docs shell with Learn, Guides, Reference, Concepts and Community sections plus a "Make your first block" tutorial; the Starter block option in New project; the project editor from "Project editor layout" in v0.2 of the plan (a separate route per project opened from Home, canvas first with floating islands, a collapsible project tree, a floating inspector, no borders, the status bar as plain text and icons only on this page, and the v0.1 project details as an Overview page inside it).
 Out of scope: items, recipes, nodes, custom models.
 Done when: the block shows in its creative tab, can be placed, drops itself when mined with the right tool, every screen works in both themes, the bench passes, and no v0.1 module was refactored.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -517,6 +526,8 @@ End with STATUS / CHECKS / NEEDS YOUR DECISION.
 Scope: an Item element module (stack size, rarity, fire resistance, food with hunger/saturation/effects, fuel time, compost chance, tooltips); a pixel texture editor (pencil, fill, picker, mirror, palette, onion skin, animated textures with .mcmeta) built as reusable brushes, because Model Studio will paint on 3D models with them in v0.5; a recipe editor with a visual crafting grid for shaped, shapeless, smelting, blasting, smoking and stonecutting; a tags editor; a lang editor; local version history (Save version = git commit, History tab); the Starter item option. Every new component in both themes, every element with its Docs page and demo.
 Out of scope: nodes, GitHub sync, custom models.
 Done when: an item is crafted from its recipe, cooked in a furnace and eaten in game, the bench passes, and no earlier module was refactored.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -534,6 +545,8 @@ End with STATUS / CHECKS / NEEDS YOUR DECISION.
 /goal Build Blocksy v0.4 "Blueprint canvas" on top of v0.3. Read docs/release/blocksy-release-plan.md sections 2, 4 and 9 first.
 Scope: first verify current versions and maintenance of React Flow (@xyflow/react) and Rete.js v2, then record the choice in an ADR (React Flow is the recommendation). Build a Blocksy-owned graph model in packages/core (nodes, typed exec and data pins, connections) with the library behind an adapter, so swapping libraries never touches node modules. Canvas: pan, zoom, minimap, search-to-add menu, groups, comments. Node families as registered modules: events (block used/placed/broken/stepped on, item used, entity hit, tick), logic (if, compare, random chance, math, variables, bounded loops), actions (play sound, spawn particle, give/take item, set block, apply effect, damage, message player, explode). Each node: one commented code template, Docs page, example graph, golden test. Inspector shows live "this node = this code" Java and a Learn more link. Validation on canvas and in Problems. Custom code node. Add 300-node and 1,000-node graphs to the bench.
 Done when: right-clicking the block plays a sound, spawns particles and gives the player an item, built only from nodes; the adapter has a test proving node modules never import the library; the canvas meets the section 4 budget.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -564,6 +577,8 @@ Calm and professional, like Feather 3D: the 3D viewport fills the page and every
 Scope: a model document in packages/model-studio (cubes, groups, textures, UVs, target format) edited only through commands; the block/item format as a registered module enforcing Java model rules (22.5 degree rotation steps on one axis, cubes inside block space) with live warnings; a React Three Fiber viewport following every rule in section 4.2 (frameloop demand, capped and adaptive dpr with drei PerformanceMonitor, instanced cubes, texture atlas with NearestFilter, no React state per frame, panels outside the Canvas); drei transform gizmo snapped to the pixel grid; camera presets; an outliner; a UV editor with auto-UV; painting on the model by raycasting to the face and texel, reusing the v0.3 brushes; display settings (GUI, hand, head, ground); a block states editor (facing, lit, powered, waterlogged, custom numeric) with a model per state; collision and outline shapes from the model; .bbmodel import and export (original code only, Blockbench is GPL-3.0); nodes that read and set states; reloading textures and models in a running game; the calm floating-islands look from "Model Studio look" in v0.5 of the plan (viewport fills the page, outliner, inspector cards and a materials/assets grid as soft rounded islands, as in docs/design/visual-editor(assets).jpg and Feather 3D). Add 500-cube and 2,000-cube models to the bench.
 Out of scope: entity format, bones, animation.
 Done when: a directional lamp with a custom model faces the player when placed and lights up when powered, and the viewport meets the section 4 budget at full 4K.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -581,6 +596,8 @@ End with STATUS / CHECKS / NEEDS YOUR DECISION.
 /goal Build Blocksy v0.6 "Block variety and redstone" on top of v0.5, following docs/release/blocksy-release-plan.md sections 2, 3 and 4.
 Scope: block family element modules (slabs, stairs, walls, fences, fence gates, doors, trapdoors, buttons, pressure plates, pillars) that reuse the v0.2 block module through its public interface; render layers (transparent, cutout), block tinting and emissive textures; plants (crops with growth stages, flowers, saplings and tree shapes); falling blocks; ores that drop XP; redstone emit and receive nodes and comparator output; a "Make a full set" helper that creates a material's block, slab, stairs, wall and their recipes. Each with Docs pages, demos and golden tests; all catalog items for 0.6 in section 3 done.
 Done when: a full set from one new stone works in game, a crop grows and can be harvested, and a block powers a redstone lamp.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -621,6 +638,8 @@ Sign-in opens in **its own small Tauri window**, separate from the main window, 
 /goal Build Blocksy v0.7 "Docs, learning and GitHub" on top of v0.6. Read docs/release/blocksy-release-plan.md sections 4 and 11 and the docs/design/ inspiration first.
 Scope: the full Docs experience organised by Diataxis (Learn, Guides, Reference, Concepts, Community) with a calm layout (about 70 character lines, left nav, On this page, generous whitespace), search and version badges; a live demo system that embeds real Blocksy editors in a sandbox with an "Open as project" button, registered through the demos registry, rendering on demand and pausing when scrolled out of view; reference pages generated from node and element definitions; a Community section driven by packages/docs/community.json (title, URL, creator credit, type, loaders, versions, last checked) seeded from section 11.3, with a CI link checker and a Suggest a resource issue template; a vanilla reference that indexes blocks, items and recipes from sources generated on the user's machine (never shipped) with "Make one like this"; a Learn mode overlay; GitHub integration following the "GitHub sign-in (device flow)" section of v0.7 in the plan (device flow with the code copied and the browser opened for the user, token only in the OS keychain and never sent to the frontend, minimal permissions recorded in an ADR, token passed per git operation and never written to remotes or config, sign-in behind githubSignIn/githubSignOut/githubAccount commands and typed events, shown in its own small window styled after docs/design/login-screen.jpg as described in "Sign-in window" in v0.7 of the plan), plus create repo, clone, push, pull, branches and a plain-language conflict screen and Import existing.
 Done when: a beginner finishes "Make your first block" using live demos, builds a furnace-like block from the vanilla reference, and pushes it to a new GitHub repo; a Docs page with three live demos still scrolls at 60 fps on the reference machine.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -639,6 +658,8 @@ End with STATUS / CHECKS / NEEDS YOUR DECISION.
 /goal Build Blocksy v0.8 "Machines and energy" on top of v0.7, following docs/release/blocksy-release-plan.md sections 2, 3 and 4.
 Scope: a Block entity element module (stored values; input, output, fuel and filtered slots; ticking; saving to the world; data attachments); items with data components and dynamic tooltips; energy storage and transfer between blocks (verify the current standard Fabric energy API and record it in an ADR); item transfer with sided input and output for hoppers and pipes; custom recipe types with a recipe editor; basic block entity renderers; a simple auto-generated screen per machine exposed through a GUI interface, so GUI Studio in v0.9 can replace it without editing the machine module. Use AE2's Inscriber as a structural reference only; write original code.
 Done when: a powered crusher takes ore, draws energy from a generator, shows progress, outputs dust from a custom recipe, keeps its contents after a world reload, and works with hoppers.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -659,6 +680,8 @@ Everything in section 10.
 /goal Build Blocksy v0.9 "GUI Studio" on top of v0.8. Read docs/release/blocksy-release-plan.md sections 4 and 10 and every image in docs/design/ first. This feature should be good enough to become the reason people use Blocksy.
 Scope: vanilla screen import that reads GUI sprites and their .mcmeta scaling (stretch, tile, nine_slice) from the user's local Minecraft assets (never shipped) plus Blocksy-authored layout data for common vanilla screens; a GUI document model in packages/gui-studio; a design canvas on the GUI pixel grid with GUI scale 1 to 4 and window-size previews, layers, alignment, distribution, snapping and undo; GUI components as registered modules (panel, image, slot, slot grid, player inventory, button, toggle, slider, text, text field, progress bar and arrow, energy and fluid gauges, item and entity preview, scroll list, item grid, tabs, tooltip); a style engine (mod colour tokens, fills, gradients, borders, pixel-stepped radius, shadows, glow, opacity, custom TTF fonts via font JSON, nine-slice editor, shared stylesheets); states (hover, pressed, disabled, focused), transitions and keyframe animation; data binding to block entity values, translations and node events; a simulate mode; a contrast checker; starter templates. Output: bake styles into nine-slice sprites where possible and generate a small, readable, commented Blocksy UI runtime into the mod for gradients, blur and animation (no external dependency). Study owo-ui, LDLib2 and Modern UI for ideas; write original code. Connect machine screens from v0.8 through the existing GUI interface without editing the machine module.
 Done when: the vanilla furnace screen is re-skinned for the crusher, a fully custom "Aetheric terminal" with gradient panels, a custom font, animated progress and a scroll grid works in game at every GUI scale, and dragging on the canvas holds 60 fps at GUI scale 4 on the reference machine.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -679,6 +702,8 @@ End with STATUS / CHECKS / NEEDS YOUR DECISION.
 /goal Build Blocksy v0.10 "Content and world" on top of v0.9, following docs/release/blocksy-release-plan.md sections 2, 3 and 4.
 Scope: element modules for tools and tool materials, armor (with armor layer textures), shields, bows and crossbows, throwables, buckets, music discs, effects, potions, enchantments, damage types, sounds (.ogg import, sound events, subtitles), custom particles, advancements (tree view editor), loot tables (including injecting into vanilla tables), worldgen ores, placed features and tree placement (height and rarity preview), NBT structures with an NBT viewer, biomes, dimensions, villager professions and trades, and a mod config whose settings screen is designed in GUI Studio. Use data generation for all JSON. Each with Docs pages, demos and golden tests; all catalog items for 0.10 in section 3 done.
 Done when: a new ore generates in a fresh world, mining it grants an advancement, its pickaxe and armor set work, and a custom villager trades the refined item.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -699,6 +724,8 @@ The second half of section 8.
 /goal Build Blocksy v0.11 "Model Studio: entities and animation" on top of v0.10. Read docs/release/blocksy-release-plan.md sections 4 and 8 first.
 Scope: an entity model format module (bones with pivots, free rotation, texture size rules) added to Model Studio without editing the block/item format or existing tools; an animator tool (timeline, keyframes for rotation, position and scale per bone, easing curves, looping, live viewport preview that mutates refs in useFrame, never React state); armor models on the player; an Entity element module (attributes, AI goals, spawn rules, spawn eggs, renderers, projectiles); animations triggered by node events (idle, walk, attack); entity model code and animation export; .bbmodel entity import. Original code only. Add an animated rig to the bench.
 Done when: a custom animated mob spawns naturally, walks and attacks with its own animations, and drops loot, and the animator meets the section 4 budget.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -717,6 +744,8 @@ End with STATUS / CHECKS / NEEDS YOUR DECISION.
 /goal Build Blocksy v0.12 "Expert tools and compatibility" on top of v0.11, following docs/release/blocksy-release-plan.md sections 2, 3 and 4.
 Scope: server-to-client networking generated as packets from nodes; key mappings; commands; game rules; statistics; resource conditions; HUD overlays designed in GUI Studio; a multiblock helper (shape definition, validation, form and break events); connecting blocks with connected models; fluids with storage and transfer; a guided mixin node with target picker; access wideners; compatibility modules for recipe viewers (EMI, REI, JEI), Jade block info and the Mod Menu config button, each optional and loaded only when that mod is present; adding another mod as a dependency and using its API; Fabric game tests; a dedicated server run check; code hotswap while the game runs. All as registered modules with Docs and demos; all catalog items for 0.12 in section 3 done.
 Done when: a storage controller multiblock forms, cables connect to it, the v0.9 Aetheric terminal lists and searches items from connected storage, the crusher's recipes appear in a recipe viewer, and the mod runs on a dedicated server.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -735,6 +764,8 @@ End with STATUS / CHECKS / NEEDS YOUR DECISION.
 /goal Build Blocksy v0.13 "Release candidate" on top of v0.12.
 Scope: whole-mod Problems checks (missing textures, lang keys, loot tables, uncraftable recipes, unused elements, low-contrast GUIs); friendly build errors and a crash log reader linking to the element at fault; multiple languages with a translation view; a mod metadata editor (icon, description, authors, separate code and assets licenses, dependencies); versioned jar export with release notes from history; Modrinth and CurseForge publishing metadata; a performance pass on 100+ element projects against every budget in docs/release/blocksy-release-plan.md section 4; autosave and crash recovery; a polish pass on both themes; finish every Docs page and demo. Audit the codebase against section 2 and section 3 and list any rule violations or missing catalog items with fixes.
 Done when: a 100-element test project builds with zero Problems, meets every section 4 budget on the reference machine, and its jar runs in a normal Fabric install outside Blocksy.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 
@@ -774,6 +805,8 @@ Test 2 (item): texture from the texture editor, recipe, node-based right-click a
 Test 3 (full mod, an Aetheric Storage Engineering slice): ore with worldgen, its items and a full block set; tool and armor set; two energy-powered machines with GUI Studio screens (one vanilla-style, one fully custom) and a custom recipe type; a data-carrying storage item; a small multiblock with cables; an animated entity made in Model Studio; recipes visible in a recipe viewer; an advancement chain; config screen and icon; pushed to GitHub; release jar running in a normal Fabric install and on a dedicated server.
 For every gap a test exposes, fix Blocksy itself (never the test project), log each fix, and confirm no fix required refactoring an earlier module; if one did, write an ADR. Run the full bench and record docs/perf/1.0.0.md.
 Done when: all three tests pass from a fresh install of Blocksy on the reference machine within every section 4 budget.
+Keep CHECKPOINT.md current as you go (same shape as earlier releases: done table, still to do, useful facts), so a new session can pick up where the last one stopped.
+Before finishing: run /code-review and /security-review on the release branch and fix what they find, and run the end-to-end test (create a project in the real app, Build, Run, and check the release's "Done when" in game).
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
 

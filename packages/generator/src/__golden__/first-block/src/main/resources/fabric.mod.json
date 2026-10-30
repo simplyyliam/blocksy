@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "first_block",
+	"version": "${version}",
+	"name": "First Block",
+	"description": "Made with Blocksy.",
+	"authors": [],
+	"license": "All-Rights-Reserved",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.example.first_block.FirstBlock"
+		],
+		"client": [
+			"com.example.first_block.client.FirstBlockClient"
+		],
+		"fabric-datagen": [
+			"com.example.first_block.client.datagen.ModDataGenerator"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

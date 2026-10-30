@@ -38,6 +38,38 @@ export interface LoaderTarget {
   paths(project: Project): Record<string, string>
   /** The empty-mod files every project starts from (build scripts, entrypoint, ...). */
   scaffold(ctx: GenerateContext): GeneratedFile[]
+  /**
+   * v0.2: this loader's code for element types, keyed by element type id.
+   * Loader code lives here, not in the element (rule 5), so a new loader adds
+   * its adapters without touching any element package (ADR 0006).
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  adapters?: Record<string, ElementTemplate<any>>
+  /**
+   * v0.2: build tasks that must run before Build or Run for this project
+   * (Fabric: data generation once the mod has blocks). Empty or missing = none.
+   */
+  prepareTasks?(project: Project): string[]
+}
+
+/** Turns one element into files for one loader target. */
+export type ElementTemplate<Data = unknown> = (element: Element & { data: Data }, ctx: GenerateContext) => GeneratedFile[]
+
+/** One field of an element, described for its generated Docs reference page. */
+export interface ElementFieldDoc {
+  key: string
+  label: string
+  /** Plain-language explanation, one or two sentences. */
+  description: string
+  /** What the field becomes in Java, e.g. ".strength(hardness, resistance)". */
+  java?: string
+}
+
+/** The Docs reference page of an element type, generated from this data (plan 11.2). */
+export interface ElementDocs {
+  /** One paragraph: what the element is and when to use it. */
+  summary: string
+  fields: ElementFieldDoc[]
 }
 
 /** An element type (block, item, ...). Templates are keyed by loader target id. */
@@ -46,7 +78,12 @@ export interface ElementType<Data = unknown> {
   name: string
   schema: z.ZodType<Data>
   defaults(): Data
-  templates: Record<string, (element: Element & { data: Data }, ctx: GenerateContext) => GeneratedFile[]>
+  /** Templates keyed by target id. A target may also bring them as `adapters`. */
+  templates: Record<string, ElementTemplate<Data>>
+  /** v0.2: plural name for groups in the project tree ("Blocks"). */
+  plural?: string
+  /** v0.2: the data behind this element's Docs reference page. */
+  docs?: ElementDocs
 }
 
 /** A visual theme: token values only, never layout or behaviour (plan section 5). */
@@ -88,4 +125,19 @@ export interface ModelStudioTool {
 export interface DocsDemo {
   id: string
   title: string
+}
+
+/**
+ * v0.2: what an element's editor panel receives from the project editor. Plain data and
+ * callbacks (no UI library), so core stays framework-free; element packages build the
+ * actual panel. Every change goes through `change`/`rename`, which run commands (undo/redo).
+ */
+export interface ElementEditorProps<Data = unknown> {
+  element: Element & { data: Data }
+  project: Project
+  /** Replaces the element's data (one undo step). */
+  change(data: Data): void
+  rename(name: string): void
+  /** Selects another element in the project tree (e.g. "open this creative tab"). */
+  select(id: string): void
 }

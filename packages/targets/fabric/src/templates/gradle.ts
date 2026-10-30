@@ -2,7 +2,7 @@
 import type { GenerateContext } from "@blocksy/core"
 
 /** Plugins, dependencies and Java settings for the mod. Versions live in gradle.properties. */
-export const buildGradle = ({ project, version }: GenerateContext) => `plugins {
+export const buildGradle = ({ project, version }: GenerateContext, datagen = false) => `plugins {
 	id 'net.fabricmc.fabric-loom' version "\${loom_version}"
 	id 'maven-publish'
 }
@@ -24,7 +24,7 @@ loom {
 	}
 }
 
-dependencies {
+${datagen ? DATAGEN : ""}dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:\${project.minecraft_version}"
 	implementation "net.fabricmc:fabric-loader:\${project.loader_version}"
@@ -102,4 +102,14 @@ networkTimeout=10000
 validateDistributionUrl=true
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
+`
+
+/** Fabric data generation, added once the mod has blocks. Runs with "gradlew runDatagen". */
+const DATAGEN = `fabricApi {
+	// Model generation is client-only code, so the data generator lives in the client source set.
+	configureDataGeneration {
+		client = true
+	}
+}
+
 `

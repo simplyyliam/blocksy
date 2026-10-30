@@ -1,0 +1,18 @@
+---
+title: Change a block's texture
+description: Swap the picture on a block for your own 16x16 PNG.
+---
+
+1. Select the block in the project tree.
+2. In the inspector, under **Look → Texture**, click **Replace** (or **Import** if it has none).
+3. Pick a **16x16 PNG**. Other sizes are refused with a message saying the size it found.
+
+The 3D preview updates straight away. The next **Build** or **Run** writes the file to
+`assets/<modid>/textures/block/<id>.png`.
+
+<Callout type="warn" title="Keep it pixel-sized">
+Draw at 16x16 and don't scale it up first: Minecraft (and Blocksy's preview) keep pixels crisp on their own.
+</Callout>
+
+To remove a texture, click the bin next to it. The block then shows Minecraft's
+"missing texture" pattern in game until you add one.

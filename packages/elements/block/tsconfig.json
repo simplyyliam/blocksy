@@ -1,0 +1,17 @@
+{
+  // Composite = other projects can reference this one; declarations go to dist/.
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    // The editor panel and canvas are React components that run in the webview.
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": []
+  },
+  "include": ["src"],
+  // Workspace packages this one imports. tsc -b checks them first.
+  "references": [{ "path": "../../core" }, { "path": "../../ui" }, { "path": "../../model-studio" }]
+}

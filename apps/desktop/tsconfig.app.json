@@ -18,6 +18,10 @@
     { "path": "../../packages/core" },
     { "path": "../../packages/generator" },
     { "path": "../../packages/targets/fabric" },
-    { "path": "../../packages/ui" }
+    { "path": "../../packages/ui" },
+    { "path": "../../packages/model-studio" },
+    { "path": "../../packages/elements/block" },
+    { "path": "../../packages/elements/creative-tab" },
+    { "path": "../../packages/docs" }
   ]
 }

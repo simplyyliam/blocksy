@@ -71,6 +71,31 @@ pub fn write_project_files(dir: String, files: Vec<FileToWrite>, overwrite: bool
     Ok(())
 }
 
+/// Deletes generated files that are no longer generated (a removed block's texture, ...),
+/// then any folders that became empty. Paths are relative and checked like writes.
+#[tauri::command]
+#[specta::specta]
+pub fn remove_project_files(dir: String, paths: Vec<String>) -> AppResult<()> {
+    let root = PathBuf::from(&dir);
+    for relative in paths {
+        let path = safe_join(&root, &relative)?;
+        match std::fs::remove_file(&path) {
+            Ok(()) => {}
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => continue,
+            Err(e) => return Err(e.into()),
+        }
+        // Tidy up: remove parent folders that are now empty, but never the project folder.
+        let mut parent = path.parent();
+        while let Some(folder) = parent {
+            if folder == root || std::fs::remove_dir(folder).is_err() {
+                break;
+            }
+            parent = folder.parent();
+        }
+    }
+    Ok(())
+}
+
 #[tauri::command]
 #[specta::specta]
 pub fn read_text_file(path: String) -> AppResult<String> {

@@ -1,0 +1,14 @@
+---
+title: Make a creative tab
+description: Give your mod its own page in the creative inventory.
+---
+
+1. In the project tree, click **+** next to **Creative tabs** and type a name, for example *Ruby Things*.
+2. Select a block, and in its inspector choose the tab under **Creative tab → Shows in**.
+3. Back on the tab, pick an **Icon** (or keep *First block*).
+
+New blocks join your first creative tab automatically. The tab's canvas shows how the page
+will look in game; click a block there to edit it.
+
+In Java this becomes a `CreativeModeTab` in `ModCreativeTabs.java`, with one
+`output.accept(...)` line per block. See the [Creative tab reference](/docs/reference/creative-tab).

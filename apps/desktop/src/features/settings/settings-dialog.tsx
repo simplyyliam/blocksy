@@ -97,7 +97,7 @@ function GeneralSection() {
   return (
     <Rows>
       {[
-        <Row key="theme" label="Theme" description="The Minecraft theme arrives in v0.2">
+        <Row key="theme" label="Theme" description="Modern, or Minecraft: pixel art and a pixel font">
           <SettingSelect
             value={settings.theme}
             onChange={(v) => void chooseTheme(v)}

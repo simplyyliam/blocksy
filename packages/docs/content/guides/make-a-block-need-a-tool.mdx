@@ -1,0 +1,17 @@
+---
+title: Make a block need a tool
+description: Only drop the block when it's mined with the right tool and tier, like iron ore.
+---
+
+In the block's inspector, under **Mining**:
+
+| Setting | Example | What it does |
+| --- | --- | --- |
+| Tool | Pickaxe | That tool mines it fast (tag `mineable/pickaxe`) |
+| Tool tier | Iron or better | Weaker tools mine it but it drops nothing (tag `needs_iron_tool`) |
+| Drops only with it | On | Mining by hand or with the wrong tool drops nothing |
+
+Turn **Drops only with it** off for blocks like dirt, which always drop.
+
+These become `.requiresCorrectToolForDrops()` in `ModBlocks.java` and two tags in
+`ModBlockTagProvider.java`. Read more in [Data generation](/docs/concepts/data-generation).

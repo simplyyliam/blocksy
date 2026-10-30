@@ -53,7 +53,40 @@ fn pipe_lines(app: AppHandle, run_id: u32, stream: OutputStream, pipe: impl Asyn
     });
 }
 
+/// Builds the command for one Gradle run (`gradlew <tasks> --console=plain`).
+fn gradle_command(dir: &Path, wrapper: &Path, java_home: &str, tasks: &[String]) -> tokio::process::Command {
+    // cmd.exe needs the full path: it may not search the current folder.
+    let mut cmd = if cfg!(windows) {
+        let mut c = quiet_async_command("cmd.exe");
+        c.arg("/c").arg(wrapper);
+        c
+    } else {
+        quiet_async_command(wrapper)
+    };
+    let path = std::env::var_os("PATH").unwrap_or_default();
+    let mut paths = vec![Path::new(java_home).join("bin")];
+    paths.extend(std::env::split_paths(&path));
+    cmd.args(tasks)
+        .arg("--console=plain")
+        .current_dir(dir)
+        .env("JAVA_HOME", java_home)
+        .env("PATH", std::env::join_paths(paths).unwrap_or(path))
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .kill_on_drop(false);
+    cmd
+}
+
+/// Gradle task names are plain words like `runDatagen` (never flags or paths).
+fn is_task_name(name: &str) -> bool {
+    name.chars().next().is_some_and(|c| c.is_ascii_alphabetic())
+        && name.chars().all(|c| c.is_ascii_alphanumeric() || c == ':' || c == '_' || c == '-')
+}
+
 /// Starts a Gradle task. Returns its run id; output arrives as events.
+/// `prepare` tasks (e.g. `runDatagen`) run first as their own Gradle run, because Gradle
+/// can't order them before `build` inside one run. The loader target decides them.
 #[tauri::command]
 #[specta::specta]
 pub async fn run_gradle(
@@ -62,6 +95,7 @@ pub async fn run_gradle(
     project_dir: String,
     task: GradleTask,
     java_home: String,
+    prepare: Vec<String>,
 ) -> AppResult<u32> {
     let dir = PathBuf::from(&project_dir);
     let wrapper = dir.join(if cfg!(windows) { "gradlew.bat" } else { "gradlew" });
@@ -71,50 +105,64 @@ pub async fn run_gradle(
     if !Path::new(&java_home).join("bin").exists() {
         return Err(AppError::new(ErrorCode::JavaMissing, format!("No JDK found at {java_home}")));
     }
+    if let Some(bad) = prepare.iter().find(|t| !is_task_name(t)) {
+        return Err(AppError::new(ErrorCode::InvalidInput, format!("Not a Gradle task name: {bad}")));
+    }
 
     let mut running = state.running.lock().unwrap();
     if running.is_some() {
         return Err(AppError::new(ErrorCode::Busy, "Another build or game is already running"));
     }
 
-    // cmd.exe needs the full path: it may not search the current folder.
-    let mut cmd = if cfg!(windows) {
-        let mut c = quiet_async_command("cmd.exe");
-        c.arg("/c").arg(&wrapper);
-        c
-    } else {
-        quiet_async_command(&wrapper)
-    };
-    let path = std::env::var_os("PATH").unwrap_or_default();
-    let mut paths = vec![Path::new(&java_home).join("bin")];
-    paths.extend(std::env::split_paths(&path));
-    cmd.args([task.gradle_name(), "--console=plain"])
-        .current_dir(&dir)
-        .env("JAVA_HOME", &java_home)
-        .env("PATH", std::env::join_paths(paths).unwrap_or(path))
-        .stdin(Stdio::null())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .kill_on_drop(false);
+    // The runs, in order: prepare tasks (if any), then the task itself.
+    let mut runs: Vec<Vec<String>> = Vec::new();
+    if !prepare.is_empty() {
+        runs.push(prepare);
+    }
+    runs.push(vec![task.gradle_name().to_string()]);
 
-    let mut child = cmd.spawn().map_err(|e| AppError::new(ErrorCode::GradleFailed, format!("Couldn't start Gradle: {e}")))?;
+    let spawn_err = |e: std::io::Error| AppError::new(ErrorCode::GradleFailed, format!("Couldn't start Gradle: {e}"));
+    let mut child = gradle_command(&dir, &wrapper, &java_home, &runs[0]).spawn().map_err(spawn_err)?;
     let run_id = state.next_id.fetch_add(1, Ordering::Relaxed) + 1;
-    let pid = child.id().unwrap_or_default();
-    *running = Some(Running { run_id, task, pid, stopped: false });
+    *running = Some(Running { run_id, task, pid: child.id().unwrap_or_default(), stopped: false });
     drop(running);
 
-    pipe_lines(app.clone(), run_id, OutputStream::Stdout, child.stdout.take().unwrap());
-    pipe_lines(app.clone(), run_id, OutputStream::Stderr, child.stderr.take().unwrap());
-
-    // Wait in the background, then clear the slot and report how it ended.
+    // Run each step in the background, streaming its output; stop at the first failure or Stop.
     tauri::async_runtime::spawn(async move {
-        let status = child.wait().await;
         let state = app.state::<GradleState>();
+        let mut result = (false, None);
+        for (i, tasks) in runs.iter().enumerate() {
+            if i > 0 {
+                // Check for Stop, spawn and record the new pid under one lock: a Stop can't
+                // slip in between and kill the finished step's (possibly reused) pid.
+                let mut running = state.running.lock().unwrap();
+                let Some(run) = running.as_mut().filter(|r| !r.stopped) else { break };
+                match gradle_command(&dir, &wrapper, &java_home, tasks).spawn() {
+                    Ok(next) => {
+                        child = next;
+                        run.pid = child.id().unwrap_or_default();
+                    }
+                    Err(e) => {
+                        drop(running);
+                        let line = format!("Couldn't start Gradle: {e}");
+                        let _ = GradleOutput { run_id, line, stream: OutputStream::Stderr }.emit(&app);
+                        result = (false, None);
+                        break;
+                    }
+                }
+            }
+            pipe_lines(app.clone(), run_id, OutputStream::Stdout, child.stdout.take().unwrap());
+            pipe_lines(app.clone(), run_id, OutputStream::Stderr, child.stderr.take().unwrap());
+            result = match child.wait().await {
+                Ok(s) => (s.success(), s.code()),
+                Err(_) => (false, None),
+            };
+            if !result.0 {
+                break;
+            }
+        }
         let stopped = state.running.lock().unwrap().take().map(|r| r.stopped).unwrap_or(false);
-        let (success, exit_code) = match status {
-            Ok(s) => (s.success(), s.code()),
-            Err(_) => (false, None),
-        };
+        let (success, exit_code) = result;
         let _ = GradleFinished { run_id, task, success: success && !stopped, exit_code, stopped }.emit(&app);
     });
 

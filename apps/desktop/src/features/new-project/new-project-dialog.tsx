@@ -18,8 +18,9 @@ import { useNavigation } from "../../shared/stores/navigation"
 import { useProject } from "../../shared/stores/project"
 import { useSettings } from "../../shared/stores/settings"
 import { createAndOpen, previewTree } from "./create-project"
+import type { StarterId } from "./starters"
 
-/** Left column rows. Only "Empty mod" exists in v0.1; the rest say when they arrive. */
+/** Left column rows. Rows that arrive in a later release say when, on hover. */
 /** A row in the left column: an icon on a solid colour tile (theme colours, no gradients). */
 interface SideOption {
   id: string
@@ -36,7 +37,7 @@ const startFrom: SideOption[] = [
 ]
 const projectTypes: SideOption[] = [
   { id: "empty", label: "Blank mod", Icon: FilePlus2, tile: "bg-brand" },
-  { id: "block", label: "Starter block", Icon: Box, tile: "bg-success", note: "A mod with one block to edit. Arrives in v0.2" },
+  { id: "block", label: "Starter block", Icon: Box, tile: "bg-success" },
   { id: "item", label: "Starter item", Icon: Sword, tile: "bg-project", note: "A mod with one item to edit. Arrives in v0.3" },
 ]
 
@@ -84,6 +85,7 @@ export function NewProjectDialog() {
   const [minecraftVersion, setMinecraftVersion] = useState(target.versions[0]!.minecraft)
   const [modIdOverride, setModIdOverride] = useState("")
   const [group, setGroup] = useState("com.example")
+  const [starter, setStarter] = useState<StarterId>("block")
   const [error, setError] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
   const ids = { name: useId(), location: useId(), version: useId(), modId: useId(), group: useId() }
@@ -99,7 +101,7 @@ export function NewProjectDialog() {
 
   const modId = modIdOverride || deriveModId(name || "my_first_mod")
   const input = { name: name || "My First Mod", target: target.id, minecraftVersion, modId, group }
-  const tree = previewTree(input) // cheap: templates are plain strings
+  const tree = previewTree(input, starter) // cheap: templates are plain strings
 
   const problems = {
     name: name.trim() ? null : "Give your mod a name",
@@ -130,7 +132,7 @@ export function NewProjectDialog() {
     setCreating(true)
     setError(null)
     try {
-      await createAndOpen({ ...input, name: name.trim(), location })
+      await createAndOpen({ ...input, name: name.trim(), location }, starter)
       setOpen(false)
       // Start the first build right away: it downloads Minecraft, which takes a while.
       if (useJava.getState().active) void buildMod()
@@ -162,7 +164,12 @@ export function NewProjectDialog() {
               <p className="mt-6 pl-2 text-sm text-fg-muted">New project</p>
               <div className="mt-2 flex flex-col gap-0.5">
                 {projectTypes.map((t) => (
-                  <SideRow key={t.id} option={t} active={t.id === "empty"} onClick={t.id === "empty" ? () => {} : undefined} />
+                  <SideRow
+                    key={t.id}
+                    option={t}
+                    active={t.id === starter}
+                    onClick={t.id === "empty" || t.id === "block" ? () => setStarter(t.id as StarterId) : undefined}
+                  />
                 ))}
               </div>
             </div>
