@@ -10,6 +10,8 @@
     { "path": "./packages/generator" },
     { "path": "./packages/targets/fabric" },
     { "path": "./packages/model-studio" },
+    { "path": "./packages/elements/block" },
+    { "path": "./packages/elements/creative-tab" },
     { "path": "./packages/gui-studio" },
     { "path": "./packages/ui" },
     { "path": "./packages/docs" },

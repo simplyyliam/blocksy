@@ -1,10 +1,50 @@
-# Checkpoint: v0.1 "Foundation"
+# Checkpoint: v0.2 "First block"
 
 Last updated: 2026-10-30. Read this first in a new session, then `CLAUDE.md` and
-`docs/release/blocksy-release-plan.md` (sections 1, 2, 4, 5 and "v0.1 Foundation" in 13).
-Work on feature branches and merge to `main` with `--no-ff` (see CLAUDE.md).
+`docs/release/blocksy-release-plan.md` (sections 2, 4, 5, 11 and "v0.2 First block" in 13).
+Work happens on branch `feature/v0.2-first-block`; merge to `main` with `--no-ff` when done.
 
-## Done (all merged into `main`)
+## The shape of v0.2 (decided, see ADR 0006)
+
+```text
+packages/elements/block         schema, options, inspector, 3D canvas, docs data, PNG helpers, tests
+packages/elements/creative-tab  schema, inspector, inventory-sketch canvas, docs data, tests
+packages/model-studio           CubeModel document + BlockPreview (R3F, frameloop="demand", dpr<=1.5)
+packages/targets/fabric         adapters for block + creative_tab (loader code lives in the target)
+core                            LoaderTarget.adapters / prepareTasks, ElementType.docs / plural,
+                                ElementEditorProps, deriveElementId, renameElement (all optional/additive)
+generator                       one line: element template ?? target adapter
+```
+
+Textures are stored as base64 16x16 PNGs inside element data, so the generator stays pure.
+Fabric output uses data generation (models, blockstates, loot tables, tags via `runDatagen`);
+lang stays a plain en_us.json written by the generator.
+
+## Done
+
+| Area | Where | Notes |
+| --- | --- | --- |
+| Core extension points | `packages/core/src/modules.ts`, `project.ts`, `project-commands.ts` | optional fields only; tests in `element-id.test.ts` |
+| Block element | `packages/elements/block` | name, hardness, resistance, tool + tier, needs-tool, light, sound, map colour, texture, tab |
+| Creative tab element | `packages/elements/creative-tab` | title, icon; blocks join via their `tab` field |
+| Block preview | `packages/model-studio` | render on demand, PerformanceMonitor, `previewFrameCount()` for the bench |
+| Inspector kit | `packages/ui/src/components/inspector.tsx` | section / field with Java hint / commit-on-blur number |
+| Lively components | `packages/ui/src/components/ui/` | Dot Matrix (assistant-ui), Dot Pattern + Confetti (Magic UI), via shadcn CLI |
+| Plan + rules | plan, CLAUDE.md, memory | "make it alive" each release; every goal keeps CHECKPOINT.md current |
+
+## Still to do for v0.2 (in order)
+
+1. Fabric adapters + aggregate files (ModBlocks, ModCreativeTabs, datagen entrypoint, lang) + golden test `first-block`
+2. `pnpm test:gradle` with a block project: build + runDatagen succeed, loot table / tags / models generated
+3. Rust: `remove_project_files`, `prepare` tasks param on `run_gradle`; regenerate bindings
+4. App: register modules, project editor page (tree, canvas, floating inspector, Design/Code island), sync files before Build/Run
+5. Minecraft theme (tokens, original pixel art, Pixelify Sans), works on every screen
+6. Docs with fumadocs: Learn / Guides / Reference / Concepts / Community + Credits, "Make your first block" with Kaupenjoe videos
+7. Starter block in New project; status bar Dot Matrix; confetti on first "mod loaded"
+8. Bench (add a block preview idle check), `docs/perf/0.2.md`, ADR 0006, CHANGELOG notes, merge
+
+## v0.1 "Foundation" (done, merged)
+
 
 | Area | Where | Notes |
 | --- | --- | --- |
@@ -25,18 +65,8 @@ Work on feature branches and merge to `main` with `--no-ff` (see CLAUDE.md).
 | Updater + release pipeline | `tauri.conf.json`, `scripts/`, `.github/workflows/release.yml` | updater off until a key exists; `pnpm updater:keygen`, `pnpm release`, draft releases with `latest.json` |
 | Bench hook in the app | `apps/desktop/src/app/bench.ts`, Rust `commands/bench.rs` | runs only with `BLOCKSY_BENCH=<report path>`; writes JSON then quits |
 
-## Still to do for v0.1
-
-Done 2026-10-30: `pnpm bench` (docs/perf/0.1.md: cold start 1.1 s, frame p95 33.3 ms, memory 320 MB,
-all pass) and the Stop test (release build: Run → "Your mod is loaded" → Stop → the game JVM is gone,
-nothing left running).
-
-1. Commit or restore `packages/ui/src/components/ui/dropdown-menu.tsx` (Liam's local edit), so main is clean.
-2. Run `/release` for 0.1.0 (it stopped on the dirty tree last time).
-3. **Updater check (Liam)**: `docs/release/updater-test.md` (pnpm release → publish 0.1.0 → install →
-   release 0.1.1 → it updates itself). Needs the signing-key password and GitHub publishing.
-
 ## Useful facts
+
 
 - Browser-only preview for UI checks: `npx vite --port 1431` in apps/desktop, then drive it with
   headless Edge + CDP. Tauri calls fail there (expected); set stores via `import()` of the exact
@@ -48,3 +78,8 @@ nothing left running).
 - Ports 5173/5174 are used by another project on this machine; Blocksy's dev server is fixed to 1420.
 - Windows: `cargo test` works because `build.rs` embeds the app manifest into every binary.
 - The React Compiler is on: components reading the mutable `logLines` buffer use `"use no memo"`.
+- Fabric API names for 26.1.2 can be checked offline: jars in `~/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/`
+  and Minecraft in `~/.gradle/caches/fabric-loom/26.1.2/` (`javap`); Fabric's `.classtweaker` files make some vanilla
+  datagen helpers public (e.g. `BlockModelGenerators.createTrivialCube`, `BlockLootSubProvider.dropSelf`).
+- shadcn files that fail strict TS (unused imports) can't be edited: don't install them (scroll-area was removed).
+- Python edits on Windows: open files with `newline=''` or they get CRLF.

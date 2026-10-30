@@ -154,6 +154,53 @@ importers:
         specifier: ^19.3.1
         version: 19.3.1(react@19.3.1)
 
+  packages/elements/block:
+    dependencies:
+      '@blocksy/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@blocksy/model-studio':
+        specifier: workspace:*
+        version: link:../../model-studio
+      '@blocksy/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      lucide-react:
+        specifier: ^1.64.0
+        version: 1.64.0(@types/react@19.3.0)(react@19.3.1)
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: ^19.3.1
+        version: 19.3.1
+
+  packages/elements/creative-tab:
+    dependencies:
+      '@blocksy/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@blocksy/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      lucide-react:
+        specifier: ^1.64.0
+        version: 1.64.0(@types/react@19.3.0)(react@19.3.1)
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: ^19.3.1
+        version: 19.3.1
+
   packages/generator:
     dependencies:
       '@blocksy/core':

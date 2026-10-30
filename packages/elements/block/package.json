@@ -1,0 +1,25 @@
+{
+  "name": "@blocksy/element-block",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@blocksy/core": "workspace:*",
+    "@blocksy/model-studio": "workspace:*",
+    "@blocksy/ui": "workspace:*",
+    "lucide-react": "^1.64.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "react": "^19.3.1"
+  },
+  "peerDependencies": {
+    "react": "^19.3.1"
+  }
+}

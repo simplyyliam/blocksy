@@ -126,3 +126,18 @@ export interface DocsDemo {
   id: string
   title: string
 }
+
+/**
+ * v0.2: what an element's editor panel receives from the project editor. Plain data and
+ * callbacks (no UI library), so core stays framework-free; element packages build the
+ * actual panel. Every change goes through `change`/`rename`, which run commands (undo/redo).
+ */
+export interface ElementEditorProps<Data = unknown> {
+  element: Element & { data: Data }
+  project: Project
+  /** Replaces the element's data (one undo step). */
+  change(data: Data): void
+  rename(name: string): void
+  /** Selects another element in the project tree (e.g. "open this creative tab"). */
+  select(id: string): void
+}

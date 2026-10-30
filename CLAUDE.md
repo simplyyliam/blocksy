@@ -109,3 +109,4 @@ docs/                    plan, ADRs (decisions/), design inspiration, perf resul
 - I'm a junior developer and a visual learner: explain decisions in plain words,
   use diagrams or tables when they help, and keep code small and commented.
 - Every task ends with a **STATUS / CHECKS / NEEDS YOUR DECISION** block.
+- Release work keeps `CHECKPOINT.md` current as it goes, so a new session can pick up where the last stopped.

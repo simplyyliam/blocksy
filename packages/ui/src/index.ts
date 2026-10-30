@@ -6,6 +6,7 @@
 export { cn } from "./lib/utils.ts"
 export { applyTheme } from "./theme/apply.ts"
 export { modernTheme } from "./theme/modern.ts"
+export { useThemeToken } from "./theme/use-token.ts"
 
 export { Badge, badgeVariants } from "./components/ui/badge.tsx"
 export { Button, buttonVariants } from "./components/ui/button.tsx"
@@ -41,11 +42,16 @@ export {
 export { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from "./components/ui/item.tsx"
 export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./components/ui/card.tsx"
 export { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "./components/ui/context-menu.tsx"
+export { Switch } from "./components/ui/switch.tsx"
+export { Slider } from "./components/ui/slider.tsx"
+export { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs.tsx"
+export { Kbd, KbdGroup } from "./components/ui/kbd.tsx"
 // Small "make it alive" pieces from shadcn registries (assistant-ui, Magic UI), stock files:
 export { DotMatrix, dotMatrixStates, type DotMatrixState } from "./components/ui/dot-matrix.tsx"
 export { DotPattern } from "./components/ui/dot-pattern.tsx"
 export { Confetti, ConfettiButton, type ConfettiRef } from "./components/ui/confetti.tsx"
 // Blocksy-only pieces (shadcn has nothing like them):
+export { InspectorField, InspectorSection, NumberInput } from "./components/inspector.tsx"
 export { AnimatedNumber } from "./components/animated-number.tsx"
 export { ElapsedTime } from "./components/elapsed-time.tsx"
 export { ProjectCover } from "./components/project-cover.tsx"
