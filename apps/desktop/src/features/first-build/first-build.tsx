@@ -55,17 +55,18 @@ export function FirstBuild() {
 
       <ChainOfThought open={open} onOpenChange={setOpen} className="mt-5 space-y-3">
         {/* Our own trigger (chevron on the left), so the AI Elements file stays as installed. */}
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => setOpen(!open)}
           aria-expanded={open}
-          className="flex h-7 items-center gap-3 text-sm text-fg-muted outline-none transition-colors hover:text-fg"
+          className="-ml-3 gap-3 font-normal text-fg-muted hover:bg-transparent"
         >
-          <ChevronDown className={cn("size-4 transition-transform duration-200 ease-out", !open && "-rotate-90")} strokeWidth={1.75} />
+          <ChevronDown className={cn("transition-transform duration-200 ease-out", !open && "-rotate-90")} strokeWidth={1.75} />
           <span>
             Working for <ElapsedTime seconds={seconds} />
           </span>
-        </button>
+        </Button>
 
         <ChainOfThoughtContent className="space-y-4">
           {FIRST_BUILD_STEPS.map((s, i) => {

@@ -1,6 +1,6 @@
 // Home: recent projects and a way to start a new one.
 import { Plus } from "lucide-react"
-import { Button, toast } from "@blocksy/ui"
+import { Button, Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle, toast } from "@blocksy/ui"
 import { errorMessage } from "../../shared/api"
 import { prettyPath } from "../../shared/paths"
 import { useNavigation } from "../../shared/stores/navigation"
@@ -53,26 +53,27 @@ export function HomePage() {
           <Button variant="secondary" size="sm" onClick={() => setNewProject(true)}>Create your first mod</Button>
         </div>
       ) : (
-        <ul className="flex flex-col">
+        <ItemGroup className="gap-0.5">
           {projects.map((project) => (
-            <li key={project.dir}>
-              <button
-                type="button"
-                onClick={() => void open(project.dir)}
-                className="group flex h-14 w-full items-center gap-3 rounded-lg px-3 text-left outline-none transition-colors duration-150 hover:bg-surface/60 focus-visible:shadow-[0_0_0_3px_var(--b-focus)]"
-              >
-                <span className="size-3.5 shrink-0 rounded-xs bg-project" />
-                <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate text-base text-fg">{project.name}</span>
-                  <span className="truncate text-xs text-fg-muted">{prettyPath(project.dir, home)}</span>
-                </span>
-                <span className="shrink-0 text-xs text-fg-muted">
-                  Minecraft {project.minecraftVersion} · {ago(project.openedAt)}
-                </span>
-              </button>
-            </li>
+            <Item
+              key={project.dir}
+              size="sm"
+              render={<button type="button" onClick={() => void open(project.dir)} />}
+              className="w-full text-left hover:bg-surface/60"
+            >
+              <ItemMedia>
+                <span className="size-4 shrink-0 rounded-xs bg-project" />
+              </ItemMedia>
+              <ItemContent className="min-w-0">
+                <ItemTitle className="font-normal">{project.name}</ItemTitle>
+                <ItemDescription className="truncate">{prettyPath(project.dir, home)}</ItemDescription>
+              </ItemContent>
+              <ItemActions className="text-xs text-fg-muted">
+                Minecraft {project.minecraftVersion} · {ago(project.openedAt)}
+              </ItemActions>
+            </Item>
           ))}
-        </ul>
+        </ItemGroup>
       )}
     </Page>
   )

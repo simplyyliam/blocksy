@@ -20,14 +20,16 @@ function IdleView() {
           {project.targetName} {project.version.minecraft}
         </Badge>
       )}
-      <button type="button" onClick={() => go("jdk")} className="rounded-md outline-none focus-visible:shadow-[0_0_0_3px_var(--b-focus)]">
-        <Badge variant="secondary" className={cn(statusChip, "transition-colors hover:bg-surface-hover")}>
+      <Badge
+        variant="secondary"
+        render={<button type="button" onClick={() => go("jdk")} />}
+        className={cn(statusChip, "transition-colors hover:bg-surface-hover")}
+      >
           {java.status === "checking" && <Spinner className="text-fg-muted" />}
           {java.status === "ready" && <CircleCheck strokeWidth={1.75} />}
           {java.status === "missing" && <AlertTriangle className="text-warning" strokeWidth={1.75} />}
           {java.status === "checking" ? "Looking for Java" : java.status === "ready" ? `JDK ${java.active?.major} found` : "JDK needed"}
-        </Badge>
-      </button>
+      </Badge>
     </>
   )
 }
