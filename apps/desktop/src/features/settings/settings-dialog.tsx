@@ -9,7 +9,7 @@
 //   │   Projects   │ ...                                │
 //   │   Updates    │                                    │
 //   └──────────────┴────────────────────────────────────┘
-import { FolderOpen } from "lucide-react"
+import { Coffee, FolderOpen, Folders, RefreshCw, Settings2, type LucideIcon } from "lucide-react"
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import { getVersion } from "@tauri-apps/api/app"
 import { open as pickFolder } from "@tauri-apps/plugin-dialog"
@@ -25,11 +25,13 @@ import { useNavigation } from "../../shared/stores/navigation"
 import { useSettings } from "../../shared/stores/settings"
 import { useUpdates } from "../../shared/stores/updates"
 
+// Each section has a coloured icon tile (theme colours, like macOS System Settings),
+// so the list is quick to scan.
 const sections = [
-  { id: "general", label: "General" },
-  { id: "java", label: "Java" },
-  { id: "projects", label: "Projects" },
-  { id: "updates", label: "Updates" },
+  { id: "general", label: "General", Icon: Settings2 as LucideIcon, tile: "bg-fg-muted" },
+  { id: "java", label: "Java", Icon: Coffee as LucideIcon, tile: "bg-warning" },
+  { id: "projects", label: "Projects", Icon: Folders as LucideIcon, tile: "bg-brand" },
+  { id: "updates", label: "Updates", Icon: RefreshCw as LucideIcon, tile: "bg-success" },
 ] as const
 type SectionId = (typeof sections)[number]["id"]
 
@@ -38,23 +40,23 @@ const AUTO = "__auto__"
 /** One setting: what it is on the left, its control on the right. */
 function Row({ label, description, children }: { label: string; description?: ReactNode; children: ReactNode }) {
   return (
-    <div className="flex min-h-14 items-center justify-between gap-8 py-3">
+    <div className="flex min-h-12 items-center justify-between gap-8 px-4 py-2.5">
       <div className="min-w-0">
-        <p className="text-base text-fg">{label}</p>
-        {description && <p className="mt-0.5 text-base wrap-anywhere text-fg-muted">{description}</p>}
+        <p className="text-sm text-fg">{label}</p>
+        {description && <p className="mt-0.5 text-xs wrap-anywhere text-fg-muted">{description}</p>}
       </div>
       <div className="flex shrink-0 items-center gap-1.5">{children}</div>
     </div>
   )
 }
 
-/** Rows with a hairline between them. */
+/** A group of rows on a soft rounded surface, hairlines between them (macOS-style). */
 function Rows({ children }: { children: ReactNode[] }) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col overflow-hidden rounded-xl bg-subtle">
       {children.filter(Boolean).map((row, i) => (
         <div key={i}>
-          {i > 0 && <Separator className="bg-line-subtle" />}
+          {i > 0 && <Separator className="mx-4 w-auto! bg-line-subtle" />}
           {row}
         </div>
       ))}
@@ -200,11 +202,13 @@ function UpdatesSection() {
     <Rows>
       {[
         <Row key="version" label={appVersion ? `Blocksy ${appVersion}` : "Blocksy"} description={description}>
-          <Button variant="ghost" size="sm" onClick={() => setWhatsNew(true)}>
-            What's new
-          </Button>
           <Button variant="secondary" size="sm" onClick={() => void checkNow()} disabled={checking || updates.state === "disabled"}>
             {checking && <Spinner />} Check for updates
+          </Button>
+        </Row>,
+        <Row key="whats-new" label="What's new" description="The changes in this version of Blocksy">
+          <Button variant="secondary" size="sm" onClick={() => setWhatsNew(true)}>
+            Show
           </Button>
         </Row>,
       ]}
@@ -239,7 +243,10 @@ export function SettingsDialog() {
               <SidebarMenu className="gap-0.5">
                 {sections.map((s) => (
                   <SidebarMenuItem key={s.id}>
-                    <SidebarMenuButton isActive={s.id === section} onClick={() => setSection(s.id)} className="h-7 data-active:bg-surface-hover">
+                    <SidebarMenuButton isActive={s.id === section} onClick={() => setSection(s.id)} className="h-8 data-active:bg-surface-hover">
+                      <span className={`grid size-5 shrink-0 place-items-center rounded-[5px] text-white ${s.tile}`}>
+                        <s.Icon className="size-3!" strokeWidth={2.25} />
+                      </span>
                       <span>{s.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -251,7 +258,7 @@ export function SettingsDialog() {
           {/* Right: the chosen section. key replays the soft fade when switching. */}
           <section key={section} ref={paneRef} tabIndex={-1} className="page-enter outline-none min-w-0 flex-1 overflow-y-auto px-8 pt-5 pb-8">
             <h2 className="flex h-[27px] items-center text-lg text-fg">{title}</h2>
-            <Separator className="mt-4 bg-line-subtle" />
+            <div className="mt-4" />
             <Body />
           </section>
         </SidebarProvider>
