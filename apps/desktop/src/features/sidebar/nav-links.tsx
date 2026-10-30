@@ -18,7 +18,7 @@ export function NavLinks() {
           <SidebarMenuItem key={target}>
             <SidebarMenuButton
               isActive={page === target}
-              className="h-8"
+              className="h-7"
               aria-current={page === target ? "page" : undefined}
               onClick={() => go(target)}
             >

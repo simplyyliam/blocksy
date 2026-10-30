@@ -41,7 +41,7 @@ function Row({ label, description, children }: { label: string; description?: Re
     <div className="flex min-h-14 items-center justify-between gap-8 py-3">
       <div className="min-w-0">
         <p className="text-base text-fg">{label}</p>
-        {description && <p className="mt-0.5 truncate text-base text-fg-muted">{description}</p>}
+        {description && <p className="mt-0.5 text-base wrap-anywhere text-fg-muted">{description}</p>}
       </div>
       <div className="flex shrink-0 items-center gap-1.5">{children}</div>
     </div>
@@ -226,7 +226,7 @@ export function SettingsDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent initialFocus={paneRef} className="h-[520px] max-h-[calc(100vh-48px)] w-[760px] max-w-[calc(100vw-48px)] gap-0 overflow-hidden p-0 sm:max-w-[calc(100vw-48px)]">
+      <DialogContent initialFocus={paneRef} className="h-[520px] max-h-[calc(100vh-48px)] w-[760px] max-w-[calc(100vw-48px)] gap-0 overflow-hidden rounded-dialog p-0 sm:max-w-[calc(100vw-48px)]">
         <SidebarProvider className="h-full min-h-0 items-stretch">
           {/* Left: the sections. collapsible="none" keeps it a plain column inside the dialog. */}
           <Sidebar collapsible="none" className="w-[200px] bg-subtle">
@@ -235,7 +235,7 @@ export function SettingsDialog() {
               <SidebarMenu className="gap-0.5">
                 {sections.map((s) => (
                   <SidebarMenuItem key={s.id}>
-                    <SidebarMenuButton isActive={s.id === section} onClick={() => setSection(s.id)} className="h-8 data-active:bg-surface-hover">
+                    <SidebarMenuButton isActive={s.id === section} onClick={() => setSection(s.id)} className="h-7 data-active:bg-surface-hover">
                       <span>{s.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

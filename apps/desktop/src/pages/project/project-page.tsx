@@ -13,9 +13,10 @@ import { Page } from "../page"
 
 function Detail({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex h-10 items-center justify-between border-b border-line-subtle text-base last:border-b-0">
-      <span className="text-fg-muted">{label}</span>
-      <span className="text-fg" data-selectable>
+    <div className="flex h-10 items-center justify-between gap-6 border-b border-line-subtle text-base last:border-b-0">
+      <span className="shrink-0 text-fg-muted">{label}</span>
+      {/* Long values (a deep Java package) are cut with "…"; hover shows the whole thing. */}
+      <span className="min-w-0 truncate text-fg" title={value} data-selectable>
         {value}
       </span>
     </div>
@@ -48,9 +49,10 @@ export function ProjectPage() {
         <Detail label="Loader" value={targetName} />
         <Detail label="Java" value={`${version.java}+`} />
       </div>
-      <Button variant="ghost" size="sm" onClick={() => void revealItemInDir(project.dir)} className="mt-4 font-normal text-fg-muted">
+      <Button variant="ghost" size="sm" onClick={() => void revealItemInDir(project.dir)} className="mt-4 h-auto min-h-8 max-w-full justify-start py-1.5 text-left font-normal whitespace-normal text-fg-muted">
         <FolderOpen strokeWidth={1.75} />
-        {prettyPath(project.dir, home)}
+        {/* Paths can be very long: let them wrap anywhere they need to instead of overflowing. */}
+        <span className="min-w-0 wrap-anywhere">{prettyPath(project.dir, home)}</span>
       </Button>
     </Page>
   )

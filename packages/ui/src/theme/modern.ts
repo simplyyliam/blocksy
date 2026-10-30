@@ -47,16 +47,18 @@ export const modernTheme: Theme = {
     "text-2xl": "22px", // page titles
 
     // Shape
-    // Calm, Linear-like corners. shadcn (base-luma) uses xl..4xl for most controls,
-    // so this scale is what keeps dropdowns, inputs and dialogs from looking bubbly.
+    // Calm corners like Linear and Vercel (6px controls, 8px cards, 12px dialogs).
+    // shadcn (base-luma) uses xl..4xl for most controls, so this scale is what keeps
+    // buttons, inputs and menus crisp instead of bubbly.
     "radius-xs": "4px", // project swatch
-    "radius-sm": "6px",
-    "radius-md": "8px", // pills and nav items
-    "radius-lg": "8px", // file tree box
-    "radius-xl": "8px", // sidebar rows, tooltips
-    "radius-2xl": "8px", // menu and select items
-    "radius-3xl": "8px", // inputs, selects, dropdowns, badges
-    "radius-4xl": "10px", // buttons and dialogs
+    "radius-sm": "4px",
+    "radius-md": "6px", // chips and small buttons
+    "radius-lg": "8px", // cards, file tree box
+    "radius-xl": "6px", // sidebar rows, tooltips
+    "radius-2xl": "6px", // menu and select items
+    "radius-3xl": "6px", // inputs, selects, menus, badges
+    "radius-4xl": "6px", // buttons
+    "radius-dialog": "12px", // dialogs (rounded-dialog)
 
     // Depth
     "shadow-sm": "0 1px 2px rgb(0 0 0 / 0.05)",
