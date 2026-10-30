@@ -10,6 +10,7 @@ import { useSettings } from "../shared/stores/settings"
 import { commands } from "../shared/bindings"
 import { listenToUpdates } from "../shared/stores/updates"
 import { registries } from "./modules"
+import { preloadBlockPreview } from "@blocksy/model-studio"
 
 /** The newest Java any supported Minecraft version needs (25 today). */
 export const requiredJava = () =>
@@ -39,4 +40,9 @@ export async function boot() {
   void showWhatsNewAfterUpdate()
   void useJava.getState().detect(settings.javaHome, requiredJava())
   await Promise.all([listenToGradle(), listenToUpdates()])
+
+  // Once Home is up and the app is idle, fetch the 3D preview code in the background,
+  // so the first block you open shows quickly (it never delays start-up).
+  const idle = window.requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 1500))
+  idle(() => preloadBlockPreview())
 }
