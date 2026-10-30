@@ -34,13 +34,16 @@ async function start(task: GradleTask): Promise<boolean> {
   try {
     // Write the mod's files from the project first, so the build always matches what you see.
     const { prepare, markPrepared } = await syncGeneratedFiles(project.dir, project.doc)
-    await useGradle.getState().start(task, { projectDir: project.dir, javaHome: java.home, modId: project.doc.modId, firstBuild, prepare })
-    // Data generation is skipped next time only if this run got past it.
+    const base = { projectDir: project.dir, javaHome: java.home, modId: project.doc.modId, firstBuild, prepares: prepare.length > 0 }
     if (prepare.length > 0) {
-      void finished().then(async (r) => {
-        if (r.success || (r.task === "run_client" && useGradle.getState().gameLoaded)) await markPrepared()
-      })
+      // Step 1: the target's prepare tasks (data generation) as their own Gradle run.
+      await useGradle.getState().start("prepare", { ...base, tasks: prepare })
+      const result = await finished()
+      if (!result.success) return true // the status bar already shows why
+      await markPrepared() // skipped next time unless the project changes
     }
+    // Step 2: the task itself, continuing the same log.
+    await useGradle.getState().start(task, { ...base, continues: prepare.length > 0 })
     return true
   } catch (err) {
     toast.error(errorMessage(err))

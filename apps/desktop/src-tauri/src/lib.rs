@@ -29,6 +29,7 @@ fn specta_builder() -> Builder<tauri::Wry> {
             covers::clear_project_cover,
             java::detect_java,
             gradle::run_gradle,
+            gradle::run_gradle_prepare,
             gradle::stop_gradle,
             gradle::gradle_status,
             gradle::export_jar,

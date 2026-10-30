@@ -11,6 +11,8 @@ pub enum GradleTask {
     Build,
     RunClient,
     Clean,
+    /// v0.2: a loader target's prepare tasks (see `run_gradle_prepare`).
+    Prepare,
 }
 
 impl GradleTask {
@@ -19,6 +21,8 @@ impl GradleTask {
             GradleTask::Build => "build",
             GradleTask::RunClient => "runClient",
             GradleTask::Clean => "clean",
+            // Prepare runs its own task list through `run_gradle_prepare`; "tasks" is harmless.
+            GradleTask::Prepare => "tasks",
         }
     }
 }

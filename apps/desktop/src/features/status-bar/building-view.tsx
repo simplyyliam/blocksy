@@ -26,6 +26,6 @@ function BuildingView() {
 export const buildingView: StatusView = {
   id: "building",
   priority: 20,
-  when: (s) => s.task === "build" || s.task === "clean",
+  when: (s) => s.task === "build" || s.task === "clean" || s.task === "prepare",
   View: BuildingView,
 }
