@@ -133,7 +133,7 @@ export function NewProjectDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent showCloseButton={false} className="w-[848px] max-w-[calc(100vw-48px)] gap-0 p-0 sm:max-w-[calc(100vw-48px)]">
+      <DialogContent showCloseButton={false} className="w-[848px] max-w-[calc(100vw-48px)] gap-0 rounded-dialog p-0 sm:max-w-[calc(100vw-48px)]">
         <form onSubmit={submit} className="flex max-h-[calc(100vh-48px)] flex-col pt-6 pr-[17px] pb-5 pl-[22px]">
           <DialogTitle className="pl-px text-lg leading-normal text-fg">New project</DialogTitle>
 
@@ -197,7 +197,7 @@ export function NewProjectDialog() {
                     <TooltipContent>Choose folder</TooltipContent>
                   </Tooltip>
                 </div>
-                <FieldDescription>Creates {prettyPath(joinPath(location || "~", modId), home)}</FieldDescription>
+                <FieldDescription className="wrap-anywhere">Creates {prettyPath(joinPath(location || "~", modId), home)}</FieldDescription>
               </Field>
 
               <Field>
@@ -306,8 +306,8 @@ export function NewProjectDialog() {
               {error}
             </p>
             <div className="flex gap-2">
-              <DialogClose render={<Button variant="outline" size="lg" type="button" className="border-line-subtle bg-subtle" />}>Cancel</DialogClose>
-              <Button variant="default" size="lg" type="submit" disabled={!valid || creating} className="px-4">
+              <DialogClose render={<Button variant="outline" size="sm" type="button" className="border-line-subtle bg-subtle" />}>Cancel</DialogClose>
+              <Button variant="default" size="sm" type="submit" disabled={!valid || creating} className="px-4">
                 {creating && <Spinner />}
                 Create
               </Button>

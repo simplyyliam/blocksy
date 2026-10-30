@@ -41,7 +41,7 @@ export function App() {
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <Header />
           {/* key={page} replays the fade-in each time the page changes */}
-          <main key={page} className="page-enter min-h-0 flex-1 overflow-y-auto px-2.5">
+          <main key={page} className="page-enter min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-2.5">
             <Current />
           </main>
           <div className="px-2.5">

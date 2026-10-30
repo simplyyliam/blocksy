@@ -50,7 +50,7 @@ export function FirstBuild() {
     <div className="mx-auto flex w-full max-w-[760px] flex-col px-4 pt-10">
       <div className="flex items-center gap-3">
         <span className="size-6 shrink-0 rounded-sm bg-project" />
-        <h1 className="text-lg text-fg">Setting up {name}</h1>
+        <h1 className="min-w-0 text-lg wrap-anywhere text-fg">Setting up {name}</h1>
       </div>
 
       <ChainOfThought open={open} onOpenChange={setOpen} className="mt-5 space-y-3">
