@@ -9,11 +9,11 @@
 //   └──────────┴──────────────────────────────────────┘
 import { SidebarProvider, Toaster, TooltipProvider } from "@blocksy/ui"
 import { NewProjectDialog } from "../features/new-project/new-project-dialog"
+import { SettingsDialog } from "../features/settings/settings-dialog"
 import { DocsPage } from "../pages/docs/docs-page"
 import { HomePage } from "../pages/home/home-page"
 import { JdkPage } from "../pages/jdk/jdk-page"
 import { ProjectPage } from "../pages/project/project-page"
-import { SettingsPage } from "../pages/settings/settings-page"
 import { useNavigation, type Page } from "../shared/stores/navigation"
 import { BottomPanel } from "../widgets/bottom-panel/bottom-panel"
 import { Header } from "../widgets/header/header"
@@ -24,7 +24,6 @@ const pages: Record<Page, () => React.ReactNode> = {
   home: HomePage,
   project: ProjectPage,
   docs: DocsPage,
-  settings: SettingsPage,
   jdk: JdkPage,
 }
 
@@ -50,6 +49,7 @@ export function App() {
         </div>
       </SidebarProvider>
       <NewProjectDialog />
+      <SettingsDialog />
       {/* Toasts sit bottom-right, just above the status bar. */}
       <Toaster position="bottom-right" offset={{ right: 20, bottom: 56 }} />
     </TooltipProvider>

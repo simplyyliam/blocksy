@@ -16,12 +16,3 @@ export function Page({ title, subtitle, actions, children }: { title: string; su
   )
 }
 
-/** A titled group of settings rows. */
-export function Section({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="mb-10">
-      <h2 className="mb-3 text-base text-fg-muted">{title}</h2>
-      <div className="flex flex-col gap-4">{children}</div>
-    </section>
-  )
-}
