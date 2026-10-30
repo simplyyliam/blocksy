@@ -32,3 +32,7 @@ What becomes easier, harder, or must now be done.
 | ADR | Title | Status |
 | --- | --- | --- |
 | [0001](0001-monorepo.md) | One pnpm-workspaces monorepo | accepted |
+| [0002](0002-stack-and-versions.md) | Stack and pinned versions | accepted |
+| [0003](0003-registries.md) | Registries as the only way modules plug in | accepted |
+| [0004](0004-bindings-errors-updater.md) | Generated bindings, one error shape, gated updater | accepted |
+| [0005](0005-shadcn-ui.md) | shadcn/ui for every UI component, left as installed | accepted |
