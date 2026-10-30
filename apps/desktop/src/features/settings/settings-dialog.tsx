@@ -166,6 +166,7 @@ function ProjectsSection() {
 
 function UpdatesSection() {
   const updates = useUpdates()
+  const setWhatsNew = useNavigation((s) => s.setWhatsNew)
   const [appVersion, setAppVersion] = useState("")
   const [checking, setChecking] = useState(false)
   const [note, setNote] = useState<string | null>(null)
@@ -199,6 +200,9 @@ function UpdatesSection() {
     <Rows>
       {[
         <Row key="version" label={appVersion ? `Blocksy ${appVersion}` : "Blocksy"} description={description}>
+          <Button variant="ghost" size="sm" onClick={() => setWhatsNew(true)}>
+            What's new
+          </Button>
           <Button variant="secondary" size="sm" onClick={() => void checkNow()} disabled={checking || updates.state === "disabled"}>
             {checking && <Spinner />} Check for updates
           </Button>

@@ -11,6 +11,7 @@ import { LayoutGroup, MotionConfig } from "motion/react"
 import { SidebarProvider, Toaster, TooltipProvider } from "@blocksy/ui"
 import { NewProjectDialog } from "../features/new-project/new-project-dialog"
 import { SettingsDialog } from "../features/settings/settings-dialog"
+import { WhatsNewDialog } from "../features/whats-new/whats-new-dialog"
 import { DocsPage } from "../pages/docs/docs-page"
 import { HomePage } from "../pages/home/home-page"
 import { JdkPage } from "../pages/jdk/jdk-page"
@@ -60,6 +61,7 @@ export function App() {
         </SidebarProvider>
         <NewProjectDialog />
         <SettingsDialog />
+        <WhatsNewDialog />
         {/* Toasts sit bottom-right, just above the status bar. */}
         <Toaster position="bottom-right" offset={{ right: 20, bottom: 56 }} />
       </TooltipProvider>
