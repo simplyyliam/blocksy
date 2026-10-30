@@ -26,6 +26,19 @@ export interface RunResult {
   stopped: boolean
 }
 
+interface StartOptions {
+  projectDir: string
+  javaHome: string
+  modId: string
+  firstBuild: boolean
+  /** v0.2: this build includes prepare tasks (shows the "Generating block data" step). */
+  prepares?: boolean
+  /** v0.2: the task list for task "prepare" (e.g. ["runDatagen"]). */
+  tasks?: string[]
+  /** v0.2: continue the previous run's log and steps (the build after its prepare step). */
+  continues?: boolean
+}
+
 interface GradleState {
   runId: number | null
   task: GradleTask | null
@@ -43,7 +56,7 @@ interface GradleState {
   lastResult: RunResult | null
   /** Changes whenever log lines are added, so the log view knows to redraw. */
   logVersion: number
-  start(task: GradleTask, opts: { projectDir: string; javaHome: string; modId: string; firstBuild: boolean; prepare: string[] }): Promise<void>
+  start(task: GradleTask, opts: StartOptions): Promise<void>
   stop(): Promise<void>
   clearResult(): void
 }
@@ -66,13 +79,18 @@ export const useGradle = create<GradleState>((set, get) => ({
   lastResult: null,
   logVersion: 0,
 
-  async start(task, { projectDir, javaHome, modId, firstBuild, prepare }) {
-    logLines.length = 0
-    pending = []
+  async start(task, { projectDir, javaHome, modId, firstBuild, prepares = false, tasks = [], continues = false }) {
+    if (!continues) {
+      logLines.length = 0
+      pending = []
+    }
     watchedModId = modId
-    set({ task, firstBuild, prepares: prepare.length > 0, step: -1, stepNow: -1, gameLoaded: false, modLoaded: false, lastResult: null, logVersion: get().logVersion + 1 })
+    const steps = continues ? {} : { step: -1, stepNow: -1 }
+    set({ task, firstBuild, prepares, ...steps, gameLoaded: false, modLoaded: false, lastResult: null, logVersion: get().logVersion + 1 })
     try {
-      const runId = await call(commands.runGradle(projectDir, task, javaHome, prepare))
+      // Prepare tasks have their own command, so v0.1's runGradle stays unchanged (ADR 0006).
+      const run = task === "prepare" ? commands.runGradlePrepare(projectDir, tasks, javaHome) : commands.runGradle(projectDir, task, javaHome)
+      const runId = await call(run)
       set({ runId })
     } catch (err) {
       set({ task: null, firstBuild: false })

@@ -30,12 +30,15 @@ export const commands = {
 	clearProjectCover: (dir: string) => typedError<null, AppError>(__TAURI_INVOKE("clear_project_cover", { dir })),
 	/**  Finds Java installs: the configured one, JAVA_HOME, `java` on PATH and common folders. */
 	detectJava: (configuredHome: string | null) => typedError<JavaInstall[], AppError>(__TAURI_INVOKE("detect_java", { configuredHome })),
+	/**  Starts a Gradle task. Returns its run id; output arrives as events. */
+	runGradle: (projectDir: string, task: GradleTask, javaHome: string) => typedError<number, AppError>(__TAURI_INVOKE("run_gradle", { projectDir, task, javaHome })),
 	/**
-	 *  Starts a Gradle task. Returns its run id; output arrives as events.
-	 *  `prepare` tasks (e.g. `runDatagen`) run first as their own Gradle run, because Gradle
-	 *  can't order them before `build` inside one run. The loader target decides them.
+	 *  v0.2: runs a loader target's prepare tasks (Fabric: `runDatagen`) as their own Gradle run,
+	 *  before Build or Run (Gradle can't order them before `build` inside one run, ADR 0006).
+	 *  Streams output and stops like `run_gradle`; it finishes with task `prepare`, and the app
+	 *  then starts the real task. Kept separate so `run_gradle` stays exactly as in v0.1.
 	 */
-	runGradle: (projectDir: string, task: GradleTask, javaHome: string, prepare: string[]) => typedError<number, AppError>(__TAURI_INVOKE("run_gradle", { projectDir, task, javaHome, prepare })),
+	runGradlePrepare: (projectDir: string, tasks: string[], javaHome: string) => typedError<number, AppError>(__TAURI_INVOKE("run_gradle_prepare", { projectDir, tasks, javaHome })),
 	/**  Stops the running task, including the game it may have started. */
 	stopGradle: () => typedError<null, AppError>(__TAURI_INVOKE("stop_gradle")),
 	/**  What's running right now, if anything (for screens opened mid-build). */
@@ -148,7 +151,9 @@ export type GradleOutput = {
 };
 
 /**  Which Gradle task is running. */
-export type GradleTask = "build" | "run_client" | "clean";
+export type GradleTask = "build" | "run_client" | "clean" | 
+/**  v0.2: a loader target's prepare tasks (see `run_gradle_prepare`). */
+"prepare";
 
 export type JavaInstall = {
 	/**  The JDK folder (the one that contains `bin/`). Used as JAVA_HOME for Gradle. */
