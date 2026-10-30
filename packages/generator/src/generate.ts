@@ -18,7 +18,8 @@ export function generate(project: Project, registries: Registries): GeneratedFil
   const files = [...target.scaffold(ctx)]
   for (const element of project.elements) {
     const type = registries.elementTypes.require(element.type)
-    const template = type.templates[target.id]
+    // The element's own template for this target, else the target's adapter for it (ADR 0006).
+    const template = type.templates[target.id] ?? target.adapters?.[type.id]
     if (!template) throw new GenerateError(`${type.name} has no ${target.name} template yet`)
     files.push(...template(element, ctx))
   }

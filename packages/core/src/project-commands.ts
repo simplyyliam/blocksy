@@ -21,3 +21,8 @@ export const updateElement = (id: string, data: unknown): Command<Project> => ({
   label: "Edit element",
   run: (p) => ({ ...p, elements: p.elements.map((e) => (e.id === id ? { ...e, data } : e)) }),
 })
+
+export const renameElement = (id: string, name: string): Command<Project> => ({
+  label: "Rename element",
+  run: (p) => ({ ...p, elements: p.elements.map((e) => (e.id === id && e.name !== name ? { ...e, name } : e)) }),
+})

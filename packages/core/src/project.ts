@@ -76,3 +76,25 @@ export function deriveClassName(name: string): string {
   const joined = words.map((w) => w[0]!.toUpperCase() + w.slice(1)).join("")
   return /^[A-Za-z]/.test(joined) ? joined : `Mod${joined}`
 }
+
+/**
+ * A Minecraft-safe id for a new element, unique in the project:
+ * "Ruby Block" -> "ruby_block", then "ruby_block_2" if that is taken.
+ * The id never changes after creation (worlds save blocks by id), even on rename.
+ */
+export function deriveElementId(name: string, taken: Iterable<string>): string {
+  const base =
+    name
+      .normalize("NFKD")
+      .replace(/[^\w\s-]/g, "")
+      .trim()
+      .toLowerCase()
+      .replace(/[\s-]+/g, "_")
+      .replace(/^[^a-z]+/, "")
+      .slice(0, 48) || "element"
+  const used = new Set(taken)
+  if (!used.has(base)) return base
+  let n = 2
+  while (used.has(`${base}_${n}`)) n++
+  return `${base}_${n}`
+}

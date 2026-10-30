@@ -94,6 +94,7 @@ docs/                     this plan, ADRs (decisions/), design inspiration (desi
 - [ ] Golden tests cover every new template; migrations exist for any format change
 - [ ] Bindings are regenerated and committed; no frontend code calls `invoke` directly
 - [ ] Lint boundaries, type checks and tests pass
+- [ ] "Make it alive": small lively components (loaders, status, backdrops, success moments) researched and used where they fit (CLAUDE.md)
 
 ### 2.5 Rust and frontend bindings (tauri-specta)
 

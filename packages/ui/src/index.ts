@@ -41,6 +41,10 @@ export {
 export { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from "./components/ui/item.tsx"
 export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./components/ui/card.tsx"
 export { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "./components/ui/context-menu.tsx"
+// Small "make it alive" pieces from shadcn registries (assistant-ui, Magic UI), stock files:
+export { DotMatrix, dotMatrixStates, type DotMatrixState } from "./components/ui/dot-matrix.tsx"
+export { DotPattern } from "./components/ui/dot-pattern.tsx"
+export { Confetti, ConfettiButton, type ConfettiRef } from "./components/ui/confetti.tsx"
 // Blocksy-only pieces (shadcn has nothing like them):
 export { AnimatedNumber } from "./components/animated-number.tsx"
 export { ElapsedTime } from "./components/elapsed-time.tsx"

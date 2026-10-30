@@ -68,6 +68,11 @@ docs/                    plan, ADRs (decisions/), design inspiration, perf resul
   props/className where a component is used (`size="sm"` for 32px pills, `--sidebar-width`).
 - AI Elements (elements.ai-sdk.dev) are shadcn registry items: add them the same way, they
   land in `packages/ui/src/components/ai-elements/`.
+- **Make it alive (every release).** Before building a release's UI, research small shadcn-registry
+  libraries that add life (assistant-ui Dot Matrix, Magic UI, Animate UI, React Bits, motion
+  primitives, pixel/matrix loaders) and use the best fit where it helps: loaders, status, empty
+  states, canvas backdrops, success moments. Respect reduced motion; keep them small. Picks so far
+  (v0.2): Dot Matrix (status), Dot Pattern (canvas backdrop), Confetti (first in-game success).
 - Blocksy-only components (no shadcn equivalent) live in `packages/ui/src/components/`
   (e.g. `PixelLoader`, `ElapsedTime`); third-party libraries get a thin adapter there.
 
