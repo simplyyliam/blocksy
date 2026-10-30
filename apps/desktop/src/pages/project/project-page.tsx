@@ -48,14 +48,10 @@ export function ProjectPage() {
         <Detail label="Loader" value={targetName} />
         <Detail label="Java" value={`${version.java}+`} />
       </div>
-      <button
-        type="button"
-        onClick={() => void revealItemInDir(project.dir)}
-        className="mt-4 inline-flex h-7 items-center gap-2 rounded-md px-2 text-base text-fg-muted outline-none transition-colors hover:bg-surface hover:text-fg focus-visible:shadow-[0_0_0_3px_var(--b-focus)]"
-      >
-        <FolderOpen className="size-3.5" strokeWidth={1.75} />
+      <Button variant="ghost" size="sm" onClick={() => void revealItemInDir(project.dir)} className="mt-4 font-normal text-fg-muted">
+        <FolderOpen strokeWidth={1.75} />
         {prettyPath(project.dir, home)}
-      </button>
+      </Button>
     </Page>
   )
 }

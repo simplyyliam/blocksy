@@ -3,7 +3,7 @@
 import { Check, ExternalLink, FolderOpen, RotateCw } from "lucide-react"
 import { open as pickFolder } from "@tauri-apps/plugin-dialog"
 import { openUrl } from "@tauri-apps/plugin-opener"
-import { Button, cn, Spinner } from "@blocksy/ui"
+import { Button, cn, Item, ItemContent, ItemDescription, ItemMedia, ItemTitle, Spinner } from "@blocksy/ui"
 import { useJava } from "../../shared/stores/java"
 import { useSettings } from "../../shared/stores/settings"
 
@@ -41,29 +41,24 @@ export function JdkSetup() {
           const usable = java.is_jdk && java.major >= required
           const chosen = active?.home === java.home
           return (
-            <button
+            <Item
               key={java.home}
-              type="button"
-              disabled={!usable}
-              onClick={() => void choose(java.home)}
-              className={cn(
-                "flex min-h-12 items-center gap-3 rounded-lg px-3 py-2 text-left outline-none transition-colors duration-150",
-                "focus-visible:shadow-[0_0_0_3px_var(--b-focus)] disabled:cursor-default",
-                chosen ? "bg-surface" : usable ? "hover:bg-surface/60" : "opacity-60",
-              )}
+              size="sm"
+              render={<button type="button" disabled={!usable} onClick={() => void choose(java.home)} />}
+              className={cn("w-full text-left", chosen ? "bg-surface" : usable ? "hover:bg-surface/60" : "opacity-60")}
             >
-              <span className="grid size-4 shrink-0 place-items-center">{chosen && <Check className="size-3.5 text-success" strokeWidth={2.25} />}</span>
-              <span className="flex min-w-0 flex-col">
-                <span className="text-base text-fg">
+              <ItemMedia className="size-4">{chosen && <Check className="size-3.5 text-success" strokeWidth={2.25} />}</ItemMedia>
+              <ItemContent className="min-w-0">
+                <ItemTitle className="font-normal">
                   Java {java.version} <span className="text-fg-muted">· {java.vendor || "Unknown vendor"}</span>
-                </span>
-                <span className="truncate text-xs text-fg-muted" data-selectable>
+                </ItemTitle>
+                <ItemDescription className="truncate text-xs" data-selectable>
                   {java.home}
                   {!java.is_jdk && " · runtime only, needs a full JDK"}
                   {java.is_jdk && java.major < required && ` · too old, needs ${required}+`}
-                </span>
-              </span>
-            </button>
+                </ItemDescription>
+              </ItemContent>
+            </Item>
           )
         })}
       </div>
