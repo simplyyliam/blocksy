@@ -4,7 +4,7 @@
 // - dpr capped at 1.5, and dropped to 1 by PerformanceMonitor when frames get slow
 // - textures use NearestFilter (crisp pixels) and are disposed when replaced
 // - panels stay outside the Canvas; only the cube lives in here
-import { ContactShadows, OrbitControls, PerformanceMonitor } from "@react-three/drei"
+import { OrbitControls, PerformanceMonitor } from "@react-three/drei"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
@@ -51,6 +51,31 @@ function usePixelTextures(urls: (string | null)[]): Map<string, THREE.Texture> {
     }
   }, [key, invalidate])
   return textures
+}
+
+/**
+ * A soft round shadow under the block: one plane with a radial-gradient texture drawn
+ * once on a small canvas. Much cheaper to start than a real-time shadow pass.
+ */
+function Shadow({ color }: { color: string }) {
+  const texture = useMemo(() => {
+    const canvas = document.createElement("canvas")
+    canvas.width = canvas.height = 64
+    const ctx = canvas.getContext("2d")!
+    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32)
+    gradient.addColorStop(0, "rgba(255,255,255,0.55)")
+    gradient.addColorStop(1, "rgba(255,255,255,0)")
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 0, 64, 64)
+    return new THREE.CanvasTexture(canvas)
+  }, [])
+  useEffect(() => () => texture.dispose(), [texture])
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.56, 0]}>
+      <planeGeometry args={[1.9, 1.9]} />
+      <meshBasicMaterial map={texture} color={color} transparent depthWrite={false} />
+    </mesh>
+  )
 }
 
 function Cube({ model, placeholder, onReady }: { model: CubeModel; placeholder: string; onReady?: () => void }) {
@@ -121,8 +146,7 @@ export function BlockPreview({ model, placeholder = "#d4d4d4", shadow = "#000000
       <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
       <CountFrames />
       <Cube model={model} placeholder={placeholder} onReady={onReady} />
-      {/* frames={1}: the soft shadow is baked once, not redrawn every frame. */}
-      <ContactShadows position={[0, -0.62, 0]} opacity={0.28} scale={3} blur={2.4} far={1.2} frames={1} color={shadow} />
+      <Shadow color={shadow} />
       {/* Drag to turn the block. OrbitControls asks for a frame only while it moves. */}
       <OrbitControls enablePan={false} enableZoom minDistance={6 / zoom} maxDistance={20 / zoom} enableDamping={false} />
     </Canvas>

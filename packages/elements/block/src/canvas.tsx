@@ -9,7 +9,7 @@ import type { BlockData } from "./schema.ts"
 
 export function BlockCanvas({ element }: ElementEditorProps<BlockData>) {
   const placeholder = useThemeToken("surface-pressed")
-  const shadow = useThemeToken("fg")
+  const shadow = useThemeToken("black") // a shadow stays dark in every theme
   const texture = element.data.texture ? pngDataUrl(element.data.texture) : null
   // The first preview takes a moment (WebGL, shaders): show a loader until it's drawn.
   const [ready, setReady] = useState(false)

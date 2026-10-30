@@ -12,7 +12,7 @@ export function CanvasLoader({ ready, label = "Loading preview" }: { ready: bool
           key="loader"
           className="pointer-events-none absolute inset-0 grid place-items-center"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1, transition: { delay: 0.12 } }} // fast loads never flash a loader
+          animate={{ opacity: 1, transition: { delay: 0.08 } }} // within the plan's 100 ms, yet fast loads never flash it
           exit={{ opacity: 0, transition: { duration: 0.18 } }}
         >
           <span className="flex flex-col items-center gap-2.5 text-xs text-fg-muted">

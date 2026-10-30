@@ -9,7 +9,7 @@ const texture = `data:image/png;base64,${starterTexture()}`
 
 export function BlockDemo({ caption = "Drag to turn it. This is the same preview as in the project editor." }: { caption?: string }) {
   const placeholder = useThemeToken("surface-pressed")
-  const shadow = useThemeToken("fg")
+  const shadow = useThemeToken("black") // a shadow stays dark in every theme
   const [ready, setReady] = useState(false)
   return (
     <figure className="not-prose my-6">
