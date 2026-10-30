@@ -40,12 +40,12 @@ lang stays a plain en_us.json written by the generator.
 
 | Code review | `/code-review` 2026-10-30 | 10 findings, all fixed (commit "fix: code review findings") |
 | Bench | `docs/perf/0.2.md`, ADR 0008 | cold start 1093 ms, frame p95 17.0 ms, memory 408 MB (+27% vs 0.1, explained), idle 3D frames 0 |
+| In-game test | Liam, 2026-10-30 | creative tab, place, drops with the right tool: confirmed |
 | E2E (release app) | `scratchpad/cdp/e2e.mjs` (not in repo) | Starter block → first build 60 s → Run → "Your mod is loaded"; jar holds ModBlocks, models, texture, loot table (drops itself), mineable/pickaxe tag |
 
 ## Still to do for v0.2
 
-1. **Liam, in game:** open the creative tab, place First Block, mine it with a pickaxe (drops) and by hand (nothing).
-   Project for it: `~/Blocksy/blocksy_v02_e2e` (made by the e2e test; delete it afterwards if you like).
+1. ~~In-game check~~ **Done by Liam (2026-10-30):** block shows in its creative tab, places, drops itself with the right tool.
 2. `/release` for 0.2.0 when happy (Liam pushes with `pnpm release`).
 3. Notes for later: Docs MDX content names Fabric (tutorial content, not code); validate the
    `.blocksy/generated.json` manifest; Docs search (v0.7); lang provider vs en_us.json (v0.3 lang editor).
