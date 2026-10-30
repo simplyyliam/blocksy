@@ -18,6 +18,7 @@ import { openProject } from "../../shared/open-project"
 import { ProjectContextMenu, ProjectMenuItems } from "../../shared/project-menu"
 import { ProjectImage } from "../../shared/project-image"
 import { prettyPath } from "../../shared/paths"
+import { useJava } from "../../shared/stores/java"
 import { useNavigation } from "../../shared/stores/navigation"
 import { useRecent, type RecentProject } from "../../shared/stores/recent"
 import { useSettings } from "../../shared/stores/settings"
@@ -38,6 +39,14 @@ const appear = (index: number) => ({
   animate: { opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const, delay: Math.min(index, 8) * 0.035 } },
   exit: { opacity: 0, scale: 0.96, transition: { duration: 0.16 } },
 })
+
+/** "Thursday 30th October, 2026", like the reference. */
+const today = () => {
+  const d = new Date()
+  const n = d.getDate()
+  const suffix = n % 10 === 1 && n !== 11 ? "st" : n % 10 === 2 && n !== 12 ? "nd" : n % 10 === 3 && n !== 13 ? "rd" : "th"
+  return `${d.toLocaleDateString("en-GB", { weekday: "long" })} ${n}${suffix} ${d.toLocaleDateString("en-GB", { month: "long" })}, ${d.getFullYear()}`
+}
 
 const greeting = () => {
   const hour = new Date().getHours()
@@ -64,11 +73,17 @@ function ProjectCard({ project }: { project: RecentProject }) {
   return (
     <ProjectContextMenu dir={project.dir}>
       {/* Lifts a little on hover and presses down on click; the cover zooms a touch. */}
-      <Card className="group gap-0 rounded-lg py-0 shadow-none transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-sm hover:ring-foreground/15 active:translate-y-0 active:scale-[0.99]">
-        <button type="button" onClick={() => void openProject(project.dir)} className="block overflow-hidden outline-none" aria-label={`Open ${project.name}`}>
+      {/* No border (calm, like the reference): the cover lifts and zooms a touch on hover. */}
+      <Card className="group gap-0 rounded-none bg-transparent py-0 shadow-none ring-0">
+        <button
+          type="button"
+          onClick={() => void openProject(project.dir)}
+          className="block overflow-hidden rounded-xl outline-none transition-[transform,box-shadow] duration-200 ease-out group-hover:-translate-y-0.5 group-hover:shadow-md focus-visible:ring-3 focus-visible:ring-ring/30 active:translate-y-0 active:scale-[0.99]"
+          aria-label={`Open ${project.name}`}
+        >
           <ProjectImage dir={project.dir} className="aspect-[16/10] w-full transition-transform duration-300 ease-out group-hover:scale-[1.03]" />
         </button>
-        <div className="flex items-start gap-2 p-3">
+        <div className="flex items-start gap-2 px-0.5 pt-2.5">
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm text-fg" title={project.name}>
               {project.name}
@@ -112,12 +127,16 @@ export function HomePage() {
   const projects = useRecent((s) => s.projects)
   const { home, homeView, update } = useSettings()
   const setNewProject = useNavigation((s) => s.setNewProject)
+  const go = useNavigation((s) => s.go)
+  const javaMissing = useJava((s) => s.status === "missing")
+  const javaRequired = useJava((s) => s.required)
   const last = projects[0]
 
   return (
-    <div className="mx-auto w-full max-w-[880px] px-4 pt-10 pb-16">
-      <h1 className="text-xl font-medium tracking-[-0.01em] text-fg">{greeting()}</h1>
-      <p className="mt-1.5 text-base text-fg-muted">
+    <div className="mx-auto w-full max-w-[760px] px-6 pt-14 pb-16">
+      <p className="text-sm text-fg-muted">{today()}</p>
+      <h1 className="mt-1.5 text-2xl font-medium tracking-[-0.015em] text-fg">{greeting()}</h1>
+      <p className="mt-4 max-w-[60ch] text-md leading-relaxed text-fg">
         {last ? (
           <>
             You have{" "}
@@ -131,8 +150,17 @@ export function HomePage() {
           "Make Minecraft mods with visual editors, and learn Java along the way."
         )}
       </p>
+      {/* The one thing Home needs to say about Java: only when it is missing. */}
+      {javaMissing && (
+        <p className="mt-3 text-sm text-fg-muted">
+          Blocksy needs Java {javaRequired} to build mods.{" "}
+          <button type="button" onClick={() => go("jdk")} className="text-brand underline-offset-4 outline-none hover:underline focus-visible:underline">
+            Set up Java
+          </button>
+        </p>
+      )}
 
-      <div className="mt-8 mb-3 flex items-center justify-between gap-3">
+      <div className="mt-12 mb-4 flex items-center justify-between gap-3">
         <h2 className="text-sm text-fg">
           Projects <AnimatedNumber value={projects.length} className="text-fg-muted" />
         </h2>
@@ -168,7 +196,7 @@ export function HomePage() {
           </Button>
         </div>
       ) : homeView === "grid" ? (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-5 gap-y-6">
           <AnimatePresence initial={true} mode="popLayout">
             {projects.map((project, i) => (
               <motion.div key={project.dir} layout {...appear(i)}>

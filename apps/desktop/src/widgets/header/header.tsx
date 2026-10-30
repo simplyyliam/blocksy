@@ -1,20 +1,22 @@
-// Header widget, which is also the window's titlebar: breadcrumb on the left, actions
-// on the right, then minimise/maximise/close. Empty space drags the window and a
-// double-click maximises it (data-tauri-drag-region). A hairline underneath meets the
-// sidebar's border. Contents: features/header/.
-// When the sidebar is hidden (Ctrl+B), its toggle shows here so it can come back.
-import { SidebarTrigger, useSidebar } from "@blocksy/ui"
+// Header widget, which is also the window's titlebar: a bare row with no border.
+// Empty space drags the window, double-click maximises (data-tauri-drag-region).
+//   Home:     (nothing)                                   ─ ▢ ✕
+//   Docs:     Docs / …  (breadcrumbs live only in Docs)    ─ ▢ ✕
+//   Project:  ▣ My mod ···            Build Run Export     ─ ▢ ✕
+// Contents: features/header/.
 import { BuildActions } from "../../features/header/build-actions"
 import { Breadcrumbs } from "../../features/header/breadcrumbs"
+import { ProjectTitle } from "../../features/header/project-title"
 import { WindowControls } from "../../features/header/window-controls"
+import { useNavigation } from "../../shared/stores/navigation"
 
 export function Header() {
-  const { open } = useSidebar()
+  const page = useNavigation((s) => s.page)
   return (
-    <header data-tauri-drag-region className="flex h-11 shrink-0 items-center gap-4 border-b border-sidebar-border pl-2.5">
+    <header data-tauri-drag-region className="flex h-11 shrink-0 items-center gap-4 pl-4">
       <div data-tauri-drag-region className="flex min-w-0 flex-1 items-center gap-1">
-        {!open && <SidebarTrigger className="text-fg-muted" />}
-        <Breadcrumbs />
+        {page === "docs" && <Breadcrumbs />}
+        {page === "project" && <ProjectTitle />}
       </div>
       <BuildActions />
       <WindowControls />

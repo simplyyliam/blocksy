@@ -11,7 +11,7 @@ export function SettingsButton() {
   return (
     <SidebarMenu className="gap-0">
       <SidebarMenuItem>
-        <SidebarMenuButton className={`h-7 ${activeRow}`} isActive={open} aria-haspopup="dialog" onClick={() => setSettings(true)}>
+        <SidebarMenuButton tooltip="Settings" className={activeRow} isActive={open} aria-haspopup="dialog" onClick={() => setSettings(true)}>
           {open && <ActiveHighlight />}
           <Settings strokeWidth={1.75} />
           <span>Settings</span>
