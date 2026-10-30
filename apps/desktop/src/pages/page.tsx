@@ -3,7 +3,7 @@ import type { ReactNode } from "react"
 
 export function Page({ title, subtitle, actions, children }: { title: string; subtitle?: ReactNode; actions?: ReactNode; children: ReactNode }) {
   return (
-    <div className="w-full max-w-[680px] pt-8 pb-16">
+    <div className="mx-auto w-full max-w-[760px] px-4 pt-10 pb-16">
       <div className="flex items-end justify-between gap-4">
         <div>
           <h1 className="text-xl font-medium tracking-[-0.01em] text-fg">{title}</h1>

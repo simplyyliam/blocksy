@@ -3,12 +3,15 @@
 import { Button, Spinner, Tooltip, TooltipContent, TooltipTrigger } from "@blocksy/ui"
 import { buildMod, exportMod, runMod } from "../../shared/project-actions"
 import { useGradle } from "../../shared/stores/gradle"
+import { useNavigation } from "../../shared/stores/navigation"
 import { useProject } from "../../shared/stores/project"
 
 export function BuildActions() {
   const hasProject = useProject((s) => s.current !== null)
+  const onProjectPage = useNavigation((s) => s.page === "project")
   const task = useGradle((s) => s.task)
-  if (!hasProject) return null
+  // Only on the project page: on Home or Docs they would act on a project you cannot see.
+  if (!hasProject || !onProjectPage) return null
 
   const busy = task !== null
   return (

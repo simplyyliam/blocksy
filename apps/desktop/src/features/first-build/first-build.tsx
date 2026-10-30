@@ -47,7 +47,7 @@ export function FirstBuild() {
   const current = Math.max(step, 0)
 
   return (
-    <div className="flex w-full max-w-[560px] flex-col pt-10 pl-5">
+    <div className="mx-auto flex w-full max-w-[760px] flex-col px-4 pt-10">
       <div className="flex items-center gap-3">
         <span className="size-6 shrink-0 rounded-sm bg-project" />
         <h1 className="text-lg text-fg">Setting up {name}</h1>

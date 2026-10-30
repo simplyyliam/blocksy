@@ -35,7 +35,9 @@ export {
 } from "./components/ai-elements/chain-of-thought.tsx"
 export { Shimmer } from "./components/ai-elements/shimmer.tsx"
 export { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "./components/ui/breadcrumb.tsx"
-export { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./components/ui/dropdown-menu.tsx"
+export {
+  DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+} from "./components/ui/dropdown-menu.tsx"
 export { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from "./components/ui/item.tsx"
 // Blocksy-only pieces (shadcn has nothing like them):
 export { ElapsedTime } from "./components/elapsed-time.tsx"
