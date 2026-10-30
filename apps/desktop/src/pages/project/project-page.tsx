@@ -36,7 +36,7 @@ export function ProjectPage() {
       title={doc.name}
       subtitle="An empty mod, ready to run. Blocks and items arrive in the next releases."
       actions={
-        <Button variant="primary" className="h-7 rounded-md px-2.5" onClick={() => void runMod()} disabled={busy}>
+        <Button variant="default" onClick={() => void runMod()} disabled={busy}>
           <Play className="fill-current" strokeWidth={0} /> Run in Minecraft
         </Button>
       }

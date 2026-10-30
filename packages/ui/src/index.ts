@@ -1,14 +1,31 @@
-// @blocksy/ui: design system: tokens, themes (Modern, Minecraft) and base components.
+// @blocksy/ui: design system: tokens, themes (Modern, Minecraft) and shadcn/ui components.
 // Public API of this package. Other packages may import only from here
 // (plus `@blocksy/ui/styles.css`, which the app imports once).
-export { cn } from "./cn.ts"
+// UI components are shadcn/ui (src/components/ui, added with the shadcn CLI);
+// write a custom component only when shadcn has nothing that fits.
+export { cn } from "./lib/utils.ts"
 export { applyTheme } from "./theme/apply.ts"
 export { modernTheme } from "./theme/modern.ts"
-export { Button, buttonStyles, type ButtonProps } from "./components/button.tsx"
-export { Field, Input } from "./components/field.tsx"
-export { Select, type SelectOption } from "./components/select.tsx"
-export { Choice, type ChoiceOption } from "./components/choice.tsx"
-export { Dialog, DialogClose } from "./components/dialog.tsx"
-export { Collapsible } from "./components/collapsible.tsx"
-export { NavItem, NavLabel } from "./components/nav-item.tsx"
-export { Pill, Progress, Spinner, Tooltip, TooltipProvider } from "./components/feedback.tsx"
+
+export { Badge, badgeVariants } from "./components/ui/badge.tsx"
+export { Button, buttonVariants } from "./components/ui/button.tsx"
+export { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./components/ui/collapsible.tsx"
+export {
+  Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+} from "./components/ui/dialog.tsx"
+export { Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel } from "./components/ui/field.tsx"
+export { Input } from "./components/ui/input.tsx"
+export { Label } from "./components/ui/label.tsx"
+export { Progress } from "./components/ui/progress.tsx"
+export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select.tsx"
+export { Separator } from "./components/ui/separator.tsx"
+export { Toaster } from "./components/ui/sonner.tsx"
+export { Spinner } from "./components/ui/spinner.tsx"
+export { Toggle } from "./components/ui/toggle.tsx"
+export { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group.tsx"
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./components/ui/tooltip.tsx"
+export { toast } from "sonner"
+export {
+  Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel,
+  SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, useSidebar,
+} from "./components/ui/sidebar.tsx"

@@ -1,26 +1,21 @@
-// Sidebar widget: the frame for the app rail. Its contents live in features/sidebar/.
-import { LayoutGroup } from "motion/react"
+// Sidebar widget: the shadcn Sidebar (variant "sidebar", not "inset") that frames the
+// app rail. Its contents live in features/sidebar/. Ctrl+B hides and shows it.
+import { Sidebar, SidebarContent, SidebarFooter } from "@blocksy/ui"
 import { NavLinks } from "../../features/sidebar/nav-links"
 import { ProjectList } from "../../features/sidebar/project-list"
 import { SettingsButton } from "../../features/sidebar/settings-button"
 
-export function Sidebar() {
+export function AppSidebar() {
+  // No right border: App.png keeps the rail and the page on one calm surface.
   return (
-    // One LayoutGroup so the grey highlight can slide from Home to a project and back.
-    <LayoutGroup id="sidebar">
-      <aside className="flex min-h-0 flex-col gap-6" aria-label="Navigation">
+    <Sidebar variant="sidebar" aria-label="Navigation" className="group-data-[side=left]:border-r-0">
+      <SidebarContent className="pt-3">
         <NavLinks />
         <ProjectList />
-      </aside>
-    </LayoutGroup>
-  )
-}
-
-/** Bottom-left corner, on the same line as the status bar. */
-export function SidebarFooter() {
-  return (
-    <div className="flex items-center">
-      <SettingsButton />
-    </div>
+      </SidebarContent>
+      <SidebarFooter>
+        <SettingsButton />
+      </SidebarFooter>
+    </Sidebar>
   )
 }

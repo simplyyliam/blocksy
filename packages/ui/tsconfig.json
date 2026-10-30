@@ -9,7 +9,9 @@
     // React components that run in the webview.
     "jsx": "react-jsx",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "types": []
+    "types": [],
+    // Lets the shadcn CLI resolve its @blocksy/ui/* aliases to files in src/.
+    "paths": { "@blocksy/ui/*": ["./src/*"] }
   },
   "include": ["src"],
   // Workspace packages this one imports. tsc -b checks them first.

@@ -1,13 +1,12 @@
 // Home: recent projects and a way to start a new one.
 import { Plus } from "lucide-react"
-import { Button } from "@blocksy/ui"
+import { Button, toast } from "@blocksy/ui"
 import { errorMessage } from "../../shared/api"
 import { prettyPath } from "../../shared/paths"
 import { useNavigation } from "../../shared/stores/navigation"
 import { useProject } from "../../shared/stores/project"
 import { useRecent } from "../../shared/stores/recent"
 import { useSettings } from "../../shared/stores/settings"
-import { useToasts } from "../../shared/stores/toasts"
 import { Page } from "../page"
 
 const ago = (time: number) => {
@@ -30,10 +29,8 @@ export function HomePage() {
     try {
       await useProject.getState().open(dir)
     } catch (err) {
-      useToasts.getState().show({
-        message: `Couldn't open project: ${errorMessage(err)}`,
-        tone: "error",
-        action: { label: "Remove from list", run: () => void forget(dir) },
+      toast.error(`Couldn't open project: ${errorMessage(err)}`, {
+        action: { label: "Remove from list", onClick: () => void forget(dir) },
       })
     }
   }
@@ -43,7 +40,7 @@ export function HomePage() {
       title="Home"
       subtitle="Make Minecraft mods with visual editors, and learn Java along the way."
       actions={
-        <Button variant="primary" className="h-7 rounded-md px-2.5" onClick={() => setNewProject(true)}>
+        <Button variant="default" onClick={() => setNewProject(true)}>
           <Plus strokeWidth={2} /> New project
         </Button>
       }
@@ -53,7 +50,7 @@ export function HomePage() {
         <div className="flex flex-col items-start gap-3 rounded-lg bg-subtle px-5 py-6">
           <p className="text-base text-fg">No projects yet.</p>
           <p className="text-base text-fg-muted">Start with an empty mod: Blocksy sets up Gradle, the mod loader and the Java files for you.</p>
-          <Button onClick={() => setNewProject(true)}>Create your first mod</Button>
+          <Button variant="secondary" onClick={() => setNewProject(true)}>Create your first mod</Button>
         </div>
       ) : (
         <ul className="flex flex-col">

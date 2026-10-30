@@ -3,7 +3,7 @@ import { FolderOpen } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getVersion } from "@tauri-apps/api/app"
 import { open as pickFolder } from "@tauri-apps/plugin-dialog"
-import { applyTheme, Button, Select, Spinner } from "@blocksy/ui"
+import { applyTheme, Button, cn, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Spinner } from "@blocksy/ui"
 import { registries } from "../../app/modules"
 import { errorMessage } from "../../shared/api"
 import { prettyPath } from "../../shared/paths"
@@ -21,6 +21,29 @@ function Row({ label, hint, children }: { label: string; hint?: string; children
       </div>
       <div className="flex shrink-0 items-center gap-1">{children}</div>
     </div>
+  )
+}
+
+/** A small grey shadcn Select for a settings row (28px, like the other row controls). */
+function SettingSelect({ value, onChange, items, className }: {
+  value: string
+  onChange(value: string): void
+  items: { value: string; label: string }[]
+  className?: string
+}) {
+  return (
+    <Select items={items} value={value} onValueChange={(next) => next !== null && onChange(next)}>
+      <SelectTrigger className={cn("h-7! rounded-md bg-secondary", className)}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent alignItemWithTrigger={false}>
+        {items.map((item) => (
+          <SelectItem key={item.value} value={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }
 
@@ -74,11 +97,11 @@ export function SettingsPage() {
     <Page title="Settings">
       <Section title="Java">
         <Row label="JDK" hint={java.active ? java.active.home : `Needs Java ${java.required} or newer`}>
-          <Select
+          <SettingSelect
             value={settings.javaHome ?? AUTO}
             onChange={(v) => void chooseJava(v)}
-            className="h-7 min-w-[220px] rounded-md bg-surface"
-            options={[
+            className="min-w-[220px]"
+            items={[
               { value: AUTO, label: "Automatic (newest found)" },
               ...usableJava.map((j) => ({ value: j.home, label: `Java ${j.version} · ${j.vendor}` })),
             ]}
@@ -88,20 +111,20 @@ export function SettingsPage() {
 
       <Section title="Projects">
         <Row label="Default folder" hint={prettyPath(settings.projectsDir ?? settings.defaultProjectsDir ?? "", settings.home)}>
-          <Button onClick={() => void chooseFolder()}>
+          <Button variant="secondary" onClick={() => void chooseFolder()}>
             <FolderOpen strokeWidth={1.75} /> Change…
           </Button>
-          {settings.projectsDir && <Button onClick={() => void settings.update({ projectsDir: null })}>Reset</Button>}
+          {settings.projectsDir && <Button variant="secondary" onClick={() => void settings.update({ projectsDir: null })}>Reset</Button>}
         </Row>
       </Section>
 
       <Section title="Appearance">
         <Row label="Theme" hint="The Minecraft theme arrives in v0.2">
-          <Select
+          <SettingSelect
             value={settings.theme}
             onChange={(v) => void chooseTheme(v)}
-            className="h-7 min-w-[160px] rounded-md bg-surface"
-            options={registries.themes.list().map((t) => ({ value: t.id, label: t.name }))}
+            className="min-w-[160px]"
+            items={registries.themes.list().map((t) => ({ value: t.id, label: t.name }))}
           />
         </Row>
       </Section>
@@ -118,7 +141,7 @@ export function SettingsPage() {
                 : "Checks for updates on start and every few hours")
           }
         >
-          <Button onClick={() => void checkNow()} disabled={checking || updates.state === "disabled"}>
+          <Button variant="secondary" onClick={() => void checkNow()} disabled={checking || updates.state === "disabled"}>
             {checking && <Spinner />} Check for updates
           </Button>
         </Row>

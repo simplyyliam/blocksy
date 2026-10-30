@@ -60,8 +60,8 @@ export function FirstBuild() {
       <div className="mt-6 flex items-center justify-between">
         <span className="text-base text-fg-muted tabular-nums">{elapsed}</span>
         <div className="flex gap-1">
-          <Button onClick={() => openLog(true)}>Show full log</Button>
-          <Button onClick={() => void stopTask()}>Stop</Button>
+          <Button variant="secondary" onClick={() => openLog(true)}>Show full log</Button>
+          <Button variant="secondary" onClick={() => void stopTask()}>Stop</Button>
         </div>
       </div>
     </div>

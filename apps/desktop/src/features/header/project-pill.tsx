@@ -8,7 +8,7 @@ export function ProjectPill() {
   const go = useNavigation((s) => s.go)
   if (!name) return <div />
   return (
-    <Button variant="pill" onClick={() => go("project")} className="max-w-[360px]">
+    <Button variant="secondary" onClick={() => go("project")} className="max-w-[360px]">
       <span className="truncate">{name}</span>
     </Button>
   )

@@ -1,14 +1,13 @@
-// The app shell (App.png): sidebar on the left; header, page and bottom panel on the
-// right; the settings gear and the status bar share the bottom line.
+// The app shell (App.png): the shadcn sidebar on the left (Settings at its foot);
+// header, page, bottom panel and status bar on the right.
 //
 //   ┌──────────┬──────────────────────────────────────┐
 //   │ Sidebar  │ Header                               │
 //   │          │ Page                                 │
 //   │          │ Bottom panel (Build log)             │
-//   ├──────────┼──────────────────────────────────────┤
 //   │ Settings │ Status bar                           │
 //   └──────────┴──────────────────────────────────────┘
-import { TooltipProvider } from "@blocksy/ui"
+import { SidebarProvider, Toaster, TooltipProvider } from "@blocksy/ui"
 import { NewProjectDialog } from "../features/new-project/new-project-dialog"
 import { DocsPage } from "../pages/docs/docs-page"
 import { HomePage } from "../pages/home/home-page"
@@ -18,9 +17,8 @@ import { SettingsPage } from "../pages/settings/settings-page"
 import { useNavigation, type Page } from "../shared/stores/navigation"
 import { BottomPanel } from "../widgets/bottom-panel/bottom-panel"
 import { Header } from "../widgets/header/header"
-import { Sidebar, SidebarFooter } from "../widgets/sidebar/sidebar"
+import { AppSidebar } from "../widgets/sidebar/sidebar"
 import { StatusBar } from "../widgets/status-bar/statusbar"
-import { Toaster } from "./toaster"
 
 const pages: Record<Page, () => React.ReactNode> = {
   home: HomePage,
@@ -36,21 +34,24 @@ export function App() {
 
   return (
     <TooltipProvider delay={500}>
-      <div className="grid h-full grid-cols-[192px_minmax(0,1fr)] grid-rows-[minmax(0,1fr)_auto] gap-x-[30px] gap-y-4 p-5">
-        <Sidebar />
-        <div className="flex min-h-0 min-w-0 flex-col">
+      <SidebarProvider className="h-full min-h-0">
+        <AppSidebar />
+        {/* A plain column next to the sidebar (no SidebarInset: the sidebar is not inset). */}
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col p-5 pl-[30px]">
           <Header />
           {/* key={page} replays the fade-in each time the page changes */}
           <main key={page} className="page-enter min-h-0 flex-1 overflow-y-auto">
             <Current />
           </main>
           <BottomPanel />
+          <div className="mt-4">
+            <StatusBar />
+          </div>
         </div>
-        <SidebarFooter />
-        <StatusBar />
-      </div>
+      </SidebarProvider>
       <NewProjectDialog />
-      <Toaster />
+      {/* Toasts sit bottom-right, just above the status bar. */}
+      <Toaster position="bottom-right" offset={{ right: 20, bottom: 56 }} />
     </TooltipProvider>
   )
 }
