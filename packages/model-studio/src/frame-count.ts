@@ -6,3 +6,10 @@ export const countFrame = () => {
   framesDrawn++
 }
 export const previewFrameCount = () => framesDrawn
+
+/** Previews that finished their first full frame (textures loaded): the same signal as onReady. */
+let readyCount = 0
+export const countReady = () => {
+  readyCount++
+}
+export const previewReadyCount = () => readyCount

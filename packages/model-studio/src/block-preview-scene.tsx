@@ -8,7 +8,7 @@ import { OrbitControls, PerformanceMonitor } from "@react-three/drei"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
-import { countFrame } from "./frame-count.ts"
+import { countFrame, countReady } from "./frame-count.ts"
 import { BOX_FACE_ORDER, FACE_SHADE, faceTexture, type CubeModel } from "./cube-model.ts"
 
 function CountFrames() {
@@ -109,7 +109,10 @@ function Cube({ model, placeholder, onReady }: { model: CubeModel; placeholder: 
   useFrame(() => {
     if (!loaded || signaled.current) return
     signaled.current = true
-    requestAnimationFrame(() => onReady?.()) // after this frame is on screen
+    requestAnimationFrame(() => {
+      countReady()
+      onReady?.()
+    }) // after this frame is on screen
   })
 
   return (
@@ -141,9 +144,12 @@ export function BlockPreview({ model, placeholder = "#d4d4d4", shadow = "#000000
       dpr={[1, dpr]}
       orthographic={false}
       camera={{ position: [7.2 / zoom, 5.8 / zoom, 9.1 / zoom], fov: 22 }}
-      gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
+      // No multisampling: pixel art doesn't need it and the WebGL context starts faster without it.
+      gl={{ antialias: false, alpha: true, powerPreference: "low-power" }}
     >
-      <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
+      {/* Only ever lowers the pixel ratio (and gives up after 3 changes): raising it again
+          would resize the canvas, draw, measure, and could keep an idle preview drawing. */}
+      <PerformanceMonitor flipflops={3} onDecline={() => setDpr(1)} onFallback={() => setDpr(1)} />
       <CountFrames />
       <Cube model={model} placeholder={placeholder} onReady={onReady} />
       <Shadow color={shadow} />

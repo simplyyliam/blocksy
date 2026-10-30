@@ -7,8 +7,16 @@ import type { BlockPreviewProps } from "./block-preview-scene.tsx"
 const loadScene = () => import("./block-preview-scene.tsx")
 const Scene = lazy(() => loadScene().then((m) => ({ default: m.BlockPreview })))
 
-/** Starts fetching the 3D code early (e.g. when a project opens), so the first preview is quick. */
-export const preloadBlockPreview = () => void loadScene()
+/**
+ * Gets the first preview ready ahead of time: fetches the 3D code, and wakes up the GPU
+ * process by creating (and at once releasing) a tiny WebGL context. The first context in a
+ * window is the slow one on integrated graphics; later ones start quickly.
+ */
+export function preloadBlockPreview() {
+  void loadScene()
+  const gl = document.createElement("canvas").getContext("webgl2")
+  gl?.getExtension("WEBGL_lose_context")?.loseContext()
+}
 
 export function BlockPreview(props: BlockPreviewProps) {
   return (

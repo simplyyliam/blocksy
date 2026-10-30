@@ -5,7 +5,7 @@ import { commands } from "../shared/bindings"
 import { logLines, useGradle } from "../shared/stores/gradle"
 import { useNavigation, type Page } from "../shared/stores/navigation"
 import { addElement, createDocumentStore, createProject } from "@blocksy/core"
-import { previewFrameCount } from "@blocksy/model-studio"
+import { previewFrameCount, previewReadyCount } from "@blocksy/model-studio"
 import { applyStarter } from "../features/new-project/starters"
 import { useEditor } from "../shared/stores/editor"
 import { useProject } from "../shared/stores/project"
@@ -96,11 +96,10 @@ async function benchBlockPreview() {
   useNavigation.getState().go("project")
   await wait(300)
   const start = performance.now()
-  const before = previewFrameCount()
+  const before = previewReadyCount()
   useEditor.getState().select("first_block")
-  // Ready = the preview drew its first frame (frame counter moves).
-  while (previewFrameCount() === before && performance.now() - start < 10_000) await frame()
-  await frame()
+  // Ready = the preview's first full frame with its texture (the moment the loader hides).
+  while (previewReadyCount() === before && performance.now() - start < 10_000) await frame()
   const readyMs = performance.now() - start
   // Switching to another block reuses the canvas: time until its new texture is drawn.
   await wait(500)
