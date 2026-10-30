@@ -2,6 +2,48 @@
 
 All notable changes to Blocksy are documented here. Versions follow docs/release/blocksy-release-plan.md.
 
+## [0.2.0] - 2026-10-30
+
+Your first block: design it, give it a texture, and play it in Minecraft in its own creative tab.
+
+### Added
+
+- **Blocks.** Add a block from the project tree and set its name, hardness, blast resistance, tool and tool tier, whether it needs the right tool to drop, light level, sound and map colour. Every setting shows the Java it turns into, so you learn the code as you click.
+- **Textures and a live 3D preview.** Import a 16x16 PNG and see your block turn in 3D straight away. Drag to look around. New blocks start with Blocksy's own pixel texture.
+- **Creative tabs.** Give your mod its own page in the creative inventory, pick its icon, and see how it will look before you play.
+- **Starter block.** New project now starts with a creative tab and one block, ready to Run.
+- **The project editor.** Each project opens in its own focused editor: your blocks and tabs on the left, the block in the middle, its settings on the right, and a small toolbar for Design, Code, undo and redo. A back button takes you home.
+- **Code tab.** Read every file Blocksy writes for your mod, with colours, always up to date with what you design.
+- **Blocks that work in game.** Blocksy writes the registration, models, loot table, tool tags and English names for you, so your block shows in its tab, can be placed, and drops itself when mined with the right tool.
+- **Minecraft theme.** Switch to it in Settings: stone and wood tones, chunky buttons and a pixel font, all original art.
+- **Docs.** Learn, Guides, Reference, Concepts and Community, starting with **Make your first block**, featuring video lessons by Modding by Kaupenjoe. A Credits page thanks everyone whose work Blocksy builds on.
+- Little touches: a dot-matrix light while building, a pixel loader while things get ready, and a burst of confetti the first time your mod loads in game.
+
+### Changed
+
+- Build and Run write your mod's files from the project first, and only regenerate block data when something changed.
+- Home and Docs keep the icon sidebar; inside a project it steps aside so the editor has the whole window.
+
+### Known issues
+
+- Windows may warn "Windows protected your PC" when you install, because the installer isn't code-signed yet. Click **More info**, then **Run anyway**.
+- Items, recipes and the Starter item arrive in 0.3.
+- Blocks are full cubes with one texture on all six faces; custom shapes and per-face textures come with Model Studio in 0.5.
+- English names come from your block and tab names; a language editor arrives in 0.3.
+- Only the Fabric loader is supported; NeoForge comes later.
+- You need Java 25 (a JDK) installed; Blocksy helps you find one but doesn't install it for you.
+- The first build of each project needs an internet connection and takes a few minutes; mods with blocks also generate their block data, which adds a little time after changes.
+- Docs search and more lessons arrive in 0.7.
+
+### Privacy
+
+- Blocksy checks GitHub for updates when it starts and every few hours. No account or personal data is sent.
+- While building, Gradle downloads Minecraft, Fabric and code libraries from Mojang, Fabric and Maven repositories.
+- Docs lesson pages show video thumbnails from YouTube; a video loads from YouTube only when you press play.
+- Links you open from the Docs or elsewhere in Blocksy open in your browser.
+- Textures and cover pictures you choose are stored in your project folder and never leave your computer.
+- There is no GitHub sign-in or sync in this version, and Blocksy collects no usage data.
+
 ## [0.1.1] - 2026-10-30
 
 A calmer, cleaner Blocksy, and a note on what's new every time it updates.
