@@ -3,6 +3,7 @@
 import { ArrowUpCircle } from "lucide-react"
 import { motion } from "motion/react"
 import { Button, toast, Tooltip, TooltipContent, TooltipTrigger } from "@blocksy/ui"
+import { statusButton } from "./chip"
 import { errorMessage } from "../../shared/api"
 import { useGradle } from "../../shared/stores/gradle"
 import { useUpdates } from "../../shared/stores/updates"
@@ -23,7 +24,7 @@ export function UpdateNote() {
   return (
     <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
       <Tooltip>
-        <TooltipTrigger render={<Button variant="secondary" size="sm" onClick={() => void restart()} disabled={busy} />}>
+        <TooltipTrigger render={<Button variant="ghost" size="xs" className={statusButton} onClick={() => void restart()} disabled={busy} />}>
           <ArrowUpCircle className="text-brand" strokeWidth={1.75} />
           Blocksy {version} is ready · Restart to update
         </TooltipTrigger>
