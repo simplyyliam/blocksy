@@ -9,10 +9,13 @@ interface NavigationState {
   newProjectOpen: boolean
   /** Settings is a dialog over the app (like Claude's settings), not a page. */
   settingsOpen: boolean
+  /** The "What's new" dialog after an update (or opened from Settings). */
+  whatsNewOpen: boolean
   go(page: Page): void
   setBottomPanel(open: boolean): void
   setNewProject(open: boolean): void
   setSettings(open: boolean): void
+  setWhatsNew(open: boolean): void
 }
 
 export const useNavigation = create<NavigationState>((set) => ({
@@ -20,8 +23,10 @@ export const useNavigation = create<NavigationState>((set) => ({
   bottomPanelOpen: false,
   newProjectOpen: false,
   settingsOpen: false,
+  whatsNewOpen: false,
   go: (page) => set({ page }),
   setBottomPanel: (bottomPanelOpen) => set({ bottomPanelOpen }),
   setNewProject: (newProjectOpen) => set({ newProjectOpen }),
   setSettings: (settingsOpen) => set({ settingsOpen }),
+  setWhatsNew: (whatsNewOpen) => set({ whatsNewOpen }),
 }))

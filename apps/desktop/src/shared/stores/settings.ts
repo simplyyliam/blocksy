@@ -13,9 +13,11 @@ export interface Settings {
   theme: string
   /** How Home lists projects. */
   homeView: "grid" | "list"
+  /** The app version whose "What's new" was last shown; null on a fresh install. */
+  lastSeenVersion: string | null
 }
 
-const defaults: Settings = { javaHome: null, projectsDir: null, theme: "modern", homeView: "grid" }
+const defaults: Settings = { javaHome: null, projectsDir: null, theme: "modern", homeView: "grid", lastSeenVersion: null }
 
 interface SettingsState extends Settings {
   loaded: boolean
@@ -41,7 +43,7 @@ export const useSettings = create<SettingsState>((set, get) => ({
   },
   async update(patch) {
     set(patch)
-    const { javaHome, projectsDir, theme, homeView } = get()
-    await saveJson("settings", { javaHome, projectsDir, theme, homeView })
+    const { javaHome, projectsDir, theme, homeView, lastSeenVersion } = get()
+    await saveJson("settings", { javaHome, projectsDir, theme, homeView, lastSeenVersion })
   },
 }))
