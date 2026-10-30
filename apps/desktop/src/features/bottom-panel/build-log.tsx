@@ -1,8 +1,11 @@
 // The Build log: live Gradle and game output.
 // Lines are drawn in chunks of 200; finished chunks never redraw, so even a
 // 20,000-line log stays smooth. It sticks to the bottom unless you scroll up.
-import { memo, useLayoutEffect, useRef } from "react"
-import { cn } from "@blocksy/ui"
+// Right-click: Copy selection / Copy log / Clear / Close.
+import { Copy, Eraser, TextSelect, X } from "lucide-react"
+import { memo, useLayoutEffect, useRef, useState } from "react"
+import { cn, ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, toast } from "@blocksy/ui"
+import { useNavigation } from "../../shared/stores/navigation"
 import { logLines, useGradle, type LogLine } from "../../shared/stores/gradle"
 import { useProject } from "../../shared/stores/project"
 
@@ -41,6 +44,17 @@ export function BuildLog() {
   const box = useRef<HTMLDivElement>(null)
   const stickToBottom = useRef(true)
   const chunks = Math.ceil(logLines.length / CHUNK)
+  // Read when the menu opens, so "Copy selection" only shows when text is selected.
+  const [selection, setSelection] = useState("")
+
+  const copy = async (text: string, what: string) => {
+    await navigator.clipboard.writeText(text)
+    toast(`Copied ${what}`)
+  }
+  const clear = () => {
+    logLines.length = 0
+    useGradle.setState((s) => ({ logVersion: s.logVersion + 1 }))
+  }
 
   useLayoutEffect(() => {
     const el = box.current
@@ -48,24 +62,48 @@ export function BuildLog() {
   }, [version])
 
   return (
-    <div
-      ref={box}
-      data-selectable
-      onScroll={(e) => {
-        const el = e.currentTarget
-        stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24
-      }}
-      className="h-full overflow-auto px-4 py-3 font-mono text-xs leading-[1.5] text-fg"
-    >
-      {chunks === 0 ? (
-        <p className="font-sans text-base text-fg-muted">
-          {task ? "Waiting for Gradle…" : "Build or Run the mod to see its output here."}
-        </p>
-      ) : (
-        Array.from({ length: chunks }, (_, i) => (
-          <Chunk key={i} index={i} version={i === chunks - 1 ? version : 0} modId={modId} />
-        ))
-      )}
-    </div>
+    <ContextMenu onOpenChange={(open) => open && setSelection(window.getSelection()?.toString() ?? "")}>
+      {/* select-text: the trigger adds select-none by default, but log text must stay selectable. */}
+      <ContextMenuTrigger
+        className="h-full overflow-auto px-4 py-3 font-mono text-xs leading-[1.5] text-fg select-text"
+        render={
+          <div
+            ref={box}
+            data-selectable
+            onScroll={(e) => {
+              const el = e.currentTarget
+              stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24
+            }}
+          />
+        }
+      >
+        {chunks === 0 ? (
+          <p className="font-sans text-base text-fg-muted">
+            {task ? "Waiting for Gradle…" : "Build or Run the mod to see its output here."}
+          </p>
+        ) : (
+          Array.from({ length: chunks }, (_, i) => (
+            <Chunk key={i} index={i} version={i === chunks - 1 ? version : 0} modId={modId} />
+          ))
+        )}
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-48">
+        {selection && (
+          <ContextMenuItem onClick={() => void copy(selection, "selection")}>
+            <TextSelect strokeWidth={1.75} /> Copy selection
+          </ContextMenuItem>
+        )}
+        <ContextMenuItem disabled={chunks === 0} onClick={() => void copy(logLines.map((l) => l.text).join("\n"), "the build log")}>
+          <Copy strokeWidth={1.75} /> Copy log
+        </ContextMenuItem>
+        <ContextMenuItem disabled={chunks === 0 || task !== null} onClick={clear}>
+          <Eraser strokeWidth={1.75} /> Clear
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem onClick={() => useNavigation.getState().setBottomPanel(false)}>
+          <X strokeWidth={1.75} /> Close
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   )
 }

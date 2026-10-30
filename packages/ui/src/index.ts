@@ -40,6 +40,7 @@ export {
 } from "./components/ui/dropdown-menu.tsx"
 export { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from "./components/ui/item.tsx"
 export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./components/ui/card.tsx"
+export { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "./components/ui/context-menu.tsx"
 // Blocksy-only pieces (shadcn has nothing like them):
 export { ElapsedTime } from "./components/elapsed-time.tsx"
 export { ProjectCover } from "./components/project-cover.tsx"

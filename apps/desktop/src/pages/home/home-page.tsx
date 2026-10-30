@@ -8,18 +8,16 @@
 //   │ cover  │ │ cover  │
 //   │ Name ··│ │ Name ··│
 //   └────────┘ └────────┘
-import { FolderOpen, LayoutGrid, List, MoreHorizontal, Plus, SquareArrowOutUpRight, Trash2 } from "lucide-react"
-import { revealItemInDir } from "@tauri-apps/plugin-opener"
+import { LayoutGrid, List, MoreHorizontal, Plus } from "lucide-react"
 import {
-  Button, Card, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Item,
-  ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle, toast, ToggleGroup, ToggleGroupItem,
+  Button, Card, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, Item, ItemActions, ItemContent, ItemDescription,
+  ItemGroup, ItemMedia, ItemTitle, ToggleGroup, ToggleGroupItem,
 } from "@blocksy/ui"
-import { CoverMenuItems } from "../../shared/cover-menu-items"
+import { openProject } from "../../shared/open-project"
+import { ProjectContextMenu, ProjectMenuItems } from "../../shared/project-menu"
 import { ProjectImage } from "../../shared/project-image"
-import { errorMessage } from "../../shared/api"
 import { prettyPath } from "../../shared/paths"
 import { useNavigation } from "../../shared/stores/navigation"
-import { useProject } from "../../shared/stores/project"
 import { useRecent, type RecentProject } from "../../shared/stores/recent"
 import { useSettings } from "../../shared/stores/settings"
 
@@ -38,16 +36,6 @@ const greeting = () => {
   return hour < 12 ? "Good morning." : hour < 18 ? "Good afternoon." : "Good evening."
 }
 
-async function openProject(project: RecentProject) {
-  try {
-    await useProject.getState().open(project.dir)
-  } catch (err) {
-    toast.error(`Couldn't open project: ${errorMessage(err)}`, {
-      action: { label: "Remove from list", onClick: () => void useRecent.getState().forget(project.dir) },
-    })
-  }
-}
-
 /** The ··· menu on a card or row. */
 function ProjectMenu({ project }: { project: RecentProject }) {
   return (
@@ -57,19 +45,8 @@ function ProjectMenu({ project }: { project: RecentProject }) {
       >
         <MoreHorizontal strokeWidth={1.75} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem onClick={() => void openProject(project)}>
-          <SquareArrowOutUpRight strokeWidth={1.75} /> Open
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => void revealItemInDir(project.dir)}>
-          <FolderOpen strokeWidth={1.75} /> Show in folder
-        </DropdownMenuItem>
-        <CoverMenuItems dir={project.dir} />
-        <DropdownMenuSeparator />
-        {/* Only forgets it here; the files on disk stay untouched. */}
-        <DropdownMenuItem onClick={() => void useRecent.getState().forget(project.dir)}>
-          <Trash2 strokeWidth={1.75} /> Remove from list
-        </DropdownMenuItem>
+      <DropdownMenuContent align="end" className="w-52">
+        <ProjectMenuItems dir={project.dir} kind="dropdown" />
       </DropdownMenuContent>
     </DropdownMenu>
   )
@@ -77,44 +54,48 @@ function ProjectMenu({ project }: { project: RecentProject }) {
 
 function ProjectCard({ project }: { project: RecentProject }) {
   return (
-    <Card className="group gap-0 rounded-lg py-0 shadow-none transition-shadow duration-150 hover:ring-foreground/15">
-      <button type="button" onClick={() => void openProject(project)} className="block outline-none" aria-label={`Open ${project.name}`}>
-        <ProjectImage dir={project.dir} className="aspect-[16/10] w-full transition-[filter] duration-200 group-hover:brightness-[1.04]" />
-      </button>
-      <div className="flex items-start gap-2 p-3">
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm text-fg" title={project.name}>
-            {project.name}
-          </p>
-          <p className="mt-0.5 truncate text-xs text-fg-muted">
-            Minecraft {project.minecraftVersion} · {ago(project.openedAt)}
-          </p>
+    <ProjectContextMenu dir={project.dir}>
+      <Card className="group gap-0 rounded-lg py-0 shadow-none transition-shadow duration-150 hover:ring-foreground/15">
+        <button type="button" onClick={() => void openProject(project.dir)} className="block outline-none" aria-label={`Open ${project.name}`}>
+          <ProjectImage dir={project.dir} className="aspect-[16/10] w-full transition-[filter] duration-200 group-hover:brightness-[1.04]" />
+        </button>
+        <div className="flex items-start gap-2 p-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm text-fg" title={project.name}>
+              {project.name}
+            </p>
+            <p className="mt-0.5 truncate text-xs text-fg-muted">
+              Minecraft {project.minecraftVersion} · {ago(project.openedAt)}
+            </p>
+          </div>
+          <ProjectMenu project={project} />
         </div>
-        <ProjectMenu project={project} />
-      </div>
-    </Card>
+      </Card>
+    </ProjectContextMenu>
   )
 }
 
 function ProjectRow({ project, home }: { project: RecentProject; home: string | null }) {
   return (
-    <Item size="xs" className="hover:bg-surface/60">
-      <ItemMedia>
-        <ProjectImage dir={project.dir} className="h-6 w-9 rounded-[3px]" />
-      </ItemMedia>
-      <ItemContent className="min-w-0">
-        <button type="button" onClick={() => void openProject(project)} className="text-left outline-none">
-          <ItemTitle className="w-full truncate font-normal">{project.name}</ItemTitle>
-        </button>
-        <ItemDescription className="truncate text-xs">{prettyPath(project.dir, home)}</ItemDescription>
-      </ItemContent>
-      <ItemActions className="gap-3 text-xs text-fg-muted">
-        <span className="hidden whitespace-nowrap sm:inline">
-          Minecraft {project.minecraftVersion} · {ago(project.openedAt)}
-        </span>
-        <ProjectMenu project={project} />
-      </ItemActions>
-    </Item>
+    <ProjectContextMenu dir={project.dir}>
+      <Item size="xs" className="hover:bg-surface/60">
+        <ItemMedia>
+          <ProjectImage dir={project.dir} className="h-6 w-9 rounded-[3px]" />
+        </ItemMedia>
+        <ItemContent className="min-w-0">
+          <button type="button" onClick={() => void openProject(project.dir)} className="text-left outline-none">
+            <ItemTitle className="w-full truncate font-normal">{project.name}</ItemTitle>
+          </button>
+          <ItemDescription className="truncate text-xs">{prettyPath(project.dir, home)}</ItemDescription>
+        </ItemContent>
+        <ItemActions className="gap-3 text-xs text-fg-muted">
+          <span className="hidden whitespace-nowrap sm:inline">
+            Minecraft {project.minecraftVersion} · {ago(project.openedAt)}
+          </span>
+          <ProjectMenu project={project} />
+        </ItemActions>
+      </Item>
+    </ProjectContextMenu>
   )
 }
 

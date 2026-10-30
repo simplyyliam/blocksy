@@ -1,8 +1,8 @@
 // The open project. In v0.1 a mod has no elements yet, so this is a calm overview
 // with the next step (Run). During the very first build it shows the progress screen.
-import { FolderOpen, Play } from "lucide-react"
+import { Copy, FolderOpen, Play } from "lucide-react"
 import { revealItemInDir } from "@tauri-apps/plugin-opener"
-import { Button } from "@blocksy/ui"
+import { Button, ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, toast } from "@blocksy/ui"
 import { FirstBuild } from "../../features/first-build/first-build"
 import { runMod } from "../../shared/project-actions"
 import { prettyPath } from "../../shared/paths"
@@ -11,15 +11,27 @@ import { useProject } from "../../shared/stores/project"
 import { useSettings } from "../../shared/stores/settings"
 import { Page } from "../page"
 
+/** One row of project facts. Right-click copies the value (handy for the Java package). */
 function Detail({ label, value }: { label: string; value: string }) {
+  const copy = async () => {
+    await navigator.clipboard.writeText(value)
+    toast(`Copied ${label.toLowerCase()}`)
+  }
   return (
-    <div className="flex h-10 items-center justify-between gap-6 border-b border-line-subtle text-base last:border-b-0">
-      <span className="shrink-0 text-fg-muted">{label}</span>
-      {/* Long values (a deep Java package) are cut with "…"; hover shows the whole thing. */}
-      <span className="min-w-0 truncate text-fg" title={value} data-selectable>
-        {value}
-      </span>
-    </div>
+    <ContextMenu>
+      <ContextMenuTrigger render={<div className="flex h-10 items-center justify-between gap-6 border-b border-line-subtle text-base last:border-b-0" />}>
+        <span className="shrink-0 text-fg-muted">{label}</span>
+        {/* Long values (a deep Java package) are cut with "…"; hover shows the whole thing. */}
+        <span className="min-w-0 truncate text-fg" title={value} data-selectable>
+          {value}
+        </span>
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-44">
+        <ContextMenuItem onClick={() => void copy()}>
+          <Copy strokeWidth={1.75} /> Copy {label.toLowerCase()}
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   )
 }
 
