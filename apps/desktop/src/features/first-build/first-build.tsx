@@ -39,6 +39,7 @@ export function FirstBuild() {
   // React Compiler's caching so every logVersion change redraws.
   "use no memo"
   const step = useGradle((s) => s.step)
+  const prepares = useGradle((s) => s.prepares)
   useGradle((s) => s.logVersion) // redraw as output arrives
   const name = useProject((s) => s.current?.doc.name ?? "your mod")
   const dir = useProject((s) => s.current?.dir ?? "")
@@ -72,6 +73,8 @@ export function FirstBuild() {
 
         <ChainOfThoughtContent className="space-y-4">
           {FIRST_BUILD_STEPS.map((s, i) => {
+            // "Generating block data" only happens in mods that have blocks.
+            if ("onlyWhenPreparing" in s && !prepares) return null
             const status = i < current ? "complete" : i === current ? "active" : "pending"
             return (
               <ChainOfThoughtStep

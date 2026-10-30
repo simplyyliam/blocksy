@@ -50,9 +50,21 @@ importers:
       '@blocksy/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@blocksy/docs':
+        specifier: workspace:*
+        version: link:../../packages/docs
+      '@blocksy/element-block':
+        specifier: workspace:*
+        version: link:../../packages/elements/block
+      '@blocksy/element-creative-tab':
+        specifier: workspace:*
+        version: link:../../packages/elements/creative-tab
       '@blocksy/generator':
         specifier: workspace:*
         version: link:../../packages/generator
+      '@blocksy/model-studio':
+        specifier: workspace:*
+        version: link:../../packages/model-studio
       '@blocksy/target-fabric':
         specifier: workspace:*
         version: link:../../packages/targets/fabric

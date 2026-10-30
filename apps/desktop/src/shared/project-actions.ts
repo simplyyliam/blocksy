@@ -13,6 +13,7 @@ import { useGradle, type RunResult } from "./stores/gradle"
 import { useJava } from "./stores/java"
 import { useNavigation } from "./stores/navigation"
 import { useProject } from "./stores/project"
+import { syncGeneratedFiles } from "./sync-files"
 
 async function start(task: GradleTask): Promise<boolean> {
   const project = useProject.getState().current
@@ -27,7 +28,15 @@ async function start(task: GradleTask): Promise<boolean> {
   if (!firstBuild) useNavigation.getState().setBottomPanel(true)
   if (firstBuild) useNavigation.getState().go("project")
   try {
-    await useGradle.getState().start(task, { projectDir: project.dir, javaHome: java.home, modId: project.doc.modId, firstBuild })
+    // Write the mod's files from the project first, so the build always matches what you see.
+    const { prepare, markPrepared } = await syncGeneratedFiles(project.dir, project.doc)
+    await useGradle.getState().start(task, { projectDir: project.dir, javaHome: java.home, modId: project.doc.modId, firstBuild, prepare })
+    // Data generation is skipped next time only if this run got past it.
+    if (prepare.length > 0) {
+      void finished().then(async (r) => {
+        if (r.success || (r.task === "run_client" && useGradle.getState().gameLoaded)) await markPrepared()
+      })
+    }
     return true
   } catch (err) {
     toast.error(errorMessage(err))

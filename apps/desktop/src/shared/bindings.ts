@@ -11,6 +11,11 @@ export const commands = {
 	defaultProjectsDir: () => typedError<string, AppError>(__TAURI_INVOKE("default_projects_dir")),
 	/**  Writes generated files into `dir`. Refuses a non-empty folder unless `overwrite`. */
 	writeProjectFiles: (dir: string, files: FileToWrite_Deserialize[], overwrite: boolean) => typedError<null, AppError>(__TAURI_INVOKE("write_project_files", { dir, files, overwrite })),
+	/**
+	 *  Deletes generated files that are no longer generated (a removed block's texture, ...),
+	 *  then any folders that became empty. Paths are relative and checked like writes.
+	 */
+	removeProjectFiles: (dir: string, paths: string[]) => typedError<null, AppError>(__TAURI_INVOKE("remove_project_files", { dir, paths })),
 	readTextFile: (path: string) => typedError<string, AppError>(__TAURI_INVOKE("read_text_file", { path })),
 	writeTextFile: (path: string, contents: string) => typedError<null, AppError>(__TAURI_INVOKE("write_text_file", { path, contents })),
 	pathExists: (path: string) => __TAURI_INVOKE<boolean>("path_exists", { path }),
@@ -25,8 +30,12 @@ export const commands = {
 	clearProjectCover: (dir: string) => typedError<null, AppError>(__TAURI_INVOKE("clear_project_cover", { dir })),
 	/**  Finds Java installs: the configured one, JAVA_HOME, `java` on PATH and common folders. */
 	detectJava: (configuredHome: string | null) => typedError<JavaInstall[], AppError>(__TAURI_INVOKE("detect_java", { configuredHome })),
-	/**  Starts a Gradle task. Returns its run id; output arrives as events. */
-	runGradle: (projectDir: string, task: GradleTask, javaHome: string) => typedError<number, AppError>(__TAURI_INVOKE("run_gradle", { projectDir, task, javaHome })),
+	/**
+	 *  Starts a Gradle task. Returns its run id; output arrives as events.
+	 *  `prepare` tasks (e.g. `runDatagen`) run first as their own Gradle run, because Gradle
+	 *  can't order them before `build` inside one run. The loader target decides them.
+	 */
+	runGradle: (projectDir: string, task: GradleTask, javaHome: string, prepare: string[]) => typedError<number, AppError>(__TAURI_INVOKE("run_gradle", { projectDir, task, javaHome, prepare })),
 	/**  Stops the running task, including the game it may have started. */
 	stopGradle: () => typedError<null, AppError>(__TAURI_INVOKE("stop_gradle")),
 	/**  What's running right now, if anything (for screens opened mid-build). */

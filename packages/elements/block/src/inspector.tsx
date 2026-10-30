@@ -193,7 +193,7 @@ export function BlockInspector({ element, project, change, rename, select }: Ele
           {(id) => (
             <Choose
               id={id}
-              value={data.tab ?? "none"}
+              value={data.tab && tabs.some((t) => t.id === data.tab) ? data.tab : "none"}
               items={[{ value: "none", label: "No tab" }, ...tabs.map((t) => ({ value: t.id, label: t.name }))]}
               onChange={(v) => set({ tab: v === "none" ? null : v })}
             />

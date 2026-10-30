@@ -6,6 +6,7 @@
 export { cn } from "./lib/utils.ts"
 export { applyTheme } from "./theme/apply.ts"
 export { modernTheme } from "./theme/modern.ts"
+export { minecraftTheme } from "./theme/minecraft.ts"
 export { useThemeToken } from "./theme/use-token.ts"
 
 export { Badge, badgeVariants } from "./components/ui/badge.tsx"
@@ -51,6 +52,7 @@ export { DotMatrix, dotMatrixStates, type DotMatrixState } from "./components/ui
 export { DotPattern } from "./components/ui/dot-pattern.tsx"
 export { Confetti, ConfettiButton, type ConfettiRef } from "./components/ui/confetti.tsx"
 // Blocksy-only pieces (shadcn has nothing like them):
+export { CodeView, languageOf, type CodeLanguage } from "./components/code-view.tsx"
 export { InspectorField, InspectorSection, NumberInput } from "./components/inspector.tsx"
 export { AnimatedNumber } from "./components/animated-number.tsx"
 export { ElapsedTime } from "./components/elapsed-time.tsx"

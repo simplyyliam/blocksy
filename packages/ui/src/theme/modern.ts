@@ -71,5 +71,20 @@ export const modernTheme: Theme = {
     // Motion
     "ease-out": "cubic-bezier(0.22, 1, 0.36, 1)",
     "ease-in-out": "cubic-bezier(0.65, 0, 0.35, 1)",
+
+    // Code colours (Code tab, docs): calm, readable on white.
+    "code-keyword": "#c42f6f",
+    "code-string": "#2f8a3e",
+    "code-comment": "#9a9a9a",
+    "code-function": "#2563c9",
+    "code-constant": "#b5680b",
+    "code-type": "#7a4cc2",
+
+    // Theme art and bevels: Modern has none (the Minecraft theme sets them).
+    "texture-app": "none",
+    "texture-panel": "none",
+    "texture-edge": "none",
+    bevel: "none",
+    "bevel-pressed": "none",
   },
 }

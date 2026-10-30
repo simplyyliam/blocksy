@@ -16,6 +16,7 @@ export const FIRST_BUILD_STEPS = [
   { id: "daemon", label: "Starting Gradle", match: /Welcome to Gradle|Starting a Gradle Daemon/ },
   { id: "minecraft", label: "Setting up Minecraft", match: /> Configure project/ },
   { id: "compile", label: "Compiling your mod", match: /> Task :compile/ },
+  { id: "datagen", label: "Generating block data", match: /> Task :runDatagen/, onlyWhenPreparing: true },
   { id: "package", label: "Packaging the jar", match: /> Task :(jar|remapJar)/ },
 ] as const
 
@@ -30,6 +31,8 @@ interface GradleState {
   task: GradleTask | null
   /** True while the project's very first build runs (shows the progress screen). */
   firstBuild: boolean
+  /** True when this run starts with prepare tasks (e.g. data generation for blocks). */
+  prepares: boolean
   /** Index into FIRST_BUILD_STEPS of the latest step reached. */
   step: number
   /** runClient: the game finished loading mods, and ours was among them. */
@@ -38,7 +41,7 @@ interface GradleState {
   lastResult: RunResult | null
   /** Changes whenever log lines are added, so the log view knows to redraw. */
   logVersion: number
-  start(task: GradleTask, opts: { projectDir: string; javaHome: string; modId: string; firstBuild: boolean }): Promise<void>
+  start(task: GradleTask, opts: { projectDir: string; javaHome: string; modId: string; firstBuild: boolean; prepare: string[] }): Promise<void>
   stop(): Promise<void>
   clearResult(): void
 }
@@ -53,19 +56,20 @@ export const useGradle = create<GradleState>((set, get) => ({
   runId: null,
   task: null,
   firstBuild: false,
+  prepares: false,
   step: -1,
   gameLoaded: false,
   modLoaded: false,
   lastResult: null,
   logVersion: 0,
 
-  async start(task, { projectDir, javaHome, modId, firstBuild }) {
+  async start(task, { projectDir, javaHome, modId, firstBuild, prepare }) {
     logLines.length = 0
     pending = []
     watchedModId = modId
-    set({ task, firstBuild, step: -1, gameLoaded: false, modLoaded: false, lastResult: null, logVersion: get().logVersion + 1 })
+    set({ task, firstBuild, prepares: prepare.length > 0, step: -1, gameLoaded: false, modLoaded: false, lastResult: null, logVersion: get().logVersion + 1 })
     try {
-      const runId = await call(commands.runGradle(projectDir, task, javaHome))
+      const runId = await call(commands.runGradle(projectDir, task, javaHome, prepare))
       set({ runId })
     } catch (err) {
       set({ task: null, firstBuild: false })
