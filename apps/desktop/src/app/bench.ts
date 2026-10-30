@@ -46,10 +46,14 @@ export async function startBenchIfRequested() {
   await wait(600)
   nav.setNewProject(false)
   await wait(400)
-  for (const page of ["docs", "settings", "home"] satisfies Page[]) {
+  for (const page of ["docs", "home"] satisfies Page[]) {
     nav.go(page)
     await wait(350)
   }
+  nav.setSettings(true)
+  await wait(500)
+  nav.setSettings(false)
+  await wait(300)
   nav.setBottomPanel(false)
   await wait(500)
   recording = false
