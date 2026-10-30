@@ -55,7 +55,7 @@ export function BuildLog() {
         const el = e.currentTarget
         stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24
       }}
-      className="h-full overflow-auto px-4 py-3 font-mono text-sm leading-[1.5] text-fg"
+      className="h-full overflow-auto px-4 py-3 font-mono text-xs leading-[1.5] text-fg"
     >
       {chunks === 0 ? (
         <p className="font-sans text-base text-fg-muted">

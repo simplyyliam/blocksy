@@ -14,7 +14,7 @@ export function DocsPage() {
       <ol className="flex flex-col gap-6">
         {steps.map((step, i) => (
           <li key={step.title} className="flex gap-4">
-            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-surface text-sm text-fg-muted tabular-nums">{i + 1}</span>
+            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-surface text-xs text-fg-muted tabular-nums">{i + 1}</span>
             <div>
               <p className="text-base text-fg">{step.title}</p>
               <p className="mt-1 text-base text-fg-muted">{step.body}</p>

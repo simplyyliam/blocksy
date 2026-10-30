@@ -1,6 +1,3 @@
-// shadcn/ui separator (added with the shadcn CLI). Sizes tuned to the Figma; colours come from styles.css.
-"use client"
-
 import { Separator as SeparatorPrimitive } from "@base-ui/react/separator"
 import { cn } from "@blocksy/ui/lib/utils"
 

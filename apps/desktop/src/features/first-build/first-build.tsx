@@ -1,22 +1,36 @@
-// First-build progress: the first build downloads Gradle, Minecraft and Fabric,
-// which takes a few minutes. Steps tick off as real Gradle output reaches them,
-// and the latest output line shows underneath, so it never looks stuck.
-import { Check } from "lucide-react"
+// First-build progress: the first build downloads Gradle, Minecraft and Fabric, which
+// takes a few minutes. Shown as a calm timeline (AI Elements' Chain of Thought):
+//
+//   ■ Setting up My Mod
+//   ⌄ Working for 1m 12s
+//   ✓ Downloading Gradle
+//   ⠿ Setting up Minecraft        ← pixel loader + shimmering label
+//     [ > Configure project : ]   ← the latest Gradle line, as a chip
+//   • Compiling your mod          ← still to come, faint
+import { Check, ChevronDown, Dot, type LucideIcon } from "lucide-react"
 import { useEffect, useState } from "react"
-import { Button, cn, Progress, Spinner } from "@blocksy/ui"
+import {
+  Button, ChainOfThought, ChainOfThoughtContent, ChainOfThoughtSearchResult, ChainOfThoughtSearchResults, ChainOfThoughtStep,
+  cn, ElapsedTime, PixelLoader, Shimmer,
+} from "@blocksy/ui"
 import { stopTask } from "../../shared/project-actions"
 import { FIRST_BUILD_STEPS, logLines, useGradle } from "../../shared/stores/gradle"
 import { useNavigation } from "../../shared/stores/navigation"
+import { useProject } from "../../shared/stores/project"
 
-function useElapsed() {
+// Chain of Thought steps take a lucide icon; the pixel loader accepts the same
+// className prop, so it can stand in for one on the step that is running now.
+const ActiveIcon = (({ className }: { className?: string }) => <PixelLoader className={cn(className, "text-brand")} />) as LucideIcon
+
+/** Seconds since the screen appeared, ticking once a second. */
+function useElapsedSeconds() {
   const [start] = useState(() => Date.now())
   const [now, setNow] = useState(start)
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(timer)
   }, [])
-  const seconds = Math.floor((now - start) / 1000)
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`
+  return Math.floor((now - start) / 1000)
 }
 
 export function FirstBuild() {
@@ -25,44 +39,67 @@ export function FirstBuild() {
   "use no memo"
   const step = useGradle((s) => s.step)
   useGradle((s) => s.logVersion) // redraw as output arrives
+  const name = useProject((s) => s.current?.doc.name ?? "your mod")
   const openLog = useNavigation((s) => s.setBottomPanel)
-  const elapsed = useElapsed()
-  const lastLine = [...logLines].reverse().find((l) => l.text.trim())?.text ?? "Starting…"
+  const seconds = useElapsedSeconds()
+  const [open, setOpen] = useState(true)
+  const lastLine = [...logLines].reverse().find((l) => l.text.trim())?.text.trim() ?? "Starting…"
+  const current = Math.max(step, 0)
 
   return (
-    <div className="flex w-full max-w-[460px] flex-col pt-[10vh]">
-      <h1 className="text-xl font-medium text-fg">Setting up your mod</h1>
-      <p className="mt-2 text-base text-fg-muted">
+    <div className="flex w-full max-w-[560px] flex-col pt-10 pl-5">
+      <div className="flex items-center gap-3">
+        <span className="size-6 shrink-0 rounded-sm bg-project" />
+        <h1 className="text-lg text-fg">Setting up {name}</h1>
+      </div>
+
+      <ChainOfThought open={open} onOpenChange={setOpen} className="mt-5 space-y-3">
+        {/* Our own trigger (chevron on the left), so the AI Elements file stays as installed. */}
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          className="flex h-7 items-center gap-3 text-sm text-fg-muted outline-none transition-colors hover:text-fg"
+        >
+          <ChevronDown className={cn("size-4 transition-transform duration-200 ease-out", !open && "-rotate-90")} strokeWidth={1.75} />
+          <span>
+            Working for <ElapsedTime seconds={seconds} />
+          </span>
+        </button>
+
+        <ChainOfThoughtContent className="space-y-4">
+          {FIRST_BUILD_STEPS.map((s, i) => {
+            const status = i < current ? "complete" : i === current ? "active" : "pending"
+            return (
+              <ChainOfThoughtStep
+                key={s.id}
+                status={status}
+                icon={status === "complete" ? Check : status === "active" ? ActiveIcon : Dot}
+                label={status === "active" ? <Shimmer as="span">{s.label}</Shimmer> : s.label}
+              >
+                {status === "active" && (
+                  <ChainOfThoughtSearchResults>
+                    <ChainOfThoughtSearchResult className="max-w-[440px] font-mono" title={lastLine}>
+                      <span className="truncate">{lastLine}</span>
+                    </ChainOfThoughtSearchResult>
+                  </ChainOfThoughtSearchResults>
+                )}
+              </ChainOfThoughtStep>
+            )
+          })}
+        </ChainOfThoughtContent>
+      </ChainOfThought>
+
+      <p className="mt-8 text-sm text-fg-muted">
         The first build downloads Minecraft and the mod loader. It takes a few minutes, and only happens once.
       </p>
-
-      <Progress className="mt-8" value={((step + 1) / (FIRST_BUILD_STEPS.length + 1)) * 100} />
-
-      <ol className="mt-6 flex flex-col gap-3">
-        {FIRST_BUILD_STEPS.map((s, i) => {
-          const done = i < step
-          const current = i === step || (step === -1 && i === 0)
-          return (
-            <li key={s.id} className={cn("flex h-6 items-center gap-3 text-base transition-colors duration-300", done || current ? "text-fg" : "text-fg-faint")}>
-              <span className="grid size-5 place-items-center">
-                {done ? <Check className="size-3.5 text-success" strokeWidth={2.25} /> : current ? <Spinner className="text-brand" /> : <span className="size-1.5 rounded-full bg-current" />}
-              </span>
-              {s.label}
-            </li>
-          )
-        })}
-      </ol>
-
-      <p className="mt-8 truncate font-mono text-sm text-fg-muted" title={lastLine}>
-        {lastLine}
-      </p>
-
-      <div className="mt-6 flex items-center justify-between">
-        <span className="text-base text-fg-muted tabular-nums">{elapsed}</span>
-        <div className="flex gap-1">
-          <Button variant="secondary" onClick={() => openLog(true)}>Show full log</Button>
-          <Button variant="secondary" onClick={() => void stopTask()}>Stop</Button>
-        </div>
+      <div className="mt-4 flex gap-1.5">
+        <Button variant="secondary" size="sm" onClick={() => openLog(true)}>
+          Show full log
+        </Button>
+        <Button variant="ghost" size="sm" onClick={() => void stopTask()}>
+          Stop
+        </Button>
       </div>
     </div>
   )

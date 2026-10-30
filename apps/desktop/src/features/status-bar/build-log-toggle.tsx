@@ -7,7 +7,7 @@ export function BuildLogToggle() {
   const open = useNavigation((s) => s.bottomPanelOpen)
   const setOpen = useNavigation((s) => s.setBottomPanel)
   return (
-    <Button variant="secondary" onClick={() => setOpen(!open)} aria-pressed={open} className={cn(open && "bg-surface-hover")}>
+    <Button variant="secondary" size="sm" onClick={() => setOpen(!open)} aria-pressed={open} className={cn(open && "bg-surface-hover")}>
       <SquareTerminal strokeWidth={1.75} />
       Build log
     </Button>

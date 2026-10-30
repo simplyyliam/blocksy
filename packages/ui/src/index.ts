@@ -29,3 +29,13 @@ export {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, useSidebar,
 } from "./components/ui/sidebar.tsx"
+export {
+  ChainOfThought, ChainOfThoughtContent, ChainOfThoughtHeader, ChainOfThoughtSearchResult, ChainOfThoughtSearchResults,
+  ChainOfThoughtStep,
+} from "./components/ai-elements/chain-of-thought.tsx"
+export { Shimmer } from "./components/ai-elements/shimmer.tsx"
+export { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "./components/ui/breadcrumb.tsx"
+export { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./components/ui/dropdown-menu.tsx"
+// Blocksy-only pieces (shadcn has nothing like them):
+export { ElapsedTime } from "./components/elapsed-time.tsx"
+export { PixelLoader } from "./components/pixel-loader.tsx"

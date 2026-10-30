@@ -57,7 +57,7 @@ export function JdkSetup() {
                 <span className="text-base text-fg">
                   Java {java.version} <span className="text-fg-muted">· {java.vendor || "Unknown vendor"}</span>
                 </span>
-                <span className="truncate text-sm text-fg-muted" data-selectable>
+                <span className="truncate text-xs text-fg-muted" data-selectable>
                   {java.home}
                   {!java.is_jdk && " · runtime only, needs a full JDK"}
                   {java.is_jdk && java.major < required && ` · too old, needs ${required}+`}
@@ -69,20 +69,20 @@ export function JdkSetup() {
       </div>
 
       <div className="mt-6 flex flex-wrap gap-1">
-        <Button variant="secondary" onClick={() => void detect(useSettings.getState().javaHome, required)}>
+        <Button variant="secondary" size="sm" onClick={() => void detect(useSettings.getState().javaHome, required)}>
           <RotateCw strokeWidth={1.75} /> Check again
         </Button>
-        <Button variant="secondary" onClick={() => void browse()}>
+        <Button variant="secondary" size="sm" onClick={() => void browse()}>
           <FolderOpen strokeWidth={1.75} /> Choose folder…
         </Button>
         {status === "missing" && (
-          <Button variant="default" onClick={() => void openUrl(DOWNLOAD_URL)}>
+          <Button variant="default" size="sm" onClick={() => void openUrl(DOWNLOAD_URL)}>
             Get Java {required} <ExternalLink strokeWidth={1.75} />
           </Button>
         )}
       </div>
       {status === "missing" && (
-        <p className="mt-3 text-sm text-fg-muted">Install it, then press Check again. Any JDK {required}+ works; Eclipse Temurin is free.</p>
+        <p className="mt-3 text-xs text-fg-muted">Install it, then press Check again. Any JDK {required}+ works; Eclipse Temurin is free.</p>
       )}
     </div>
   )

@@ -23,7 +23,7 @@ export function UpdateNote() {
   return (
     <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
       <Tooltip>
-        <TooltipTrigger render={<Button variant="secondary" onClick={() => void restart()} disabled={busy} />}>
+        <TooltipTrigger render={<Button variant="secondary" size="sm" onClick={() => void restart()} disabled={busy} />}>
           <ArrowUpCircle className="text-brand" strokeWidth={1.75} />
           Blocksy {version} is ready · Restart to update
         </TooltipTrigger>

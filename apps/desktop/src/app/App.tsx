@@ -33,17 +33,21 @@ export function App() {
 
   return (
     <TooltipProvider delay={500}>
-      <SidebarProvider className="h-full min-h-0">
+      {/* 250px = the 230px rail from App.png + 10px app padding on each side */}
+      <SidebarProvider className="h-full min-h-0" style={{ "--sidebar-width": "250px" } as React.CSSProperties}>
         <AppSidebar />
         {/* A plain column next to the sidebar (no SidebarInset: the sidebar is not inset). */}
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col p-6 pl-[23px]">
+        {/* 10px around the whole app; the header hairline spans the column edge to edge. */}
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <Header />
           {/* key={page} replays the fade-in each time the page changes */}
-          <main key={page} className="page-enter min-h-0 flex-1 overflow-y-auto">
+          <main key={page} className="page-enter min-h-0 flex-1 overflow-y-auto px-2.5">
             <Current />
           </main>
-          <BottomPanel />
-          <div className="mt-4">
+          <div className="px-2.5">
+            <BottomPanel />
+          </div>
+          <div className="p-2.5">
             <StatusBar />
           </div>
         </div>

@@ -14,21 +14,21 @@ export function BuildActions() {
   return (
     <div className="flex items-center gap-1">
       <Tooltip>
-        <TooltipTrigger render={<Button variant="secondary" onClick={() => void buildMod()} disabled={busy} />}>
+        <TooltipTrigger render={<Button variant="secondary" size="sm" onClick={() => void buildMod()} disabled={busy} />}>
           {task === "build" && <Spinner />}
           Build
         </TooltipTrigger>
         <TooltipContent>Compile the mod</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger render={<Button variant="secondary" onClick={() => void runMod()} disabled={busy} />}>
+        <TooltipTrigger render={<Button variant="secondary" size="sm" onClick={() => void runMod()} disabled={busy} />}>
           {task === "run_client" && <Spinner />}
           Run
         </TooltipTrigger>
         <TooltipContent>Play it in Minecraft</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger render={<Button variant="secondary" onClick={() => void exportMod()} disabled={busy} />}>
+        <TooltipTrigger render={<Button variant="secondary" size="sm" onClick={() => void exportMod()} disabled={busy} />}>
           Export
         </TooltipTrigger>
         <TooltipContent>Save the mod as a .jar file</TooltipContent>

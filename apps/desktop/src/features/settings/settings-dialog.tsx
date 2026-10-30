@@ -155,7 +155,7 @@ function ProjectsSection() {
               Reset
             </Button>
           )}
-          <Button variant="secondary" onClick={() => void chooseFolder()}>
+          <Button variant="secondary" size="sm" onClick={() => void chooseFolder()}>
             <FolderOpen strokeWidth={1.75} /> Change…
           </Button>
         </Row>,
@@ -199,7 +199,7 @@ function UpdatesSection() {
     <Rows>
       {[
         <Row key="version" label={appVersion ? `Blocksy ${appVersion}` : "Blocksy"} description={description}>
-          <Button variant="secondary" onClick={() => void checkNow()} disabled={checking || updates.state === "disabled"}>
+          <Button variant="secondary" size="sm" onClick={() => void checkNow()} disabled={checking || updates.state === "disabled"}>
             {checking && <Spinner />} Check for updates
           </Button>
         </Row>,
@@ -226,7 +226,7 @@ export function SettingsDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent initialFocus={paneRef} className="h-[520px] max-h-[calc(100vh-48px)] w-[760px] max-w-[calc(100vw-48px)] gap-0 overflow-hidden rounded-3xl bg-bg p-0 sm:max-w-[calc(100vw-48px)]">
+      <DialogContent initialFocus={paneRef} className="h-[520px] max-h-[calc(100vh-48px)] w-[760px] max-w-[calc(100vw-48px)] gap-0 overflow-hidden p-0 sm:max-w-[calc(100vw-48px)]">
         <SidebarProvider className="h-full min-h-0 items-stretch">
           {/* Left: the sections. collapsible="none" keeps it a plain column inside the dialog. */}
           <Sidebar collapsible="none" className="w-[200px] bg-subtle">
@@ -235,7 +235,7 @@ export function SettingsDialog() {
               <SidebarMenu className="gap-0.5">
                 {sections.map((s) => (
                   <SidebarMenuItem key={s.id}>
-                    <SidebarMenuButton isActive={s.id === section} onClick={() => setSection(s.id)} className="data-active:bg-surface-hover">
+                    <SidebarMenuButton isActive={s.id === section} onClick={() => setSection(s.id)} className="h-8 data-active:bg-surface-hover">
                       <span>{s.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
