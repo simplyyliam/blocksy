@@ -46,3 +46,16 @@ The user also asked to prefer Fabric data generation over hand-written JSON.
   an adapter in each target that should support it.
 - Builds with blocks take a datagen step the first time and after edits (shown as
   "Generating block data" on the first-build screen).
+
+## Refactor of v0.1 code (plan 2.4)
+
+- `run_gradle` (`apps/desktop/src-tauri/src/commands/gradle.rs`) was restructured, not only
+  extended: building the Gradle command moved into `gradle_command`, and one task became a
+  list of steps (prepare tasks, then the task) run in a loop with Stop checked between steps.
+  This was needed because Gradle can't run `runDatagen` before `build` in one invocation.
+- What prevents a repeat: the `prepare` parameter is now the extension point. Any target that
+  needs work before a build (NeoForge datagen, code generation, asset packing) returns task
+  names from `LoaderTarget.prepareTasks`; `run_gradle` itself does not change again.
+- Every other v0.1 change in 0.2 is additive (optional fields, defaulted parameters); the
+  empty-mod golden files are byte-identical.
+
