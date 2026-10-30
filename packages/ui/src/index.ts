@@ -39,6 +39,7 @@ export {
   DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "./components/ui/dropdown-menu.tsx"
 export { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from "./components/ui/item.tsx"
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./components/ui/card.tsx"
 // Blocksy-only pieces (shadcn has nothing like them):
 export { ElapsedTime } from "./components/elapsed-time.tsx"
 export { PixelLoader } from "./components/pixel-loader.tsx"

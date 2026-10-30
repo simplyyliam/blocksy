@@ -11,9 +11,11 @@ export interface Settings {
   /** Where new projects go; null = ~/Blocksy. */
   projectsDir: string | null
   theme: string
+  /** How Home lists projects. */
+  homeView: "grid" | "list"
 }
 
-const defaults: Settings = { javaHome: null, projectsDir: null, theme: "modern" }
+const defaults: Settings = { javaHome: null, projectsDir: null, theme: "modern", homeView: "grid" }
 
 interface SettingsState extends Settings {
   loaded: boolean
@@ -39,7 +41,7 @@ export const useSettings = create<SettingsState>((set, get) => ({
   },
   async update(patch) {
     set(patch)
-    const { javaHome, projectsDir, theme } = get()
-    await saveJson("settings", { javaHome, projectsDir, theme })
+    const { javaHome, projectsDir, theme, homeView } = get()
+    await saveJson("settings", { javaHome, projectsDir, theme, homeView })
   },
 }))
