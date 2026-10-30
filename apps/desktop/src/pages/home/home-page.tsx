@@ -40,7 +40,7 @@ export function HomePage() {
       title="Home"
       subtitle="Make Minecraft mods with visual editors, and learn Java along the way."
       actions={
-        <Button variant="default" onClick={() => setNewProject(true)}>
+        <Button variant="default" size="sm" onClick={() => setNewProject(true)}>
           <Plus strokeWidth={2} /> New project
         </Button>
       }
@@ -50,7 +50,7 @@ export function HomePage() {
         <div className="flex flex-col items-start gap-3 rounded-lg bg-subtle px-5 py-6">
           <p className="text-base text-fg">No projects yet.</p>
           <p className="text-base text-fg-muted">Start with an empty mod: Blocksy sets up Gradle, the mod loader and the Java files for you.</p>
-          <Button variant="secondary" onClick={() => setNewProject(true)}>Create your first mod</Button>
+          <Button variant="secondary" size="sm" onClick={() => setNewProject(true)}>Create your first mod</Button>
         </div>
       ) : (
         <ul className="flex flex-col">
@@ -64,9 +64,9 @@ export function HomePage() {
                 <span className="size-3.5 shrink-0 rounded-xs bg-project" />
                 <span className="flex min-w-0 flex-1 flex-col">
                   <span className="truncate text-base text-fg">{project.name}</span>
-                  <span className="truncate text-sm text-fg-muted">{prettyPath(project.dir, home)}</span>
+                  <span className="truncate text-xs text-fg-muted">{prettyPath(project.dir, home)}</span>
                 </span>
-                <span className="shrink-0 text-sm text-fg-muted">
+                <span className="shrink-0 text-xs text-fg-muted">
                   Minecraft {project.minecraftVersion} · {ago(project.openedAt)}
                 </span>
               </button>

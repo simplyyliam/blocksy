@@ -40,7 +40,7 @@ function SideRow({ label, active, note, onClick }: { label: string; active?: boo
       aria-disabled={!onClick}
       aria-current={active ? "true" : undefined}
       className={cn(
-        "w-full justify-start rounded-full px-3",
+        "w-full justify-start px-3",
         active && "bg-surface-hover hover:bg-surface-hover",
         !onClick && "hover:bg-transparent",
       )}
@@ -128,12 +128,12 @@ export function NewProjectDialog() {
   }
 
   const nameError = name && problems.name ? problems.name : null
-  // Pill fields from add-project.png: 38px tall and 158px wide.
-  const pillField = "h-[38px] w-[158px] rounded-full bg-input px-4"
+  // Loader and version controls are 158px wide (add-project.png).
+  const pillField = "w-[158px]"
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent showCloseButton={false} className="w-[848px] max-w-[calc(100vw-48px)] gap-0 bg-bg p-0 sm:max-w-[calc(100vw-48px)]">
+      <DialogContent showCloseButton={false} className="w-[848px] max-w-[calc(100vw-48px)] gap-0 p-0 sm:max-w-[calc(100vw-48px)]">
         <form onSubmit={submit} className="flex max-h-[calc(100vh-48px)] flex-col pt-6 pr-[17px] pb-5 pl-[22px]">
           <DialogTitle className="pl-px text-lg leading-normal text-fg">New project</DialogTitle>
 
@@ -184,11 +184,11 @@ export function NewProjectDialog() {
                       render={
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="icon-sm"
                           type="button"
                           aria-label="Choose folder"
                           onClick={() => void browse()}
-                          className="absolute top-1/2 right-1.5 -translate-y-1/2 rounded-full text-muted-foreground hover:bg-surface-hover"
+                          className="absolute top-1/2 right-1 -translate-y-1/2 text-muted-foreground"
                         />
                       }
                     >
@@ -207,7 +207,7 @@ export function NewProjectDialog() {
                     <ToggleGroupItem
                       key={t.id}
                       value={t.id}
-                      className={cn(pillField, "justify-start aria-pressed:bg-input aria-pressed:ring-1 aria-pressed:ring-border")}
+                      className={cn(pillField, "justify-start bg-input/50 aria-pressed:ring-1 aria-pressed:ring-border")}
                     >
                       {t.name}
                     </ToggleGroupItem>
@@ -220,7 +220,7 @@ export function NewProjectDialog() {
                           <ToggleGroupItem
                             value={l.id}
                             disabled
-                            className={cn(pillField, "pointer-events-auto justify-start disabled:opacity-100")}
+                            className={cn(pillField, "pointer-events-auto justify-start bg-input/50 disabled:opacity-100")}
                           />
                         }
                       >
@@ -239,7 +239,7 @@ export function NewProjectDialog() {
                   value={minecraftVersion}
                   onValueChange={(next) => next !== null && setMinecraftVersion(next)}
                 >
-                  <SelectTrigger id={ids.version} className={cn(pillField, "h-[38px]! w-[158px]!")}>
+                  <SelectTrigger id={ids.version} className="w-[158px]!">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent alignItemWithTrigger={false}>
@@ -293,7 +293,7 @@ export function NewProjectDialog() {
                 <FieldLabel>What gets created</FieldLabel>
                 <pre
                   data-selectable
-                  className="h-[175px] max-w-[570px] overflow-auto rounded-lg px-4 py-3.5 font-mono text-sm leading-[15px] text-fg shadow-[inset_0_0_0_1px_var(--b-line)]"
+                  className="h-[175px] max-w-[570px] overflow-auto rounded-lg px-4 py-3.5 font-mono text-xs leading-[15px] text-fg shadow-[inset_0_0_0_1px_var(--b-line)]"
                 >
                   {tree ?? "Fill in the fields above to see the files."}
                 </pre>

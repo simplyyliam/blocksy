@@ -38,27 +38,33 @@ export const modernTheme: Theme = {
     // Type
     "font-sans": '"DM Sans Variable", ui-sans-serif, system-ui, sans-serif',
     "font-mono": '"JetBrains Mono Variable", ui-monospace, "Cascadia Mono", Menlo, monospace',
-    "text-xs": "11px",
-    "text-sm": "12px",
-    "text-base": "13px", // body and controls
+    "text-xs": "12px", // small print, log lines
+    "text-sm": "13px", // shadcn controls use text-sm, so it is the 13px base too
+    "text-base": "13px", // body
     "text-md": "14px",
     "text-lg": "15px", // dialog titles
     "text-xl": "18px",
     "text-2xl": "22px", // page titles
 
     // Shape
+    // Calm, Linear-like corners. shadcn (base-luma) uses xl..4xl for most controls,
+    // so this scale is what keeps dropdowns, inputs and dialogs from looking bubbly.
     "radius-xs": "4px", // project swatch
     "radius-sm": "6px",
     "radius-md": "8px", // pills and nav items
-    "radius-lg": "14px", // file tree box, popovers
-    "radius-xl": "20px",
-    "radius-2xl": "28px",
-    "radius-3xl": "36px", // dialogs
+    "radius-lg": "8px", // file tree box
+    "radius-xl": "8px", // sidebar rows, tooltips
+    "radius-2xl": "8px", // menu and select items
+    "radius-3xl": "8px", // inputs, selects, dropdowns, badges
+    "radius-4xl": "10px", // buttons and dialogs
 
     // Depth
     "shadow-sm": "0 1px 2px rgb(0 0 0 / 0.05)",
     "shadow-md": "0 12px 32px -8px rgb(0 0 0 / 0.14), 0 0 0 1px rgb(0 0 0 / 0.04)", // popovers
-    "shadow-lg": "0 32px 80px -16px rgb(0 0 0 / 0.20), 0 0 0 1px rgb(0 0 0 / 0.04)", // dialogs
+    "shadow-lg": "0 16px 40px -12px rgb(0 0 0 / 0.16), 0 0 0 1px rgb(0 0 0 / 0.04)", // menus
+    "shadow-xl": "0 32px 80px -16px rgb(0 0 0 / 0.20), 0 0 0 1px rgb(0 0 0 / 0.04)", // dialogs
+    black: "#000000", // only for shadcn overlays (bg-black/30)
+    white: "#ffffff",
 
     // Motion
     "ease-out": "cubic-bezier(0.22, 1, 0.36, 1)",

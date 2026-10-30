@@ -1,6 +1,3 @@
-// shadcn/ui collapsible (added with the shadcn CLI). Sizes tuned to the Figma; colours come from styles.css.
-"use client"
-
 import { Collapsible as CollapsiblePrimitive } from "@base-ui/react/collapsible"
 
 function Collapsible({ ...props }: CollapsiblePrimitive.Root.Props) {

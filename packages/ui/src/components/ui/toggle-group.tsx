@@ -1,4 +1,3 @@
-// shadcn/ui toggle-group (added with the shadcn CLI). Sizes tuned to the Figma; colours come from styles.css.
 "use client"
 
 import * as React from "react"

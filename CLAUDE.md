@@ -21,7 +21,7 @@ live docs, while teaching Java along the way. It scales from one block to a full
 7. Documents are the only source of truth; editors change them through commands (undo/redo).
 8. Rust stays thin: filesystem, processes, git, OS dialogs. Product logic is TypeScript.
 9. Design tokens only; every component works in both Modern and Minecraft themes.
-   UI components are **shadcn/ui** (see "UI components" below), never hand-rolled.
+   UI components are **shadcn/ui** (see "UI components" below), never hand-rolled or edited.
 10. Never ship Minecraft's code or assets.
 11. Never copy GPL code (e.g. Blockbench); study behaviour, write original code.
 12. Architectural decisions get a short ADR in `docs/decisions/`.
@@ -54,8 +54,15 @@ docs/                    plan, ADRs (decisions/), design inspiration, perf resul
 - After adding, check for a bare `import { cn } from "cn"` (a CLI bug): change it to
   `@blocksy/ui/lib/utils` and remove the `cn` npm package if it was installed.
 - Export new components from `packages/ui/src/index.ts`; the app imports only `@blocksy/ui`.
-- Colours come from `styles.css`, where shadcn variables point at Blocksy tokens (`--b-*`).
-  Small size edits inside the copied files (13px text, 28px pills) are fine; raw colours are not.
+- **Never edit installed shadcn / AI Elements files.** Leave them exactly as the CLI wrote
+  them (the only allowed change is the `cn` import fix above). Get the Blocksy look from:
+  theme tokens (`packages/ui/src/theme/modern.ts`: radius scale, text sizes, shadows),
+  the shadcn variables in `styles.css` (they point at Blocksy tokens `--b-*`), and
+  props/className where a component is used (`size="sm"` for 32px pills, `--sidebar-width`).
+- AI Elements (elements.ai-sdk.dev) are shadcn registry items: add them the same way, they
+  land in `packages/ui/src/components/ai-elements/`.
+- Blocksy-only components (no shadcn equivalent) live in `packages/ui/src/components/`
+  (e.g. `PixelLoader`, `ElapsedTime`); third-party libraries get a thin adapter there.
 
 ## Frontend structure (apps/desktop/src)
 

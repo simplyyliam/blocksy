@@ -1,4 +1,3 @@
-// shadcn/ui use-mobile hook (added with the shadcn CLI, used by the sidebar).
 import * as React from "react"
 
 const MOBILE_BREAKPOINT = 768

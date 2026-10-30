@@ -49,7 +49,7 @@ export function BottomPanel() {
           />
           <div className="flex h-10 shrink-0 items-center justify-between pr-2 pl-4">
             <span className="text-base text-fg">Build log</span>
-            <Button variant="ghost" size="icon" aria-label="Close build log" onClick={() => setOpen(false)}>
+            <Button variant="ghost" size="icon-sm" aria-label="Close build log" onClick={() => setOpen(false)}>
               <X strokeWidth={1.75} />
             </Button>
           </div>
