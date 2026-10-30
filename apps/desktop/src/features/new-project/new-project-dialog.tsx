@@ -1,6 +1,6 @@
 // New project dialog, matching add-project.png.
 // Left: where to start from. Right: name, location, loader, version, advanced, preview.
-import { ChevronRight, FolderOpen } from "lucide-react"
+import { Box, ChevronRight, FilePlus2, FolderOpen, GitBranch, Sword, type LucideIcon } from "lucide-react"
 import { useEffect, useId, useState } from "react"
 import { open as pickFolder } from "@tauri-apps/plugin-dialog"
 import { deriveModId, MOD_ID_PATTERN, PACKAGE_PATTERN } from "@blocksy/core"
@@ -20,17 +20,28 @@ import { useSettings } from "../../shared/stores/settings"
 import { createAndOpen, previewTree } from "./create-project"
 
 /** Left column rows. Only "Empty mod" exists in v0.1; the rest say when they arrive. */
-const startFrom = [
-  { id: "clone", label: "Clone from GitHub", note: "Arrives in v0.7 with GitHub sign-in" },
-  { id: "import", label: "Import existing", note: "Opens a folder that has a blocksy.json" },
+/** A row in the left column: an icon on a solid colour tile (theme colours, no gradients). */
+interface SideOption {
+  id: string
+  label: string
+  Icon: LucideIcon
+  /** Tile colour: a Tailwind class from the theme tokens. */
+  tile: string
+  note?: string
+}
+
+const startFrom: SideOption[] = [
+  { id: "clone", label: "Clone from GitHub", Icon: GitBranch, tile: "bg-fg", note: "Arrives in v0.7 with GitHub sign-in" },
+  { id: "import", label: "Open a project", Icon: FolderOpen, tile: "bg-warning", note: "Opens a folder that has a blocksy.json" },
 ]
-const projectTypes = [
-  { id: "empty", label: "Empty mod" },
-  { id: "item", label: "First item", note: "Arrives in v0.3" },
-  { id: "block", label: "First block", note: "Arrives in v0.2" },
+const projectTypes: SideOption[] = [
+  { id: "empty", label: "Blank mod", Icon: FilePlus2, tile: "bg-brand" },
+  { id: "block", label: "Starter block", Icon: Box, tile: "bg-success", note: "A mod with one block to edit. Arrives in v0.2" },
+  { id: "item", label: "Starter item", Icon: Sword, tile: "bg-project", note: "A mod with one item to edit. Arrives in v0.3" },
 ]
 
-function SideRow({ label, active, note, onClick }: { label: string; active?: boolean; note?: string; onClick?: () => void }) {
+function SideRow({ option, active, onClick }: { option: SideOption; active?: boolean; onClick?: () => void }) {
+  const { label, Icon, tile, note } = option
   const row = (
     <Button
       variant="ghost"
@@ -40,12 +51,15 @@ function SideRow({ label, active, note, onClick }: { label: string; active?: boo
       aria-disabled={!onClick}
       aria-current={active ? "true" : undefined}
       className={cn(
-        "w-full justify-start px-3",
+        "w-full justify-start gap-2.5 px-2",
         active && "bg-surface-hover hover:bg-surface-hover",
         !onClick && "hover:bg-transparent",
       )}
     >
-      {label}
+      <span className={cn("grid size-5 shrink-0 place-items-center rounded-[5px] text-white", tile, !onClick && "opacity-50")}>
+        <Icon className="size-3!" strokeWidth={2.25} />
+      </span>
+      <span className={cn("truncate", !onClick && "text-fg-muted")}>{label}</span>
     </Button>
   )
   if (!note) return row
@@ -133,28 +147,28 @@ export function NewProjectDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent showCloseButton={false} className="w-[848px] max-w-[calc(100vw-48px)] gap-0 rounded-dialog p-0 sm:max-w-[calc(100vw-48px)]">
-        <form onSubmit={submit} className="flex max-h-[calc(100vh-48px)] flex-col pt-6 pr-[17px] pb-5 pl-[22px]">
+      <DialogContent showCloseButton={false} className="w-[720px] max-w-[calc(100vw-48px)] gap-0 rounded-dialog p-0 sm:max-w-[calc(100vw-48px)]">
+        <form onSubmit={submit} className="flex max-h-[calc(100vh-48px)] flex-col px-5 pt-5 pb-4">
           <DialogTitle className="pl-px text-lg leading-normal text-fg">New project</DialogTitle>
 
-          <div className="mt-[23px] grid min-h-0 grid-cols-[186px_1fr] gap-x-[25px] overflow-y-auto">
+          <div className="mt-5 grid min-h-0 grid-cols-[176px_1fr] gap-x-6 overflow-y-auto">
             {/* Left column */}
             <div className="flex flex-col">
-              <p className="h-[19px] pl-px text-base text-fg-muted">Start from existing</p>
-              <div className="mt-[12px] flex flex-col gap-0.5">
-                <SideRow label={startFrom[0]!.label} note={startFrom[0]!.note} />
-                <SideRow label={startFrom[1]!.label} note={startFrom[1]!.note} onClick={() => void importExisting()} />
+              <p className="pl-2 text-sm text-fg-muted">Start from</p>
+              <div className="mt-2 flex flex-col gap-0.5">
+                <SideRow option={startFrom[0]!} />
+                <SideRow option={startFrom[1]!} onClick={() => void importExisting()} />
               </div>
-              <p className="mt-[29px] h-[19px] pl-px text-base text-fg-muted">Project type</p>
-              <div className="mt-[12px] flex flex-col gap-0.5">
+              <p className="mt-6 pl-2 text-sm text-fg-muted">New project</p>
+              <div className="mt-2 flex flex-col gap-0.5">
                 {projectTypes.map((t) => (
-                  <SideRow key={t.id} label={t.label} note={t.note} active={t.id === "empty"} onClick={t.id === "empty" ? () => {} : undefined} />
+                  <SideRow key={t.id} option={t} active={t.id === "empty"} onClick={t.id === "empty" ? () => {} : undefined} />
                 ))}
               </div>
             </div>
 
             {/* Right column */}
-            <div className="flex flex-col gap-[28px]">
+            <div className="flex flex-col gap-5">
               <Field>
                 <FieldLabel htmlFor={ids.name}>Name</FieldLabel>
                 <Input
@@ -293,7 +307,7 @@ export function NewProjectDialog() {
                 <FieldLabel>What gets created</FieldLabel>
                 <pre
                   data-selectable
-                  className="h-[175px] max-w-[570px] overflow-auto rounded-lg px-4 py-3.5 font-mono text-xs leading-[15px] text-fg shadow-[inset_0_0_0_1px_var(--b-line)]"
+                  className="h-[140px] overflow-auto rounded-lg px-4 py-3.5 font-mono text-xs leading-[15px] text-fg shadow-[inset_0_0_0_1px_var(--b-line)]"
                 >
                   {tree ?? "Fill in the fields above to see the files."}
                 </pre>
@@ -301,7 +315,7 @@ export function NewProjectDialog() {
             </div>
           </div>
 
-          <div className="mt-[30px] flex shrink-0 items-center justify-between gap-4">
+          <div className="mt-6 flex shrink-0 items-center justify-between gap-4">
             <p className="min-h-5 text-base text-danger" role="alert">
               {error}
             </p>
