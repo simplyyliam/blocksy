@@ -47,21 +47,40 @@ function buildIfStale() {
   execFileSync("pnpm --filter @blocksy/desktop tauri build --no-bundle", { cwd: root, stdio: "inherit", shell: true })
 }
 
-/** Total working set (MB) of a process and all its descendants (WebView2 lives there). */
+/**
+ * Private working set (MB) of a process and all its descendants (WebView2 lives there).
+ * "Private" is what Task Manager shows as Memory: pages that belong only to that process.
+ * The plain working set also counts shared DLL pages once per process, which over-counts
+ * a multi-process app like this one several times over.
+ */
 function treeMemoryMb(pid) {
   const script =
-    "Get-CimInstance Win32_Process | Select-Object ProcessId,ParentProcessId,WorkingSetSize | ConvertTo-Json -Compress"
-  const all = JSON.parse(execFileSync("powershell", ["-NoProfile", "-Command", script], { encoding: "utf8" }))
+    "Get-CimInstance Win32_PerfFormattedData_PerfProc_Process | Select-Object IDProcess,CreatingProcessID,WorkingSetPrivate | ConvertTo-Json -Compress"
+  const all = JSON.parse(execFileSync("powershell", ["-NoProfile", "-Command", script], { encoding: "utf8" })).filter((p) => p.IDProcess > 0)
   const children = new Map()
-  for (const p of all) children.set(p.ParentProcessId, [...(children.get(p.ParentProcessId) ?? []), p])
+  for (const p of all) children.set(p.CreatingProcessID, [...(children.get(p.CreatingProcessID) ?? []), p])
   let bytes = 0
-  const stack = all.filter((p) => p.ProcessId === pid)
+  const stack = all.filter((p) => p.IDProcess === pid)
   while (stack.length) {
     const p = stack.pop()
-    bytes += Number(p.WorkingSetSize)
-    stack.push(...(children.get(p.ProcessId) ?? []))
+    bytes += Number(p.WorkingSetPrivate)
+    stack.push(...(children.get(p.IDProcess) ?? []))
   }
   return bytes / 1024 / 1024
+}
+
+/** Temporary WebView2 folders to delete once all runs are done. */
+const leftovers = []
+
+/** Best-effort cleanup: a folder still locked by a closing WebView2 is just left in temp. */
+function removeLeftovers() {
+  for (const dir of leftovers) {
+    try {
+      fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 })
+    } catch {
+      // harmless: the OS cleans the temp folder eventually
+    }
+  }
 }
 
 /** One launch: returns the app's report plus the peak memory of its process tree. */
@@ -69,7 +88,11 @@ async function runOnce(i) {
   const reportPath = path.join(os.tmpdir(), `blocksy-bench-${process.pid}-${i}.json`)
   fs.rmSync(reportPath, { force: true })
   const started = performance.now()
-  const child = spawn(exe, [], { env: { ...process.env, BLOCKSY_BENCH: reportPath }, stdio: "ignore" })
+  // Its own WebView2 data folder: a cold WebView every run, and its processes are never
+  // shared with another open Blocksy (e.g. pnpm dev), so memory counts only this app.
+  const webviewData = path.join(os.tmpdir(), `blocksy-bench-webview-${process.pid}-${i}`)
+  const env = { ...process.env, BLOCKSY_BENCH: reportPath, WEBVIEW2_USER_DATA_FOLDER: webviewData }
+  const child = spawn(exe, [], { env, stdio: "ignore" })
 
   let peakMb = 0
   const sampler = setInterval(() => {
@@ -89,6 +112,7 @@ async function runOnce(i) {
   if (!fs.existsSync(reportPath)) throw new Error(`Run ${i + 1}: the app exited (code ${code}) without writing a report`)
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"))
   fs.rmSync(reportPath, { force: true })
+  leftovers.push(webviewData) // deleted at the end: WebView2 may still be shutting down now
   return { ...report, peakMb, wallMs }
 }
 
@@ -114,12 +138,13 @@ function machineInfo() {
   }
 }
 
-function writeMarkdown(runs, machine) {
+function writeMarkdown(runs, machine, note) {
   const m = {
     coldStartMs: median(runs.map((r) => r.homeAtRustMs)),
     frameMedianMs: median(runs.map((r) => r.frames.medianMs)),
     frameP95Ms: median(runs.map((r) => r.frames.p95Ms)),
-    memoryMb: median(runs.map((r) => r.peakMb)),
+    // A run that ended before any memory sample landed has no memory number; skip it.
+    memoryMb: median(runs.map((r) => r.peakMb).filter((mb) => mb > 0)),
     heapMb: median(runs.map((r) => r.jsHeapMb ?? 0)),
   }
   const pass = (ok) => (ok ? "✅ pass" : "❌ over")
@@ -150,16 +175,18 @@ function writeMarkdown(runs, machine) {
     `| Memory, whole app (peak) | ${Math.round(m.memoryMb)} MB | ${BUDGET.memoryMb} MB | ${pass(m.memoryMb <= BUDGET.memoryMb)} |`,
     `| JS heap | ${m.heapMb.toFixed(1)} MB | | |`,
     "",
-    "Cold start counts from the Rust process starting to Home being painted (two frames after first render).",
+    "Cold start counts from the Rust process starting to Home being painted (two frames after first render),",
+    "with a fresh WebView2 data folder each run (a true cold start).",
     "The frame times cover a scripted workout: opening the build log, streaming 5,000 log lines,",
     "the New project and Settings dialogs, and switching pages. Memory adds up blocksy.exe and its",
-    "WebView2 processes. v0.1 has no 3D views yet, so the 3D budgets start with Model Studio.",
+    "WebView2 processes (private working set, as in Task Manager). v0.1 has no 3D views yet, so the 3D budgets start with Model Studio.",
     "",
+    ...(note ? [`> ${note}`, ""] : []),
     "## Every run",
     "",
     "| Run | Cold start | Frame p95 | Memory |",
     "| --- | --- | --- | --- |",
-    ...runs.map((r, i) => `| ${i + 1} | ${ms(r.homeAtRustMs)} | ${r.frames.p95Ms.toFixed(1)} ms | ${Math.round(r.peakMb)} MB |`),
+    ...runs.map((r, i) => `| ${i + 1} | ${ms(r.homeAtRustMs)} | ${r.frames.p95Ms.toFixed(1)} ms | ${r.peakMb > 0 ? `${Math.round(r.peakMb)} MB` : "no sample"} |`),
     "",
   ]
   const out = path.join(root, "docs/perf", `${minor}.md`)
@@ -173,15 +200,16 @@ if (process.platform !== "win32") {
   process.exit(1)
 }
 
-// Another Blocksy (e.g. `pnpm dev`) shares the same WebView2 processes, which hides most
-// of the memory and slows the frames. Measure only when this is the only Blocksy running.
+// Another open Blocksy no longer skews memory (each run has its own WebView2), but it
+// still competes for CPU, so say so in the report.
 const others = execFileSync("tasklist", ["/FI", "IMAGENAME eq blocksy.exe", "/NH"], { encoding: "utf8" })
-if (others.toLowerCase().includes("blocksy.exe")) {
-  console.error("Close every other Blocksy window (including pnpm dev) first: they share WebView2 and skew the numbers.")
-  process.exit(1)
-}
+const otherBlocksyOpen = others.toLowerCase().includes("blocksy.exe")
+if (otherBlocksyOpen) console.warn("Note: another Blocksy is open; it may slow the frame times a little.")
 
 buildIfStale()
+// The first performance-counter query is slow (Windows loads the counters); do it now,
+// so the first run gets memory samples too.
+treeMemoryMb(process.pid)
 const runs = []
 for (let i = 0; i < RUNS; i++) {
   process.stdout.write(`Run ${i + 1}/${RUNS}… `)
@@ -189,5 +217,7 @@ for (let i = 0; i < RUNS; i++) {
   runs.push(run)
   console.log(`start ${Math.round(run.homeAtRustMs)} ms, p95 ${run.frames.p95Ms.toFixed(1)} ms, ${Math.round(run.peakMb)} MB`)
 }
-const { out, m } = writeMarkdown(runs, machineInfo())
+removeLeftovers()
+const note = otherBlocksyOpen ? "Measured with another Blocksy window open (a dev build), which may add a little CPU noise." : ""
+const { out, m } = writeMarkdown(runs, machineInfo(), note)
 console.log(`\nCold start ${Math.round(m.coldStartMs)} ms (budget ${BUDGET.coldStartMs}). Wrote ${path.relative(root, out)}`)
