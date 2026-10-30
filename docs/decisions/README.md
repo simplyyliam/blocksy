@@ -36,3 +36,5 @@ What becomes easier, harder, or must now be done.
 | [0003](0003-registries.md) | Registries as the only way modules plug in | accepted |
 | [0004](0004-bindings-errors-updater.md) | Generated bindings, one error shape, gated updater | accepted |
 | [0005](0005-shadcn-ui.md) | shadcn/ui for every UI component, left as installed | accepted |
+| [0006](0006-element-adapters-and-datagen.md) | Loader code for elements lives in the target; Fabric data generation | accepted |
+| [0007](0007-router-layouts.md) | react-router with layout routes | accepted |

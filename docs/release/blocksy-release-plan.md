@@ -495,6 +495,8 @@ Decided 2026-10-30 (Liam). The app's main face stays calm: the icon rail (Home, 
 - **The status bar lives only here**, as plain text and icons (VS Code / macOS menu bar style, no pills): loader and version, Java, build and game state, update note, Build log toggle. Home and Docs have none.
 - **Project overview page.** The v0.1 project details screen (mod ID, Java package, Minecraft, loader, Java, folder) moves into the editor as its own "Overview" page in the project tree, not the first thing you see when opening a project.
 - The same layout hosts Model Studio (0.5), the Blueprint canvas (0.4) and GUI Studio (0.9) as pages of the project.
+- **Routing (decided 2026-10-30, ADR 0007).** `react-router-dom` with layout routes and `<Outlet>`s: `AppLayout` (icon rail) for Home and Docs, `ProjectLayout` for `/project/:projectId`. Inside a project the icon rail is hidden; a back button at the top left, beside the project breadcrumb, returns to Home. Later editors become child routes of `ProjectLayout`.
+- **Editor look (decided 2026-10-30).** Design editors follow `docs/design/visual-editor(assets).jpg`: white rounded cards floating over a soft grey canvas, Title-case section headers with a hairline between sections and a "+" on the right, list rows with icons on small square tiles, segmented controls, a project header card. Loaders wherever something takes time (3D previews, Docs, builds).
 
 **Done when:** the block shows in its creative tab, places, and drops itself with the right tool; opening a project from Home shows the project editor with the status bar; every screen works in both themes.
 
