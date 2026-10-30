@@ -4,6 +4,7 @@ import {
   SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, toast, Tooltip, TooltipContent, TooltipTrigger,
 } from "@blocksy/ui"
 import { ProjectImage } from "../../shared/project-image"
+import { ProjectContextMenu } from "../../shared/project-menu"
 import { errorMessage } from "../../shared/api"
 import { useNavigation } from "../../shared/stores/navigation"
 import { useProject } from "../../shared/stores/project"
@@ -40,16 +41,18 @@ export function ProjectList() {
             const active = page === "project" && project.dir === openDir
             return (
               <SidebarMenuItem key={project.dir}>
-                <SidebarMenuButton
-                  isActive={active}
-                  className="h-7"
-                  aria-current={active ? "page" : undefined}
-                  title={project.dir}
-                  onClick={() => void open(project.dir)}
-                >
-                  <ProjectImage dir={project.dir} grid={[4, 4]} className="size-3.5 shrink-0 overflow-hidden rounded-[4px]" />
-                  <span>{project.name}</span>
-                </SidebarMenuButton>
+                <ProjectContextMenu dir={project.dir} open={!active}>
+                  <SidebarMenuButton
+                    isActive={active}
+                    className="h-7"
+                    aria-current={active ? "page" : undefined}
+                    title={project.dir}
+                    onClick={() => void open(project.dir)}
+                  >
+                    <ProjectImage dir={project.dir} grid={[4, 4]} className="size-3.5 shrink-0 overflow-hidden rounded-[4px]" />
+                    <span>{project.name}</span>
+                  </SidebarMenuButton>
+                </ProjectContextMenu>
               </SidebarMenuItem>
             )
           })}
