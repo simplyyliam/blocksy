@@ -11,7 +11,7 @@ import { Check, ChevronDown, Dot, type LucideIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import {
   Button, ChainOfThought, ChainOfThoughtContent, ChainOfThoughtSearchResult, ChainOfThoughtSearchResults, ChainOfThoughtStep,
-  cn, ElapsedTime, PixelLoader, Shimmer,
+  cn, ElapsedTime, PixelLoader, ProjectCover, Shimmer,
 } from "@blocksy/ui"
 import { stopTask } from "../../shared/project-actions"
 import { FIRST_BUILD_STEPS, logLines, useGradle } from "../../shared/stores/gradle"
@@ -40,6 +40,7 @@ export function FirstBuild() {
   const step = useGradle((s) => s.step)
   useGradle((s) => s.logVersion) // redraw as output arrives
   const name = useProject((s) => s.current?.doc.name ?? "your mod")
+  const dir = useProject((s) => s.current?.dir ?? "")
   const openLog = useNavigation((s) => s.setBottomPanel)
   const seconds = useElapsedSeconds()
   const [open, setOpen] = useState(true)
@@ -49,7 +50,7 @@ export function FirstBuild() {
   return (
     <div className="mx-auto flex w-full max-w-[760px] flex-col px-4 pt-10">
       <div className="flex items-center gap-3">
-        <span className="size-6 shrink-0 rounded-sm bg-project" />
+        <ProjectCover seed={dir} grid={[6, 6]} className="size-6 shrink-0 overflow-hidden rounded-[5px]" />
         <h1 className="min-w-0 text-lg wrap-anywhere text-fg">Setting up {name}</h1>
       </div>
 

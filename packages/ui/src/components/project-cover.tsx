@@ -2,12 +2,12 @@
 // face. It is generated from the project's folder path, so every project gets its own
 // pattern and it never changes. Colours are mixed from theme tokens only (rule 9),
 // so covers follow the theme. Real screenshots can replace this in a later release.
+// Custom because shadcn has nothing like it. Small icons (sidebar, breadcrumb) pass a
+// coarse grid like [4, 4]: same colour, bigger pixels, so it still reads at 14px.
 //
 //   ▓▒░▓▒▒▓░▓▒▓▓░▒▓▒
 //   ▒▓▓░▒▓▒▒▓▓▒░▓▒▓▓   ← 16 × 10 pixels, each a lighter or darker shade of one colour
 //   ...
-const COLUMNS = 16
-const ROWS = 10
 const BASES = ["--b-project", "--b-brand", "--b-success", "--b-warning"]
 
 /** A small, stable hash of a string (FNV-1a), so the same project always looks the same. */
@@ -27,7 +27,14 @@ function random(seed: number) {
   }
 }
 
-export function ProjectCover({ seed, className }: { seed: string; className?: string }) {
+export function ProjectCover({ seed, grid = [16, 10], className }: {
+  /** Anything stable and unique per project; the folder path works well. */
+  seed: string
+  /** Pixels across and down. */
+  grid?: [columns: number, rows: number]
+  className?: string
+}) {
+  const [COLUMNS, ROWS] = grid
   const h = hash(seed)
   const next = random(h)
   const base = `var(${BASES[h % BASES.length]})`
