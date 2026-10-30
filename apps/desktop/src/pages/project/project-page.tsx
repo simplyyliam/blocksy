@@ -1,11 +1,12 @@
 // The project editor (plan v0.2 "Project editor layout"): canvas first, calm, borderless.
 //
-//   ┌ canvas (soft grey surface) ─────────────────────────────────┐
-//   │ ┌ tree card ┐                               ┌ inspector ──┐ │
-//   │ │ Ruby Mod  │          [ 3D block ]         │ card, only  │ │
-//   │ │ Blocks  + │                               │ when picked │ │
-//   │ └───────────┘   ( ≡ │ Design Code │ ↶ ↷ )   └─────────────┘ │
-//   └─────────────────────────────────────────────────────────────┘
+//   ┌ tree ─────┬ canvas (soft grey surface) ─────┬ inspector ──┐
+//   │ Ruby Mod  │                                 │ Block       │
+//   │ Blocks  + │          [ 3D block ]           │ Name  [   ] │
+//   │  ▣ Ruby   │                                 │ Mining      │
+//   │           │   ( ≡ │ Design Code │ ↶ ↷ )     │ (when picked)│
+//   └───────────┴─────────────────────────────────┴─────────────┘
+// Tree and inspector are flush on the white page (Liam preferred it to floating cards).
 // Element canvases and inspectors come from element packages (app/modules.ts), so new
 // element types appear here without changes. The status bar sits below (App.tsx).
 import { AnimatePresence, motion } from "motion/react"
@@ -71,62 +72,64 @@ export function ProjectPage() {
   const module = element && elementModules.get(element.type)
   const props = element && editorProps(project, element, select)
 
-  // Cards float over the canvas (docs/design/visual-editor(assets).jpg): white, rounded, soft shadow.
-  const card = "absolute top-2.5 bottom-2.5 overflow-hidden rounded-2xl bg-bg shadow-lg"
   const ease = [0.22, 1, 0.36, 1] as const
 
+  // The tree and inspector sit flush on the white page; only the canvas is a soft grey surface.
   return (
-    <section className="relative h-full min-h-0 overflow-hidden rounded-2xl bg-surface" aria-label="Canvas">
-      {/* The work fills the page: the selected element's canvas, its code, or the overview. */}
-      <div className="absolute inset-0 overflow-y-auto">
-        {view === "code" ? (
-          <div className={treeOpen ? "pl-[252px]" : ""}>
-            <CodeTab />
-          </div>
-        ) : module && props ? (
-          // No key: switching between two blocks keeps the same 3D canvas (no new WebGL context).
-          <module.Canvas {...props} />
-        ) : (
-          <Overview />
-        )}
-      </div>
-
-      {/* The project tree card, collapsible (Ctrl+\). */}
+    <div className="flex h-full min-h-0 gap-2.5 pb-1">
+      {/* The project tree, collapsible (Ctrl+\ or the toolbar). */}
       <AnimatePresence initial={false}>
         {treeOpen && (
           <motion.aside
             key="tree"
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -12 }}
-            transition={{ duration: 0.2, ease }}
-            className={`${card} left-2.5 w-[232px]`}
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 228, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease }}
+            className="shrink-0 overflow-hidden"
           >
-            <ProjectTree />
+            <div className="h-full w-[228px]">
+              <ProjectTree />
+            </div>
           </motion.aside>
         )}
       </AnimatePresence>
 
-      {/* The inspector card floats on the right, only while something is selected. */}
-      <AnimatePresence>
+      {/* The canvas: the work fills it; the toolbar floats above it. */}
+      <section className="relative min-w-0 flex-1 overflow-hidden rounded-2xl bg-surface" aria-label="Canvas">
+        <div className="absolute inset-0 overflow-y-auto">
+          {view === "code" ? (
+            <CodeTab />
+          ) : module && props ? (
+            // No key: switching between two blocks keeps the same 3D canvas (no new WebGL context).
+            <module.Canvas {...props} />
+          ) : (
+            <Overview />
+          )}
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
+          <EditorIsland />
+        </div>
+      </section>
+
+      {/* The inspector, only while something is selected. */}
+      <AnimatePresence initial={false}>
         {view === "design" && module && props && (
           <motion.aside
-            key={element.id}
+            key="inspector"
             aria-label={`${module.type.name} inspector`}
-            initial={{ opacity: 0, x: 12 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 12 }}
-            transition={{ duration: 0.2, ease }}
-            className={`${card} right-2.5 w-[300px] overflow-x-hidden overflow-y-auto`}
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 296, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease }}
+            className="shrink-0 overflow-hidden"
           >
-            <module.Inspector {...props} />
+            <div key={element.id} className="h-full w-[296px] overflow-x-hidden overflow-y-auto">
+              <module.Inspector {...props} />
+            </div>
           </motion.aside>
         )}
       </AnimatePresence>
-
-      <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
-        <EditorIsland />
-      </div>
-    </section>
+    </div>
   )
 }

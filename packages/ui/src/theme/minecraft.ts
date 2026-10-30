@@ -64,6 +64,7 @@ export const minecraftTheme: Theme = {
     "radius-3xl": "0px",
     "radius-4xl": "0px",
     "radius-dialog": "0px",
+    "radius-pill": "0px",
 
     // Depth: hard pixel shadows with a dark outline, no blur.
     "shadow-sm": `0 2px 0 rgb(0 0 0 / 0.4)`,

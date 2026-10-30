@@ -1,8 +1,8 @@
-// The project tree: a floating card on the left of the canvas, styled after
-// docs/design/visual-editor(assets).jpg (white card, icon tiles, Title-case groups).
+// The project tree: the left column of the project editor, flush on the white page,
+// styled after docs/design/visual-editor(assets).jpg (icon tiles, Title-case groups).
 //
 //   ┌──────────────────────┐
-//   │ Ruby Mod          [▢]│  <- project header, collapse button
+//   │ Ruby Mod             │  <- project header
 //   │ Fabric · 26.1.2      │
 //   ├──────────────────────┤
 //   │ [▦] Overview         │
@@ -13,7 +13,7 @@
 //   └──────────────────────┘
 // A new element type shows up here with no change to this file. Right-click a row to
 // delete it (Ctrl+Z undoes).
-import { LayoutDashboard, PanelLeft, Plus, Trash2 } from "lucide-react"
+import { LayoutDashboard, Plus, Trash2 } from "lucide-react"
 import { useState, type ReactNode } from "react"
 import { addElement, deriveElementId, removeElement, type Element } from "@blocksy/core"
 import {
@@ -46,7 +46,6 @@ export function ProjectTree() {
   const project = useProject((s) => s.current)
   const selected = useEditor((s) => s.selected)
   const select = useEditor((s) => s.select)
-  const toggleTree = useEditor((s) => s.toggleTree)
   // The group showing its "name your new element" field, if any.
   const [adding, setAdding] = useState<string | null>(null)
   if (!project) return null
@@ -72,22 +71,16 @@ export function ProjectTree() {
   return (
     <div className="flex h-full flex-col">
       {/* Project header, like "Robot 2.0 / 3D Design Project" in the reference. */}
-      <div className="flex items-start justify-between gap-2 px-4 pt-3.5 pb-3">
+      <div className="flex items-start justify-between gap-2 px-3 pt-2 pb-3">
         <div className="min-w-0">
           <p className="truncate text-md font-medium text-fg">{doc.name}</p>
           <p className="mt-0.5 truncate text-xs text-fg-muted">
             {targetName} · Minecraft {version.minecraft}
           </p>
         </div>
-        <Tooltip>
-          <TooltipTrigger render={<Button variant="ghost" size="icon-sm" aria-label="Hide project tree" className="-mr-1.5 text-fg-muted" onClick={toggleTree} />}>
-            <PanelLeft strokeWidth={1.75} />
-          </TooltipTrigger>
-          <TooltipContent>Hide project tree</TooltipContent>
-        </Tooltip>
       </div>
 
-      <nav aria-label="Project" className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto border-t border-line-subtle px-3 pt-3 pb-4">
+      <nav aria-label="Project" className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto border-t border-line-subtle px-2 pt-3 pb-4">
         <Button variant="ghost" size="sm" className={cn(row, selected === "overview" && "bg-surface-hover")} onClick={() => select("overview")}>
           <Tile>
             <LayoutDashboard className="size-4" strokeWidth={1.75} />

@@ -16,8 +16,8 @@ export function BlockCanvas({ element }: ElementEditorProps<BlockData>) {
   return (
     <div className="relative size-full">
       {/* The dot grid fades out towards the edges, so the block sits in a soft spotlight. */}
-      <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_15%,transparent_65%)]">
-        <DotPattern width={18} height={18} cr={0.9} className="text-line" />
+      <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_85%)]">
+        <DotPattern width={18} height={18} cr={0.9} className="text-fg-faint opacity-60" />
       </div>
       <BlockPreview className="absolute! inset-0" model={{ textures: { all: texture } }} placeholder={placeholder} shadow={shadow} onReady={() => setReady(true)} />
       <CanvasLoader ready={ready} label="Loading 3D preview" />

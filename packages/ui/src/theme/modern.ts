@@ -59,6 +59,7 @@ export const modernTheme: Theme = {
     "radius-3xl": "6px", // inputs, selects, menus, badges
     "radius-4xl": "6px", // buttons
     "radius-dialog": "12px", // dialogs (rounded-dialog)
+    "radius-pill": "9999px", // fully round toolbars (rounded-pill)
 
     // Depth
     "shadow-sm": "0 1px 2px rgb(0 0 0 / 0.05)",

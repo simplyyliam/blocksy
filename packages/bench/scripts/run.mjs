@@ -18,11 +18,13 @@ const RUNS = Number(process.env.BENCH_RUNS ?? 5)
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..")
 const desktop = path.join(root, "apps/desktop")
 const exe = path.join(desktop, "src-tauri/target/release/blocksy.exe")
-const version = JSON.parse(fs.readFileSync(path.join(desktop, "src-tauri/tauri.conf.json"), "utf8")).version
+// BENCH_VERSION=0.2.0 records a release before its version bump (the /release step bumps it).
+const version = process.env.BENCH_VERSION || JSON.parse(fs.readFileSync(path.join(desktop, "src-tauri/tauri.conf.json"), "utf8")).version
 const minor = version.split(".").slice(0, 2).join(".")
 
-// The budget from plan section 4 that v0.1 can measure (an empty app, no 3D yet).
-const BUDGET = { coldStartMs: 2500, memoryMb: 600, frameP95Ms: 1000 / 30 }
+// The budget from plan section 4 that the app can measure so far.
+// v0.2 adds the block preview: idle 3D views must draw no frames; ready time is reported.
+const BUDGET = { coldStartMs: 2500, memoryMb: 600, frameP95Ms: 1000 / 30, idleFrames: 0, previewReadyMs: 1000 }
 
 /** Newest modification time of any file under these folders (skips build output). */
 function newestMtime(dirs) {
@@ -146,6 +148,8 @@ function writeMarkdown(runs, machine, note) {
     // A run that ended before any memory sample landed has no memory number; skip it.
     memoryMb: median(runs.map((r) => r.peakMb).filter((mb) => mb > 0)),
     heapMb: median(runs.map((r) => r.jsHeapMb ?? 0)),
+    previewReadyMs: median(runs.map((r) => r.preview?.readyMs ?? 0)),
+    idleFrames: Math.max(...runs.map((r) => r.preview?.idleFrames ?? 0)),
   }
   const pass = (ok) => (ok ? "✅ pass" : "❌ over")
   const ms = (v) => `${Math.round(v)} ms`
@@ -174,12 +178,16 @@ function writeMarkdown(runs, machine, note) {
     `| Frame time, 95th percentile | ${m.frameP95Ms.toFixed(1)} ms | ${BUDGET.frameP95Ms.toFixed(1)} ms (30 fps) | ${pass(m.frameP95Ms <= BUDGET.frameP95Ms)} |`,
     `| Memory, whole app (peak) | ${Math.round(m.memoryMb)} MB | ${BUDGET.memoryMb} MB | ${pass(m.memoryMb <= BUDGET.memoryMb)} |`,
     `| JS heap | ${m.heapMb.toFixed(1)} MB | | |`,
+    `| Block preview ready (first open) | ${ms(m.previewReadyMs)} | ${ms(BUDGET.previewReadyMs)} | ${pass(m.previewReadyMs <= BUDGET.previewReadyMs)} |`,
+    `| Frames drawn by an idle 3D view (2 s) | ${m.idleFrames} | ${BUDGET.idleFrames} | ${pass(m.idleFrames <= BUDGET.idleFrames)} |`,
     "",
     "Cold start counts from the Rust process starting to Home being painted (two frames after first render),",
     "with a fresh WebView2 data folder each run (a true cold start).",
     "The frame times cover a scripted workout: opening the build log, streaming 5,000 log lines,",
     "the New project and Settings dialogs, and switching pages. Memory adds up blocksy.exe and its",
-    "WebView2 processes (private working set, as in Task Manager). v0.1 has no 3D views yet, so the 3D budgets start with Model Studio.",
+    "WebView2 processes (private working set, as in Task Manager).",
+    "The 3D rows open a project with 20 blocks in the editor, time until the first block's preview is drawn",
+    "(WebGL start, shaders, texture), then count frames while it sits untouched for 2 seconds (render on demand).",
     "",
     ...(note ? [`> ${note}`, ""] : []),
     "## Every run",

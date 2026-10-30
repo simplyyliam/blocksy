@@ -19,7 +19,7 @@ function IslandButton({ label, keys, Icon, onClick, disabled, active }: { label:
             aria-pressed={active}
             disabled={disabled}
             onClick={onClick}
-            className={cn("text-fg-muted", active && "bg-surface-hover text-fg")}
+            className={cn("rounded-pill text-fg-muted", active && "bg-surface-hover text-fg")}
           />
         }
       >
@@ -42,7 +42,7 @@ function ViewButton({ view, label, Icon }: { view: "design" | "code"; label: str
       size="sm"
       aria-pressed={current === view}
       onClick={() => setView(view)}
-      className={cn("gap-1.5 px-2.5 text-fg-muted", current === view && "bg-surface-hover text-fg")}
+      className={cn("gap-1.5 rounded-pill px-3 text-fg-muted", current === view && "bg-surface-hover text-fg")}
     >
       <Icon strokeWidth={1.75} /> {label}
     </Button>
@@ -62,7 +62,7 @@ export function EditorIsland() {
   const undoLabel = documents.undoLabel()
 
   return (
-    <div className="pointer-events-auto flex items-center gap-1 rounded-xl bg-bg/85 p-1 shadow-lg backdrop-blur-md">
+    <div className="pointer-events-auto flex items-center gap-1 rounded-pill bg-bg/90 p-1 shadow-lg backdrop-blur-md">
       <IslandButton label={treeOpen ? "Hide project tree" : "Show project tree"} keys="Ctrl \" Icon={PanelLeft} active={treeOpen} onClick={toggleTree} />
       <Separator orientation="vertical" className="mx-0.5 h-5 bg-line-subtle" />
       <ViewButton view="design" label="Design" Icon={Shapes} />

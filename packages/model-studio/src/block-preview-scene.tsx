@@ -74,9 +74,12 @@ function Cube({ model, placeholder, onReady }: { model: CubeModel; placeholder: 
   const loaded = urls.every((url, i) => !url || textures[i])
   const signaled = useRef(false)
   const invalidate = useThree((s) => s.invalidate)
+  // Redraw when the canvas changes size (panels opening, window resizing): with render on
+  // demand nothing else would, and the old frame would show stretched.
+  const size = useThree((s) => s.size)
   useEffect(() => {
     if (loaded) invalidate()
-  }, [loaded, invalidate])
+  }, [loaded, invalidate, size.width, size.height])
   useFrame(() => {
     if (!loaded || signaled.current) return
     signaled.current = true
@@ -109,7 +112,7 @@ export function BlockPreview({ model, placeholder = "#d4d4d4", shadow = "#000000
       frameloop="demand"
       dpr={[1, dpr]}
       orthographic={false}
-      camera={{ position: [3.5, 2.8, 4.4], fov: 26 }}
+      camera={{ position: [7.2, 5.8, 9.1], fov: 22 }}
       gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
     >
       <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
@@ -118,7 +121,7 @@ export function BlockPreview({ model, placeholder = "#d4d4d4", shadow = "#000000
       {/* frames={1}: the soft shadow is baked once, not redrawn every frame. */}
       <ContactShadows position={[0, -0.62, 0]} opacity={0.28} scale={3} blur={2.4} far={1.2} frames={1} color={shadow} />
       {/* Drag to turn the block. OrbitControls asks for a frame only while it moves. */}
-      <OrbitControls enablePan={false} enableZoom minDistance={3} maxDistance={8} enableDamping={false} />
+      <OrbitControls enablePan={false} enableZoom minDistance={6} maxDistance={20} enableDamping={false} />
     </Canvas>
   )
 }

@@ -3,8 +3,11 @@
 /* The Docs (Fumadocs), coloured by the same theme tokens. */
 @import "@blocksy/docs/docs.css";
 
-/* Scan the app's own components for Tailwind class names. */
+/* Scan the app's own components for Tailwind class names, and the packages whose
+   React components use Tailwind (element editors, 3D previews). */
 @source "./";
+@source "../../../packages/elements";
+@source "../../../packages/model-studio/src";
 
 /* Pages fade in softly when you switch between them. */
 .page-enter {
