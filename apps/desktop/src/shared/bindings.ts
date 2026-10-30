@@ -17,6 +17,12 @@ export const commands = {
 	/**  Returns the saved JSON text, or `None` if it was never saved. */
 	loadAppData: (name: string) => typedError<string | null, AppError>(__TAURI_INVOKE("load_app_data", { name })),
 	saveAppData: (name: string, json: string) => typedError<null, AppError>(__TAURI_INVOKE("save_app_data", { name, json })),
+	/**  The cover as a `data:` URL the webview can show, or `None` for the generated one. */
+	readProjectCover: (dir: string) => typedError<string | null, AppError>(__TAURI_INVOKE("read_project_cover", { dir })),
+	/**  Copies the picture at `source` into the project as its cover and returns it as a data URL. */
+	setProjectCover: (dir: string, source: string) => typedError<string, AppError>(__TAURI_INVOKE("set_project_cover", { dir, source })),
+	/**  Removes the custom cover, so the generated one shows again. */
+	clearProjectCover: (dir: string) => typedError<null, AppError>(__TAURI_INVOKE("clear_project_cover", { dir })),
 	/**  Finds Java installs: the configured one, JAVA_HOME, `java` on PATH and common folders. */
 	detectJava: (configuredHome: string | null) => typedError<JavaInstall[], AppError>(__TAURI_INVOKE("detect_java", { configuredHome })),
 	/**  Starts a Gradle task. Returns its run id; output arrives as events. */

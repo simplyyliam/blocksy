@@ -6,8 +6,10 @@ import { FolderOpen, MoreHorizontal, X } from "lucide-react"
 import { revealItemInDir } from "@tauri-apps/plugin-opener"
 import {
   Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, Button,
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, ProjectCover,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@blocksy/ui"
+import { CoverMenuItems } from "../../shared/cover-menu-items"
+import { ProjectImage } from "../../shared/project-image"
 import { useNavigation, type Page } from "../../shared/stores/navigation"
 import { useProject } from "../../shared/stores/project"
 
@@ -28,6 +30,7 @@ function ProjectMenu({ dir }: { dir: string }) {
         <DropdownMenuItem onClick={() => void revealItemInDir(dir)}>
           <FolderOpen strokeWidth={1.75} /> Show in folder
         </DropdownMenuItem>
+        <CoverMenuItems dir={dir} />
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
@@ -61,7 +64,7 @@ export function Breadcrumbs() {
             <BreadcrumbSeparator className="text-fg-faint">/</BreadcrumbSeparator>
             <BreadcrumbItem className="min-w-0 gap-1">
               <BreadcrumbPage className={chip}>
-                <ProjectCover seed={project.dir} grid={[4, 4]} className="size-3.5 shrink-0 overflow-hidden rounded-[4px]" />
+                <ProjectImage dir={project.dir} grid={[4, 4]} className="size-3.5 shrink-0 overflow-hidden rounded-[4px]" />
                 <span className="truncate">{project.doc.name}</span>
               </BreadcrumbPage>
               <ProjectMenu dir={project.dir} />

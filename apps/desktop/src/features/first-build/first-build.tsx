@@ -11,8 +11,9 @@ import { Check, ChevronDown, Dot, type LucideIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import {
   Button, ChainOfThought, ChainOfThoughtContent, ChainOfThoughtSearchResult, ChainOfThoughtSearchResults, ChainOfThoughtStep,
-  cn, ElapsedTime, PixelLoader, ProjectCover, Shimmer,
+  cn, ElapsedTime, PixelLoader, Shimmer,
 } from "@blocksy/ui"
+import { ProjectImage } from "../../shared/project-image"
 import { stopTask } from "../../shared/project-actions"
 import { FIRST_BUILD_STEPS, logLines, useGradle } from "../../shared/stores/gradle"
 import { useNavigation } from "../../shared/stores/navigation"
@@ -50,7 +51,7 @@ export function FirstBuild() {
   return (
     <div className="mx-auto flex w-full max-w-[760px] flex-col px-4 pt-10">
       <div className="flex items-center gap-3">
-        <ProjectCover seed={dir} grid={[6, 6]} className="size-6 shrink-0 overflow-hidden rounded-[5px]" />
+        <ProjectImage dir={dir} grid={[6, 6]} className="size-6 shrink-0 overflow-hidden rounded-[5px]" />
         <h1 className="min-w-0 text-lg wrap-anywhere text-fg">Setting up {name}</h1>
       </div>
 
