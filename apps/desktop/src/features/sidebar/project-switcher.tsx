@@ -11,8 +11,9 @@
 import { ChevronsUpDown, LayoutGrid, Plus } from "lucide-react"
 import {
   Button, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
-  DropdownMenuTrigger, ProjectCover, toast,
+  DropdownMenuTrigger, toast,
 } from "@blocksy/ui"
+import { ProjectImage } from "../../shared/project-image"
 import { errorMessage } from "../../shared/api"
 import { useNavigation } from "../../shared/stores/navigation"
 import { useProject } from "../../shared/stores/project"
@@ -40,7 +41,7 @@ export function ProjectSwitcher() {
         render={<Button variant="ghost" size="sm" className="min-w-0 max-w-full shrink justify-start gap-2 px-1.5 font-medium" />}
       >
         {showing ? (
-          <ProjectCover seed={showing.dir} grid={[4, 4]} className="size-4 shrink-0 overflow-hidden rounded-[4px]" />
+          <ProjectImage dir={showing.dir} grid={[4, 4]} className="size-4 shrink-0 overflow-hidden rounded-[4px]" />
         ) : (
           <span className="grid size-4 shrink-0 place-items-center rounded-[4px] bg-fg text-bg">
             <LayoutGrid className="size-2.5!" strokeWidth={2.5} />
@@ -57,7 +58,7 @@ export function ProjectSwitcher() {
               <DropdownMenuLabel>Projects</DropdownMenuLabel>
               {projects.map((project) => (
                 <DropdownMenuItem key={project.dir} onClick={() => void open(project.dir)}>
-                  <ProjectCover seed={project.dir} grid={[4, 4]} className="size-4 shrink-0 overflow-hidden rounded-[4px]" />
+                  <ProjectImage dir={project.dir} grid={[4, 4]} className="size-4 shrink-0 overflow-hidden rounded-[4px]" />
                   <span className="truncate">{project.name}</span>
                 </DropdownMenuItem>
               ))}

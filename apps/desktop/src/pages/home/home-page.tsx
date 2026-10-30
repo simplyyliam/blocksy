@@ -12,8 +12,10 @@ import { FolderOpen, LayoutGrid, List, MoreHorizontal, Plus, SquareArrowOutUpRig
 import { revealItemInDir } from "@tauri-apps/plugin-opener"
 import {
   Button, Card, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Item,
-  ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle, ProjectCover, toast, ToggleGroup, ToggleGroupItem,
+  ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle, toast, ToggleGroup, ToggleGroupItem,
 } from "@blocksy/ui"
+import { CoverMenuItems } from "../../shared/cover-menu-items"
+import { ProjectImage } from "../../shared/project-image"
 import { errorMessage } from "../../shared/api"
 import { prettyPath } from "../../shared/paths"
 import { useNavigation } from "../../shared/stores/navigation"
@@ -62,6 +64,7 @@ function ProjectMenu({ project }: { project: RecentProject }) {
         <DropdownMenuItem onClick={() => void revealItemInDir(project.dir)}>
           <FolderOpen strokeWidth={1.75} /> Show in folder
         </DropdownMenuItem>
+        <CoverMenuItems dir={project.dir} />
         <DropdownMenuSeparator />
         {/* Only forgets it here; the files on disk stay untouched. */}
         <DropdownMenuItem onClick={() => void useRecent.getState().forget(project.dir)}>
@@ -76,7 +79,7 @@ function ProjectCard({ project }: { project: RecentProject }) {
   return (
     <Card className="group gap-0 rounded-lg py-0 shadow-none transition-shadow duration-150 hover:ring-foreground/15">
       <button type="button" onClick={() => void openProject(project)} className="block outline-none" aria-label={`Open ${project.name}`}>
-        <ProjectCover seed={project.dir} className="aspect-[16/10] w-full transition-[filter] duration-200 group-hover:brightness-[1.04]" />
+        <ProjectImage dir={project.dir} className="aspect-[16/10] w-full transition-[filter] duration-200 group-hover:brightness-[1.04]" />
       </button>
       <div className="flex items-start gap-2 p-3">
         <div className="min-w-0 flex-1">
@@ -97,7 +100,7 @@ function ProjectRow({ project, home }: { project: RecentProject; home: string | 
   return (
     <Item size="xs" className="hover:bg-surface/60">
       <ItemMedia>
-        <ProjectCover seed={project.dir} className="h-6 w-9 rounded-[3px]" />
+        <ProjectImage dir={project.dir} className="h-6 w-9 rounded-[3px]" />
       </ItemMedia>
       <ItemContent className="min-w-0">
         <button type="button" onClick={() => void openProject(project)} className="text-left outline-none">

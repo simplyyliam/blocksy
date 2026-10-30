@@ -6,7 +6,7 @@ mod error;
 mod events;
 mod process;
 
-use commands::{bench, files, gradle, java, updater};
+use commands::{bench, covers, files, gradle, java, updater};
 use tauri_specta::{collect_commands, collect_events, Builder};
 
 /// Where the generated TypeScript bindings go. Never edit that file by hand.
@@ -23,6 +23,9 @@ fn specta_builder() -> Builder<tauri::Wry> {
             files::path_exists,
             files::load_app_data,
             files::save_app_data,
+            covers::read_project_cover,
+            covers::set_project_cover,
+            covers::clear_project_cover,
             java::detect_java,
             gradle::run_gradle,
             gradle::stop_gradle,

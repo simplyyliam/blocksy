@@ -1,9 +1,9 @@
 // "Projects": recently opened projects, each with its colour swatch (App.png).
 import { Plus } from "lucide-react"
 import {
-  SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
-  ProjectCover, toast, Tooltip, TooltipContent, TooltipTrigger,
+  SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, toast, Tooltip, TooltipContent, TooltipTrigger,
 } from "@blocksy/ui"
+import { ProjectImage } from "../../shared/project-image"
 import { errorMessage } from "../../shared/api"
 import { useNavigation } from "../../shared/stores/navigation"
 import { useProject } from "../../shared/stores/project"
@@ -47,7 +47,7 @@ export function ProjectList() {
                   title={project.dir}
                   onClick={() => void open(project.dir)}
                 >
-                  <ProjectCover seed={project.dir} grid={[4, 4]} className="size-3.5 shrink-0 overflow-hidden rounded-[4px]" />
+                  <ProjectImage dir={project.dir} grid={[4, 4]} className="size-3.5 shrink-0 overflow-hidden rounded-[4px]" />
                   <span>{project.name}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
