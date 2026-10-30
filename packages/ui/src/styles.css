@@ -184,6 +184,7 @@
   --color-foreground: var(--foreground);
   --color-background: var(--background);
   --radius-4xl: var(--b-radius-4xl);
+  --radius-dialog: var(--b-radius-dialog);
 }
 
 :root {

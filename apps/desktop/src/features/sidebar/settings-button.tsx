@@ -10,7 +10,7 @@ export function SettingsButton() {
   return (
     <SidebarMenu className="gap-0">
       <SidebarMenuItem>
-        <SidebarMenuButton className="h-8" isActive={open} aria-haspopup="dialog" onClick={() => setSettings(true)}>
+        <SidebarMenuButton className="h-7" isActive={open} aria-haspopup="dialog" onClick={() => setSettings(true)}>
           <Settings strokeWidth={1.75} />
           <span>Settings</span>
         </SidebarMenuButton>

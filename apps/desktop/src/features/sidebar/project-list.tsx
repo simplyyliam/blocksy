@@ -42,12 +42,12 @@ export function ProjectList() {
               <SidebarMenuItem key={project.dir}>
                 <SidebarMenuButton
                   isActive={active}
-                  className="h-[34px]"
+                  className="h-7"
                   aria-current={active ? "page" : undefined}
                   title={project.dir}
                   onClick={() => void open(project.dir)}
                 >
-                  <span className="size-4 shrink-0 rounded-xs bg-project" />
+                  <span className="size-3.5 shrink-0 rounded-xs bg-project" />
                   <span>{project.name}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>

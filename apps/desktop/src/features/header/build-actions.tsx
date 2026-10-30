@@ -6,6 +6,9 @@ import { useGradle } from "../../shared/stores/gradle"
 import { useNavigation } from "../../shared/stores/navigation"
 import { useProject } from "../../shared/stores/project"
 
+// Toolbar buttons: 28px, 6px corners, a hairline border (like Linear and Vercel).
+const toolbar = "h-7 px-2.5"
+
 export function BuildActions() {
   const hasProject = useProject((s) => s.current !== null)
   const onProjectPage = useNavigation((s) => s.page === "project")
@@ -17,21 +20,21 @@ export function BuildActions() {
   return (
     <div className="flex items-center gap-1">
       <Tooltip>
-        <TooltipTrigger render={<Button variant="secondary" size="sm" onClick={() => void buildMod()} disabled={busy} />}>
+        <TooltipTrigger render={<Button variant="outline" size="sm" className={toolbar} onClick={() => void buildMod()} disabled={busy} />}>
           {task === "build" && <Spinner />}
           Build
         </TooltipTrigger>
         <TooltipContent>Compile the mod</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger render={<Button variant="secondary" size="sm" onClick={() => void runMod()} disabled={busy} />}>
+        <TooltipTrigger render={<Button variant="outline" size="sm" className={toolbar} onClick={() => void runMod()} disabled={busy} />}>
           {task === "run_client" && <Spinner />}
           Run
         </TooltipTrigger>
         <TooltipContent>Play it in Minecraft</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger render={<Button variant="secondary" size="sm" onClick={() => void exportMod()} disabled={busy} />}>
+        <TooltipTrigger render={<Button variant="outline" size="sm" className={toolbar} onClick={() => void exportMod()} disabled={busy} />}>
           Export
         </TooltipTrigger>
         <TooltipContent>Save the mod as a .jar file</TooltipContent>
