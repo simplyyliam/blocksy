@@ -1,11 +1,14 @@
 // The mod's own files: metadata, Java entrypoints, language file, .gitignore.
 import { deriveClassName, type GenerateContext } from "@blocksy/core"
+import { datagenClass, initializerImports, initializers, needsDatagen, type Content } from "./content.ts"
+
+const NO_CONTENT: Content = { blocks: [], tabs: [] }
 
 /** Java package of the mod, e.g. "com.example.my_mod". */
 export const javaPackage = ({ project }: GenerateContext) => `${project.group}.${project.modId}`
 
 /** fabric.mod.json: tells Fabric the mod's id, name, entrypoints and what it needs. */
-export const fabricModJson = (ctx: GenerateContext) => {
+export const fabricModJson = (ctx: GenerateContext, content: Content = NO_CONTENT) => {
   const { project, version } = ctx
   const mainClass = deriveClassName(project.name)
   const json = {
@@ -20,6 +23,8 @@ export const fabricModJson = (ctx: GenerateContext) => {
     entrypoints: {
       main: [`${javaPackage(ctx)}.${mainClass}`],
       client: [`${javaPackage(ctx)}.client.${mainClass}Client`],
+      // Only when the mod has data to generate (blocks): "gradlew runDatagen" starts here.
+      ...(needsDatagen(content) ? { "fabric-datagen": [datagenClass(ctx)] } : {}),
     },
     depends: {
       fabricloader: `>=${version.pins.loader}`,
@@ -32,12 +37,15 @@ export const fabricModJson = (ctx: GenerateContext) => {
 }
 
 /** Runs once when the game loads the mod. Later releases add registrations here. */
-export const mainClass = (ctx: GenerateContext) => {
+export const mainClass = (ctx: GenerateContext, content: Content = NO_CONTENT) => {
   const name = deriveClassName(ctx.project.name)
+  // Registry classes (ModBlocks, ...) run when first used, so onInitialize touches them in order.
+  const imports = initializerImports(ctx, content).map((line) => `${line}\n`).join("")
+  const calls = initializers(content).map((call) => `\t\t${call}\n`).join("")
   return `package ${javaPackage(ctx)};
 
 import net.fabricmc.api.ModInitializer;
-
+${imports ? `\n${imports}` : ""}
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +58,7 @@ public class ${name} implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		// Runs as soon as Minecraft is ready to load mods.
-		LOGGER.info("${ctx.project.name} loaded");
+${calls}		LOGGER.info("${ctx.project.name} loaded");
 	}
 }
 `
@@ -73,7 +81,8 @@ public class ${name}Client implements ClientModInitializer {
 }
 
 /** English names for everything in the mod. Empty until the first block or item. */
-export const langJson = () => "{}\n"
+export const langJson = (entries: Record<string, string> = {}) =>
+  Object.keys(entries).length === 0 ? "{}\n" : `${JSON.stringify(entries, null, "\t")}\n`
 
 export const gitignore = () => `# Gradle
 .gradle/

@@ -109,4 +109,7 @@ docs/                    plan, ADRs (decisions/), design inspiration, perf resul
 - I'm a junior developer and a visual learner: explain decisions in plain words,
   use diagrams or tables when they help, and keep code small and commented.
 - Every task ends with a **STATUS / CHECKS / NEEDS YOUR DECISION** block.
+- Before that block, at the end of release work: run `/code-review` and `/security-review` on the
+  branch (fix what they find), and run the end-to-end test in the real app (create a project, Build,
+  Run, check the release's "Done when" in game). Report all three under CHECKS.
 - Release work keeps `CHECKPOINT.md` current as it goes, so a new session can pick up where the last stopped.

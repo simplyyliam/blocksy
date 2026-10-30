@@ -207,6 +207,12 @@ importers:
         specifier: workspace:*
         version: link:../core
     devDependencies:
+      '@blocksy/element-block':
+        specifier: workspace:*
+        version: link:../elements/block
+      '@blocksy/element-creative-tab':
+        specifier: workspace:*
+        version: link:../elements/creative-tab
       '@blocksy/target-fabric':
         specifier: workspace:*
         version: link:../targets/fabric

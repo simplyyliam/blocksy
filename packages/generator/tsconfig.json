@@ -7,9 +7,17 @@
     "outDir": "dist",
     "rootDir": "src",
     // Tests hash binary files with node:crypto.
-    "types": ["node"]
+    "types": ["node"],
+    // Tests import element packages, whose editor panels are React components.
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"]
   },
   "include": ["src"],
   // Workspace packages this one imports. tsc -b checks them first.
-  "references": [{ "path": "../core" }, { "path": "../targets/fabric" }]
+  "references": [
+    { "path": "../core" },
+    { "path": "../targets/fabric" },
+    { "path": "../elements/block" },
+    { "path": "../elements/creative-tab" }
+  ]
 }
