@@ -13,7 +13,7 @@ import { SettingsButton } from "../../features/sidebar/settings-button"
 export function AppSidebar() {
   return (
     <Sidebar variant="sidebar" aria-label="Navigation">
-      <SidebarHeader className="h-11 flex-row items-center justify-between gap-2 px-2.5 py-0">
+      <SidebarHeader data-tauri-drag-region className="h-11 flex-row items-center justify-between gap-2 px-2.5 py-0">
         <div className="flex min-w-0 flex-1">
           <ProjectSwitcher />
         </div>
