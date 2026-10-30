@@ -24,7 +24,7 @@ export function ProjectList() {
   }
 
   return (
-    <SidebarGroup className="min-h-0">
+    <SidebarGroup className="mt-[18px] min-h-0 p-0">
       <SidebarGroupLabel>Projects</SidebarGroupLabel>
       <Tooltip>
         <TooltipTrigger render={<SidebarGroupAction aria-label="New project" onClick={() => setNewProject(true)} />}>
@@ -33,7 +33,7 @@ export function ProjectList() {
         <TooltipContent>New project</TooltipContent>
       </Tooltip>
 
-      <SidebarGroupContent className="min-h-0 overflow-y-auto">
+      <SidebarGroupContent className="mt-2 min-h-0 overflow-y-auto">
         {projects.length === 0 && <p className="px-2 text-base text-fg-faint">No projects yet</p>}
         <SidebarMenu>
           {projects.map((project) => {
@@ -42,11 +42,12 @@ export function ProjectList() {
               <SidebarMenuItem key={project.dir}>
                 <SidebarMenuButton
                   isActive={active}
+                  className="h-[34px]"
                   aria-current={active ? "page" : undefined}
                   title={project.dir}
                   onClick={() => void open(project.dir)}
                 >
-                  <span className="size-3.5 shrink-0 rounded-xs bg-project" />
+                  <span className="size-4 shrink-0 rounded-xs bg-project" />
                   <span>{project.name}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>

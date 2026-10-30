@@ -12,8 +12,8 @@ export function NavLinks() {
   const page = useNavigation((s) => s.page)
   const go = useNavigation((s) => s.go)
   return (
-    <SidebarGroup>
-      <SidebarMenu>
+    <SidebarGroup className="p-0">
+      <SidebarMenu className="gap-0">
         {links.map(({ page: target, label, Icon }) => (
           <SidebarMenuItem key={target}>
             <SidebarMenuButton

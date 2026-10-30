@@ -37,7 +37,7 @@ export function App() {
       <SidebarProvider className="h-full min-h-0">
         <AppSidebar />
         {/* A plain column next to the sidebar (no SidebarInset: the sidebar is not inset). */}
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col p-5 pl-[30px]">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col p-6 pl-[23px]">
           <Header />
           {/* key={page} replays the fade-in each time the page changes */}
           <main key={page} className="page-enter min-h-0 flex-1 overflow-y-auto">
