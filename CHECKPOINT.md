@@ -27,12 +27,14 @@ Work on feature branches and merge to `main` with `--no-ff` (see CLAUDE.md).
 
 ## Still to do for v0.1
 
-1. **Bench on the reference machine (Liam)**: `pnpm bench` (builds a release binary if stale, 5 runs,
-   writes `docs/perf/0.1.md`). Runner: `packages/bench/scripts/run.mjs`.
-2. **Updater check (needs Liam)**: follow `docs/release/updater-test.md`
-   (keygen → release 0.1.0 → install → release 0.1.1 → it updates itself).
-3. **Stop test**: during a Run, press Blocksy's Stop and confirm the game window closes (process tree kill).
-4. Then run `/release` for 0.1.0 (it checks everything, writes the changelog, tags).
+Done 2026-10-30: `pnpm bench` (docs/perf/0.1.md: cold start 1.1 s, frame p95 33.3 ms, memory 320 MB,
+all pass) and the Stop test (release build: Run → "Your mod is loaded" → Stop → the game JVM is gone,
+nothing left running).
+
+1. Commit or restore `packages/ui/src/components/ui/dropdown-menu.tsx` (Liam's local edit), so main is clean.
+2. Run `/release` for 0.1.0 (it stopped on the dirty tree last time).
+3. **Updater check (Liam)**: `docs/release/updater-test.md` (pnpm release → publish 0.1.0 → install →
+   release 0.1.1 → it updates itself). Needs the signing-key password and GitHub publishing.
 
 ## Useful facts
 
