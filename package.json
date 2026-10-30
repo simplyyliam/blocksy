@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:gradle": "vitest run --config vitest.gradle.config.ts",
-    "bench": "node -e \"console.log('bench comes in v0.1')\"",
+    "bench": "node packages/bench/scripts/run.mjs",
     "release": "node scripts/release.mjs",
     "updater:keygen": "node scripts/updater-keygen.mjs"
   },
