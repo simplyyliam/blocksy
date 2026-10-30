@@ -24,24 +24,26 @@ lang stays a plain en_us.json written by the generator.
 
 | Area | Where | Notes |
 | --- | --- | --- |
-| Core extension points | `packages/core/src/modules.ts`, `project.ts`, `project-commands.ts` | optional fields only; tests in `element-id.test.ts` |
-| Block element | `packages/elements/block` | name, hardness, resistance, tool + tier, needs-tool, light, sound, map colour, texture, tab |
-| Creative tab element | `packages/elements/creative-tab` | title, icon; blocks join via their `tab` field |
-| Block preview | `packages/model-studio` | render on demand, PerformanceMonitor, `previewFrameCount()` for the bench |
-| Inspector kit | `packages/ui/src/components/inspector.tsx` | section / field with Java hint / commit-on-blur number |
-| Lively components | `packages/ui/src/components/ui/` | Dot Matrix (assistant-ui), Dot Pattern + Confetti (Magic UI), via shadcn CLI |
-| Plan + rules | plan, CLAUDE.md, memory | "make it alive" each release; every goal keeps CHECKPOINT.md current |
+| Core extension points | `packages/core/src/modules.ts`, `project.ts`, `project-commands.ts` | optional fields only (ADR 0006); `element-id.test.ts` |
+| Block element | `packages/elements/block` | name, hardness, resistance, tool + tier, needs-tool, light, sound, map colour, 16x16 texture, tab; inspector shows the Java per field |
+| Creative tab element | `packages/elements/creative-tab` | title, icon; blocks join via their `tab` field; inventory-sketch canvas |
+| Fabric adapters + datagen | `packages/targets/fabric/src/elements`, `templates/content.ts` | ModBlocks, ModCreativeTabs, model/loot/tag providers, lang JSON; golden `first-block`; `pnpm test:gradle` builds a block mod on 26.1.2 and 26.3 and checks the generated JSON (passed) |
+| Build pipeline | `apps/desktop/src/shared/sync-files.ts`, Rust `gradle.rs`, `files.rs` | files written before Build/Run, stale ones removed via `.blocksy/generated.json`, `runDatagen` as its own Gradle run, skipped when unchanged |
+| 3D preview | `packages/model-studio` | lazy-loaded R3F, render on demand, redraw on resize, `zoom` prop, `onReady` + `CanvasLoader` |
+| Project editor | `apps/desktop/src/pages/project`, `features/project-editor` | tree + canvas + inspector flush on white, pill toolbar (Design/Code, undo/redo), Overview page, read-only Code tab (Shiki via `CodeView`) |
+| Router | `apps/desktop/src/app/router.tsx`, `layouts/` | react-router memory router; AppLayout (rail) / ProjectLayout (back button, no rail) (ADR 0007) |
+| Minecraft theme | `packages/ui/src/theme/minecraft.ts`, `scripts/make-pixel-art.mjs`, `styles.css` | original pixel art, Pixelify Sans (OFL), bevels, `radius-pill`; parity test |
+| Docs | `packages/docs` | Fumadocs behind `<DocsApp>`; Learn/Guides/Reference (generated)/Concepts/Community/Credits; Kaupenjoe videos (ids verified via oEmbed); credits footer |
+| Starter block | `apps/desktop/src/features/new-project/starters.ts` | default in New project |
+| Lively bits | Dot Matrix (status), Dot Pattern (canvas), Confetti (first mod load) | CLAUDE.md "Make it alive" |
+| Security review | run 2026-10-30 | no findings; suggestion: validate element ids on load |
 
-## Still to do for v0.2 (in order)
+## Still to do for v0.2
 
-1. Fabric adapters + aggregate files (ModBlocks, ModCreativeTabs, datagen entrypoint, lang) + golden test `first-block`
-2. `pnpm test:gradle` with a block project: build + runDatagen succeed, loot table / tags / models generated
-3. Rust: `remove_project_files`, `prepare` tasks param on `run_gradle`; regenerate bindings
-4. App: register modules, project editor page (tree, canvas, floating inspector, Design/Code island), sync files before Build/Run
-5. Minecraft theme (tokens, original pixel art, Pixelify Sans), works on every screen
-6. Docs with fumadocs: Learn / Guides / Reference / Concepts / Community + Credits, "Make your first block" with Kaupenjoe videos
-7. Starter block in New project; status bar Dot Matrix; confetti on first "mod loaded"
-8. Bench (add a block preview idle check), `docs/perf/0.2.md`, ADR 0006, CHANGELOG notes, merge
+1. Bench results into `docs/perf/0.2.md` (running; memory rose from 320 MB because the bench now opens a WebGL preview: explain)
+2. `/code-review` findings (running in background) → fix
+3. E2E in the release app: `scratchpad/cdp/e2e.mjs` (create Starter block → first build → Run → "Your mod is loaded"); in-game place/mine check is Liam's
+4. Merge `feature/v0.2-first-block` into `main` with `--no-ff`; `/release` for 0.2.0 is Liam's call
 
 ## v0.1 "Foundation" (done, merged)
 
@@ -83,3 +85,9 @@ lang stays a plain en_us.json written by the generator.
   datagen helpers public (e.g. `BlockModelGenerators.createTrivialCube`, `BlockLootSubProvider.dropSelf`).
 - shadcn files that fail strict TS (unused imports) can't be edited: don't install them (scroll-area was removed).
 - Python edits on Windows: open files with `newline=''` or they get CRLF.
+- Browser checks: `npx vite --port 1431` in apps/desktop + headless Edge with `--remote-debugging-port`; import
+  stores with the exact module URL from `performance.getEntriesByType("resource")`, or you get a second copy.
+- Fumadocs' Vite plugin needs the monorepo root as its root (wrapper `docsMdx()` in `vite.config.ts`).
+- Tailwind scans `packages/elements` and `packages/model-studio/src` from `apps/desktop/src/index.css`;
+  a new package with Tailwind classes needs an `@source` line there.
+- `origin/HEAD` was set locally to `origin/main` so `/security-review` can diff.
