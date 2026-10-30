@@ -42,6 +42,8 @@ export { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, 
 export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./components/ui/card.tsx"
 export { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "./components/ui/context-menu.tsx"
 // Blocksy-only pieces (shadcn has nothing like them):
+export { AnimatedNumber } from "./components/animated-number.tsx"
 export { ElapsedTime } from "./components/elapsed-time.tsx"
 export { ProjectCover } from "./components/project-cover.tsx"
+export { PixelBurst } from "./components/pixel-burst.tsx"
 export { PixelLoader } from "./components/pixel-loader.tsx"

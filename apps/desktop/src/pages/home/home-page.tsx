@@ -9,8 +9,9 @@
 //   │ Name ··│ │ Name ··│
 //   └────────┘ └────────┘
 import { LayoutGrid, List, MoreHorizontal, Plus } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 import {
-  Button, Card, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, Item, ItemActions, ItemContent, ItemDescription,
+  AnimatedNumber, Button, Card, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, Item, ItemActions, ItemContent, ItemDescription,
   ItemGroup, ItemMedia, ItemTitle, ToggleGroup, ToggleGroupItem,
 } from "@blocksy/ui"
 import { openProject } from "../../shared/open-project"
@@ -30,6 +31,13 @@ const ago = (time: number) => {
   const days = Math.round(hours / 24)
   return days === 1 ? "yesterday" : `${days} days ago`
 }
+
+/** Cards and rows rise in one after another; a removed one fades and shrinks away. */
+const appear = (index: number) => ({
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const, delay: Math.min(index, 8) * 0.035 } },
+  exit: { opacity: 0, scale: 0.96, transition: { duration: 0.16 } },
+})
 
 const greeting = () => {
   const hour = new Date().getHours()
@@ -55,9 +63,10 @@ function ProjectMenu({ project }: { project: RecentProject }) {
 function ProjectCard({ project }: { project: RecentProject }) {
   return (
     <ProjectContextMenu dir={project.dir}>
-      <Card className="group gap-0 rounded-lg py-0 shadow-none transition-shadow duration-150 hover:ring-foreground/15">
-        <button type="button" onClick={() => void openProject(project.dir)} className="block outline-none" aria-label={`Open ${project.name}`}>
-          <ProjectImage dir={project.dir} className="aspect-[16/10] w-full transition-[filter] duration-200 group-hover:brightness-[1.04]" />
+      {/* Lifts a little on hover and presses down on click; the cover zooms a touch. */}
+      <Card className="group gap-0 rounded-lg py-0 shadow-none transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-sm hover:ring-foreground/15 active:translate-y-0 active:scale-[0.99]">
+        <button type="button" onClick={() => void openProject(project.dir)} className="block overflow-hidden outline-none" aria-label={`Open ${project.name}`}>
+          <ProjectImage dir={project.dir} className="aspect-[16/10] w-full transition-transform duration-300 ease-out group-hover:scale-[1.03]" />
         </button>
         <div className="flex items-start gap-2 p-3">
           <div className="min-w-0 flex-1">
@@ -111,7 +120,11 @@ export function HomePage() {
       <p className="mt-1.5 text-base text-fg-muted">
         {last ? (
           <>
-            You have <span className="text-fg">{projects.length === 1 ? "1 project" : `${projects.length} projects`}</span>. Last opened{" "}
+            You have{" "}
+            <span className="text-fg">
+              <AnimatedNumber value={projects.length} /> {projects.length === 1 ? "project" : "projects"}
+            </span>
+            . Last opened{" "}
             <span className="text-fg">{last.name}</span>, {ago(last.openedAt)}.
           </>
         ) : (
@@ -121,7 +134,7 @@ export function HomePage() {
 
       <div className="mt-8 mb-3 flex items-center justify-between gap-3">
         <h2 className="text-sm text-fg">
-          Projects <span className="text-fg-muted">{projects.length}</span>
+          Projects <AnimatedNumber value={projects.length} className="text-fg-muted" />
         </h2>
         <div className="flex items-center gap-2">
           {projects.length > 0 && (
@@ -156,15 +169,23 @@ export function HomePage() {
         </div>
       ) : homeView === "grid" ? (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
-          {projects.map((project) => (
-            <ProjectCard key={project.dir} project={project} />
-          ))}
+          <AnimatePresence initial={true} mode="popLayout">
+            {projects.map((project, i) => (
+              <motion.div key={project.dir} layout {...appear(i)}>
+                <ProjectCard project={project} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       ) : (
         <ItemGroup className="gap-0.5">
-          {projects.map((project) => (
-            <ProjectRow key={project.dir} project={project} home={home} />
-          ))}
+          <AnimatePresence initial={true} mode="popLayout">
+            {projects.map((project, i) => (
+              <motion.div key={project.dir} layout {...appear(i)}>
+                <ProjectRow project={project} home={home} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </ItemGroup>
       )}
     </div>
