@@ -2,7 +2,7 @@
 import { Plus } from "lucide-react"
 import {
   SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
-  toast, Tooltip, TooltipContent, TooltipTrigger,
+  ProjectCover, toast, Tooltip, TooltipContent, TooltipTrigger,
 } from "@blocksy/ui"
 import { errorMessage } from "../../shared/api"
 import { useNavigation } from "../../shared/stores/navigation"
@@ -47,7 +47,7 @@ export function ProjectList() {
                   title={project.dir}
                   onClick={() => void open(project.dir)}
                 >
-                  <span className="size-3.5 shrink-0 rounded-xs bg-project" />
+                  <ProjectCover seed={project.dir} grid={[4, 4]} className="size-3.5 shrink-0 overflow-hidden rounded-[4px]" />
                   <span>{project.name}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -42,4 +42,5 @@ export { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, 
 export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./components/ui/card.tsx"
 // Blocksy-only pieces (shadcn has nothing like them):
 export { ElapsedTime } from "./components/elapsed-time.tsx"
+export { ProjectCover } from "./components/project-cover.tsx"
 export { PixelLoader } from "./components/pixel-loader.tsx"

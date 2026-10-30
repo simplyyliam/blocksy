@@ -12,7 +12,7 @@ import { FolderOpen, LayoutGrid, List, MoreHorizontal, Plus, SquareArrowOutUpRig
 import { revealItemInDir } from "@tauri-apps/plugin-opener"
 import {
   Button, Card, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Item,
-  ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle, toast, ToggleGroup, ToggleGroupItem,
+  ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle, ProjectCover, toast, ToggleGroup, ToggleGroupItem,
 } from "@blocksy/ui"
 import { errorMessage } from "../../shared/api"
 import { prettyPath } from "../../shared/paths"
@@ -20,7 +20,6 @@ import { useNavigation } from "../../shared/stores/navigation"
 import { useProject } from "../../shared/stores/project"
 import { useRecent, type RecentProject } from "../../shared/stores/recent"
 import { useSettings } from "../../shared/stores/settings"
-import { ProjectCover } from "./project-cover"
 
 const ago = (time: number) => {
   const minutes = Math.round((Date.now() - time) / 60000)
