@@ -446,7 +446,7 @@ Every `/goal` prompt ends with a STATUS / CHECKS / NEEDS YOUR DECISION report, s
 - Project file with `formatVersion`, a migration runner, and a command system with undo/redo
 - Pure generator engine with golden tests; Fabric target module
 - Design system: tokens, Modern theme, base components
-- App shell: app rail (Home, Docs, settings gear), header, status bar, bottom panel with Build log
+- App shell: app rail (Home, Docs, settings gear), header, status bar, bottom panel with Build log (redesigned 2026-10-30: borderless icon rail with Home and Docs, projects only on Home, Build log and status bar only on the project page)
 - Home with recent projects; New project dialog (Empty mod)
 - JDK detection and setup screen; official Fabric template with pinned versions
 - Run (`runClient`), Build, Export jar; first-build progress screen
@@ -474,13 +474,28 @@ End with STATUS / CHECKS / NEEDS YOUR DECISION.
 - Creative tab element; read-only Code tab
 - **Minecraft theme baseline:** token set, original pixel-art panels and buttons, open-licensed pixel font
 - Docs shell with Learn, Guides, Reference, Concepts, Community sections and the first tutorial
-- First block starter in the New project dialog
+- Starter block in the New project dialog
+- **The project editor** (first appears here, every later editor lives in it): see "Project editor layout" below
 
-**Done when:** the block shows in its creative tab, places, and drops itself with the right tool; every screen works in both themes.
+#### Project editor layout
+
+Decided 2026-10-30 (Liam). The app's main face stays calm: the icon rail (Home, Docs) and Home with the project grid, nothing else. Working on a mod happens on its own page.
+
+- **Its own route per project.** Clicking a project on Home opens `/project/<id>`, a separate full-page editor for that one project. Projects are not listed in the app sidebar; you focus on one project at a time and go back to Home to switch.
+- **Calm, canvas first.** Study visual editors that stay quiet (Figma UI3, Spline, Framer, Feather) and avoid the noise of MCreator's dense toolbars and nested panels. Rules:
+  - The work (block preview, node canvas, model, GUI) fills the page. Tools float above it as small rounded **islands** (a bottom toolbar, a panel beside the selection), slightly translucent, never fixed walls of panels.
+  - One quiet left column for the project tree (elements by type), collapsible. The inspector for the selection floats on the right and only appears when something is selected.
+  - No borders: separate areas with space and soft surfaces, as on Home. Every icon button has a tooltip and a label somewhere (Feather is criticised for obscure icons).
+  - Build, Run and Export sit in the project's titlebar row, as in v0.1.
+- **The status bar lives only here**, as plain text and icons (VS Code / macOS menu bar style, no pills): loader and version, Java, build and game state, update note, Build log toggle. Home and Docs have none.
+- **Project overview page.** The v0.1 project details screen (mod ID, Java package, Minecraft, loader, Java, folder) moves into the editor as its own "Overview" page in the project tree, not the first thing you see when opening a project.
+- The same layout hosts Model Studio (0.5), the Blueprint canvas (0.4) and GUI Studio (0.9) as pages of the project.
+
+**Done when:** the block shows in its creative tab, places, and drops itself with the right tool; opening a project from Home shows the project editor with the status bar; every screen works in both themes.
 
 ```text
 /goal Build Blocksy v0.2 "First block" on top of v0.1. Follow docs/release/blocksy-release-plan.md sections 2 and 4.
-Scope: a Block element module (schema, editor panel, templates, Docs reference page, tests) with name, hardness, blast resistance, required tool, light level, sound type and map colour; project sidebar tree; 16x16 PNG texture import with a live React Three Fiber block preview that renders on demand; generated Java registration plus blockstate, block and item models, loot table and lang entry (prefer Fabric data generation); a Creative tab element; a read-only Code tab; the Minecraft theme baseline as a token set with original pixel-art assets and an openly licensed pixel font (no Mojang textures or font in the app UI); the Docs shell with Learn, Guides, Reference, Concepts and Community sections plus a "Make your first block" tutorial; the First block starter.
+Scope: a Block element module (schema, editor panel, templates, Docs reference page, tests) with name, hardness, blast resistance, required tool, light level, sound type and map colour; project sidebar tree; 16x16 PNG texture import with a live React Three Fiber block preview that renders on demand; generated Java registration plus blockstate, block and item models, loot table and lang entry (prefer Fabric data generation); a Creative tab element; a read-only Code tab; the Minecraft theme baseline as a token set with original pixel-art assets and an openly licensed pixel font (no Mojang textures or font in the app UI); the Docs shell with Learn, Guides, Reference, Concepts and Community sections plus a "Make your first block" tutorial; the Starter block option in New project; the project editor from "Project editor layout" in v0.2 of the plan (a separate route per project opened from Home, canvas first with floating islands, a collapsible project tree, a floating inspector, no borders, the status bar as plain text and icons only on this page, and the v0.1 project details as an Overview page inside it).
 Out of scope: items, recipes, nodes, custom models.
 Done when: the block shows in its creative tab, can be placed, drops itself when mined with the right tool, every screen works in both themes, the bench passes, and no v0.1 module was refactored.
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
@@ -493,13 +508,13 @@ End with STATUS / CHECKS / NEEDS YOUR DECISION.
 - Recipe editor with a visual crafting grid: shaped, shapeless, smelting, blasting, smoking, stonecutting
 - Tags editor; lang editor
 - Local version history (Save version = git commit, History tab)
-- First item starter
+- Starter item in the New project dialog
 
 **Done when:** an item is crafted, cooked in a furnace and eaten.
 
 ```text
 /goal Build Blocksy v0.3 "First item, textures and recipes" on top of v0.2, following docs/release/blocksy-release-plan.md sections 2 and 4.
-Scope: an Item element module (stack size, rarity, fire resistance, food with hunger/saturation/effects, fuel time, compost chance, tooltips); a pixel texture editor (pencil, fill, picker, mirror, palette, onion skin, animated textures with .mcmeta) built as reusable brushes, because Model Studio will paint on 3D models with them in v0.5; a recipe editor with a visual crafting grid for shaped, shapeless, smelting, blasting, smoking and stonecutting; a tags editor; a lang editor; local version history (Save version = git commit, History tab); the First item starter. Every new component in both themes, every element with its Docs page and demo.
+Scope: an Item element module (stack size, rarity, fire resistance, food with hunger/saturation/effects, fuel time, compost chance, tooltips); a pixel texture editor (pencil, fill, picker, mirror, palette, onion skin, animated textures with .mcmeta) built as reusable brushes, because Model Studio will paint on 3D models with them in v0.5; a recipe editor with a visual crafting grid for shaped, shapeless, smelting, blasting, smoking and stonecutting; a tags editor; a lang editor; local version history (Save version = git commit, History tab); the Starter item option. Every new component in both themes, every element with its Docs page and demo.
 Out of scope: nodes, GitHub sync, custom models.
 Done when: an item is crafted from its recipe, cooked in a furnace and eaten in game, the bench passes, and no earlier module was refactored.
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
@@ -532,12 +547,21 @@ Everything in section 8.1 except the animator and entity format.
 - Display settings (GUI, hand, head, ground); block states editor with a model per state; collision shapes from the model
 - `.bbmodel` import and export; nodes that read and set states
 - Reload textures and models in a running game
+- **Floating islands** layout inside the project editor (see v0.2 "Project editor layout"), see below
+
+#### Model Studio look (decided 2026-10-30)
+
+Calm and professional, like Feather 3D: the 3D viewport fills the page and every tool floats above it as a soft rounded island. Reference: `docs/design/visual-editor(assets).jpg`.
+
+- **Islands:** scene outliner (Scene / Assets tabs, camera and lights, objects with lock/hide/focus on hover); inspector cards with a heading and `+` (Backgrounds, Camera Isometric/Perspective with distortion, Show frame, Artboard size); a Materials and Assets browser as a grid of large rounded thumbnails; a project card with the model name and type.
+- Segmented controls for modes (Design / Animation in 0.11), switches for toggles, number fields with units, light surfaces, generous padding, no hard borders.
+- Islands collapse and can be hidden (Tab) so the model has the whole screen; positions are remembered per project.
 
 **Done when:** a directional lamp with a custom model faces the player and lights up when powered, and orbiting a 500-cube model holds 60 fps at full 4K on the reference machine.
 
 ```text
 /goal Build Blocksy v0.5 "Model Studio: blocks and items" on top of v0.4. Read docs/release/blocksy-release-plan.md sections 2, 4 and 8 first.
-Scope: a model document in packages/model-studio (cubes, groups, textures, UVs, target format) edited only through commands; the block/item format as a registered module enforcing Java model rules (22.5 degree rotation steps on one axis, cubes inside block space) with live warnings; a React Three Fiber viewport following every rule in section 4.2 (frameloop demand, capped and adaptive dpr with drei PerformanceMonitor, instanced cubes, texture atlas with NearestFilter, no React state per frame, panels outside the Canvas); drei transform gizmo snapped to the pixel grid; camera presets; an outliner; a UV editor with auto-UV; painting on the model by raycasting to the face and texel, reusing the v0.3 brushes; display settings (GUI, hand, head, ground); a block states editor (facing, lit, powered, waterlogged, custom numeric) with a model per state; collision and outline shapes from the model; .bbmodel import and export (original code only, Blockbench is GPL-3.0); nodes that read and set states; reloading textures and models in a running game. Add 500-cube and 2,000-cube models to the bench.
+Scope: a model document in packages/model-studio (cubes, groups, textures, UVs, target format) edited only through commands; the block/item format as a registered module enforcing Java model rules (22.5 degree rotation steps on one axis, cubes inside block space) with live warnings; a React Three Fiber viewport following every rule in section 4.2 (frameloop demand, capped and adaptive dpr with drei PerformanceMonitor, instanced cubes, texture atlas with NearestFilter, no React state per frame, panels outside the Canvas); drei transform gizmo snapped to the pixel grid; camera presets; an outliner; a UV editor with auto-UV; painting on the model by raycasting to the face and texel, reusing the v0.3 brushes; display settings (GUI, hand, head, ground); a block states editor (facing, lit, powered, waterlogged, custom numeric) with a model per state; collision and outline shapes from the model; .bbmodel import and export (original code only, Blockbench is GPL-3.0); nodes that read and set states; reloading textures and models in a running game; the calm floating-islands look from "Model Studio look" in v0.5 of the plan (viewport fills the page, outliner, inspector cards and a materials/assets grid as soft rounded islands, as in docs/design/visual-editor(assets).jpg and Feather 3D). Add 500-cube and 2,000-cube models to the bench.
 Out of scope: entity format, bones, animation.
 Done when: a directional lamp with a custom model faces the player when placed and lights up when powered, and the viewport meets the section 4 budget at full 4K.
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
@@ -585,10 +609,17 @@ Blocksy has no server, so it signs in with GitHub's device flow, which needs no 
 - **Sign out** deletes the token from the keychain and asks GitHub to revoke it.
 - **Errors** use the `AppError` contract with codes like `github_denied`, `github_expired` and `github_offline`, shown in plain language.
 
+#### Sign-in window (decided 2026-10-30)
+
+Sign-in opens in **its own small Tauri window**, separate from the main window, styled after `docs/design/login-screen.jpg`:
+
+- A rounded card over a soft, blurred backdrop. Left half: a large picture, using Blocksy's generated pixel cover art (never Mojang art, rule 10). Right half: a small "Back", "Sign in to" over a large calm headline, the GitHub device-flow steps (the code, copied, and an "Open GitHub" button), and the Blocksy mark with a one-line tagline at the bottom.
+- The window closes on its own when sign-in finishes, and the main window shows the signed-in avatar where the settings gear sits.
+
 
 ```text
 /goal Build Blocksy v0.7 "Docs, learning and GitHub" on top of v0.6. Read docs/release/blocksy-release-plan.md sections 4 and 11 and the docs/design/ inspiration first.
-Scope: the full Docs experience organised by Diataxis (Learn, Guides, Reference, Concepts, Community) with a calm layout (about 70 character lines, left nav, On this page, generous whitespace), search and version badges; a live demo system that embeds real Blocksy editors in a sandbox with an "Open as project" button, registered through the demos registry, rendering on demand and pausing when scrolled out of view; reference pages generated from node and element definitions; a Community section driven by packages/docs/community.json (title, URL, creator credit, type, loaders, versions, last checked) seeded from section 11.3, with a CI link checker and a Suggest a resource issue template; a vanilla reference that indexes blocks, items and recipes from sources generated on the user's machine (never shipped) with "Make one like this"; a Learn mode overlay; GitHub integration following the "GitHub sign-in (device flow)" section of v0.7 in the plan (device flow with the code copied and the browser opened for the user, token only in the OS keychain and never sent to the frontend, minimal permissions recorded in an ADR, token passed per git operation and never written to remotes or config, sign-in behind githubSignIn/githubSignOut/githubAccount commands and typed events), plus create repo, clone, push, pull, branches and a plain-language conflict screen and Import existing.
+Scope: the full Docs experience organised by Diataxis (Learn, Guides, Reference, Concepts, Community) with a calm layout (about 70 character lines, left nav, On this page, generous whitespace), search and version badges; a live demo system that embeds real Blocksy editors in a sandbox with an "Open as project" button, registered through the demos registry, rendering on demand and pausing when scrolled out of view; reference pages generated from node and element definitions; a Community section driven by packages/docs/community.json (title, URL, creator credit, type, loaders, versions, last checked) seeded from section 11.3, with a CI link checker and a Suggest a resource issue template; a vanilla reference that indexes blocks, items and recipes from sources generated on the user's machine (never shipped) with "Make one like this"; a Learn mode overlay; GitHub integration following the "GitHub sign-in (device flow)" section of v0.7 in the plan (device flow with the code copied and the browser opened for the user, token only in the OS keychain and never sent to the frontend, minimal permissions recorded in an ADR, token passed per git operation and never written to remotes or config, sign-in behind githubSignIn/githubSignOut/githubAccount commands and typed events, shown in its own small window styled after docs/design/login-screen.jpg as described in "Sign-in window" in v0.7 of the plan), plus create repo, clone, push, pull, branches and a plain-language conflict screen and Import existing.
 Done when: a beginner finishes "Make your first block" using live demos, builds a furnace-like block from the vanilla reference, and pushes it to a new GitHub repo; a Docs page with three live demos still scrolls at 60 fps on the reference machine.
 End with STATUS / CHECKS / NEEDS YOUR DECISION.
 ```
