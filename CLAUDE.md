@@ -6,8 +6,12 @@ live docs, while teaching Java along the way. It scales from one block to a full
 ## Read first
 
 - Before any release work: `docs/release/blocksy-release-plan.md` (the source of truth).
-- Before any UI work: `docs/design/`. App.png and add-project.png are my own Figma designs:
-  match them (calm, 13px base type, generous whitespace, smooth motion). The rest is mood.
+- Before any UI work: `docs/design/`. The look to match now is `home-page(redesign).jpg`:
+  calm, borderless, icon rail, good typography and space (13px base type, smooth motion).
+  add-project.png is my Figma design for New project. Release-specific references are
+  noted in the plan (project editor v0.2, Model Studio v0.5, sign-in window v0.7).
+- Build only what the current release covers; ideas for later releases go into their
+  section of `docs/release/blocksy-release-plan.md` as notes, not code.
 - Decisions live in `docs/decisions/` (ADRs). New architectural choice = new ADR.
 
 ## Hard rules (plan section 2.2)
