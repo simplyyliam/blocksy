@@ -1,12 +1,12 @@
 // Minimise / maximise / close for the custom titlebar (the native one is turned off in
-// tauri.conf.json so the top of the window follows the theme). Windows-style: wide,
-// flat buttons flush with the top-right corner; close turns red on hover.
+// tauri.conf.json so the top of the window follows the theme). Compact 28px buttons
+// with small icons, sized like the rest of the toolbar; close turns red on hover.
 import { Copy, Minus, Square, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import { Button, cn } from "@blocksy/ui"
 
-const control = "h-11 w-11 rounded-none text-fg-muted hover:text-fg"
+const control = "size-7 text-fg-muted hover:text-fg [&_svg]:size-3.5!"
 
 export function WindowControls() {
   const [maximized, setMaximized] = useState(false)
@@ -25,7 +25,7 @@ export function WindowControls() {
   }, [])
 
   return (
-    <div className="flex h-11 shrink-0 items-stretch">
+    <div className="flex shrink-0 items-center gap-0.5 pr-2">
       <Button variant="ghost" aria-label="Minimise" className={control} onClick={() => void getCurrentWindow().minimize()}>
         <Minus strokeWidth={1.5} />
       </Button>
@@ -35,7 +35,7 @@ export function WindowControls() {
         className={control}
         onClick={() => void getCurrentWindow().toggleMaximize()}
       >
-        {maximized ? <Copy className="size-3.5! -scale-x-100" strokeWidth={1.5} /> : <Square className="size-3.5!" strokeWidth={1.5} />}
+        {maximized ? <Copy className="size-3! -scale-x-100" strokeWidth={1.5} /> : <Square className="size-3!" strokeWidth={1.5} />}
       </Button>
       <Button
         variant="ghost"
