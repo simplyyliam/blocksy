@@ -21,6 +21,7 @@ live docs, while teaching Java along the way. It scales from one block to a full
 7. Documents are the only source of truth; editors change them through commands (undo/redo).
 8. Rust stays thin: filesystem, processes, git, OS dialogs. Product logic is TypeScript.
 9. Design tokens only; every component works in both Modern and Minecraft themes.
+   UI components are **shadcn/ui** (see "UI components" below), never hand-rolled.
 10. Never ship Minecraft's code or assets.
 11. Never copy GPL code (e.g. Blockbench); study behaviour, write original code.
 12. Architectural decisions get a short ADR in `docs/decisions/`.
@@ -35,12 +36,26 @@ packages/targets/fabric/ Fabric loader target (templates, file layout, adapters)
 packages/elements/*      one package per element type     packages/nodes/*  one per node family
 packages/model-studio/   model document, formats, tools, R3F viewport
 packages/gui-studio/     GUI document model, components, style engine
-packages/ui/             design system: tokens, themes, components
+packages/ui/             design system: tokens, themes, shadcn/ui components
 packages/docs/           MDX content, demos, community data   packages/bench/  perf harness
 docs/                    plan, ADRs (decisions/), design inspiration, perf results
 ```
 
 `core` imports no other `@blocksy` package. Nothing imports from `apps/`.
+
+## UI components (shadcn/ui)
+
+- Use shadcn/ui for every UI piece (buttons, inputs, dialogs, selects, tooltips, sidebar,
+  toasts, ...). Write a custom component only when shadcn has nothing that fits, and say why
+  in its header comment. Never delete or replace shadcn components with hand-made ones.
+- They live in `packages/ui/src/components/ui/` (config: `packages/ui/components.json`,
+  style `base-luma` = Base UI underneath). Add one from `packages/ui`:
+  `pnpm dlx shadcn@latest add <name>`. Answer **no** when it asks to overwrite a file.
+- After adding, check for a bare `import { cn } from "cn"` (a CLI bug): change it to
+  `@blocksy/ui/lib/utils` and remove the `cn` npm package if it was installed.
+- Export new components from `packages/ui/src/index.ts`; the app imports only `@blocksy/ui`.
+- Colours come from `styles.css`, where shadcn variables point at Blocksy tokens (`--b-*`).
+  Small size edits inside the copied files (13px text, 28px pills) are fine; raw colours are not.
 
 ## Frontend structure (apps/desktop/src)
 
@@ -61,6 +76,7 @@ docs/                    plan, ADRs (decisions/), design inspiration, perf resul
 ## Commands
 
 - Root: `pnpm dev` (desktop app), `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm bench`
+- Root: `pnpm test:gradle` (real Fabric builds), `pnpm release`, `pnpm updater:keygen`
 - In `apps/desktop/src-tauri`: `cargo check`, `cargo clippy --all-targets`, `cargo test`
 
 ## Never

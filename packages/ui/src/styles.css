@@ -5,8 +5,11 @@
 @import "tailwindcss";
 @import "@fontsource-variable/dm-sans";
 @import "@fontsource-variable/jetbrains-mono";
+/* shadcn/ui: enter/exit animations and the data-open/data-closed variants its components use. */
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-/* Scan this package's components for class names. */
+/* Scan this package's components (incl. components/ui from shadcn) for class names. */
 @source "./";
 
 @theme {
@@ -134,13 +137,13 @@
   }
 }
 
-/* --- shadcn/ui variables (restored from the original shadcn init) ---
-   Kept so shadcn components work as-is. Blocksy's own tokens above stay the
-   source of truth for the Figma look; where names clashed:
-   - Blocksy's blue is `brand` (bg-brand), so `accent` keeps shadcn's meaning.
-   - rounded-sm..3xl use the Figma radius scale; shadcn's --radius is kept
-     and drives rounded-4xl.
-   - Fonts stay DM Sans (Figma), not shadcn's Inter. */
+/* --- shadcn/ui variables ---
+   shadcn components (src/components/ui) read these names. Each one points at a
+   Blocksy token, so shadcn looks like the Figma and follows the active theme
+   (Modern, Minecraft) with no extra work. Never put raw colours here (rule 9).
+   - Blocksy's blue is `brand`; shadcn's `primary` points at it (Create button).
+   - rounded-sm..3xl use the Figma radius scale; --radius drives rounded-4xl.
+   - Fonts stay DM Sans (Figma). There is no .dark block: themes own their colours. */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -179,72 +182,38 @@
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+  --background: var(--b-bg);
+  --foreground: var(--b-fg);
+  --card: var(--b-bg);
+  --card-foreground: var(--b-fg);
+  --popover: var(--b-bg);
+  --popover-foreground: var(--b-fg);
+  --primary: var(--b-brand);
+  --primary-foreground: var(--b-on-brand);
+  --secondary: var(--b-surface); /* grey pills (App.png) */
+  --secondary-foreground: var(--b-fg);
+  --muted: var(--b-surface);
+  --muted-foreground: var(--b-fg-muted);
+  --accent: var(--b-surface);
+  --accent-foreground: var(--b-fg);
+  --destructive: var(--b-danger);
+  --border: var(--b-line);
+  --input: var(--b-field); /* grey fill of inputs and selects */
+  --ring: var(--b-brand);
+  --chart-1: var(--b-brand);
+  --chart-2: var(--b-success);
+  --chart-3: var(--b-warning);
+  --chart-4: var(--b-danger);
+  --chart-5: var(--b-project);
+  --radius: 0.625rem;
+  --sidebar: var(--b-bg);
+  --sidebar-foreground: var(--b-fg);
+  --sidebar-primary: var(--b-brand);
+  --sidebar-primary-foreground: var(--b-on-brand);
+  --sidebar-accent: var(--b-surface);
+  --sidebar-accent-foreground: var(--b-fg);
+  --sidebar-border: var(--b-line);
+  --sidebar-ring: var(--b-brand);
 }
 
 @layer base {
@@ -253,12 +222,3 @@
   }
 }
 
-/* The moving stripe of an indeterminate Progress bar. */
-@keyframes blocksy-indeterminate {
-  from {
-    left: -33%;
-  }
-  to {
-    left: 100%;
-  }
-}

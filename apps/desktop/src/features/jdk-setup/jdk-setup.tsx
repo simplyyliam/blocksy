@@ -69,14 +69,14 @@ export function JdkSetup() {
       </div>
 
       <div className="mt-6 flex flex-wrap gap-1">
-        <Button onClick={() => void detect(useSettings.getState().javaHome, required)}>
+        <Button variant="secondary" onClick={() => void detect(useSettings.getState().javaHome, required)}>
           <RotateCw strokeWidth={1.75} /> Check again
         </Button>
-        <Button onClick={() => void browse()}>
+        <Button variant="secondary" onClick={() => void browse()}>
           <FolderOpen strokeWidth={1.75} /> Choose folder…
         </Button>
         {status === "missing" && (
-          <Button variant="primary" className="h-7 rounded-md px-2.5" onClick={() => void openUrl(DOWNLOAD_URL)}>
+          <Button variant="default" onClick={() => void openUrl(DOWNLOAD_URL)}>
             Get Java {required} <ExternalLink strokeWidth={1.75} />
           </Button>
         )}

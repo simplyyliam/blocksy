@@ -1,6 +1,6 @@
 // Build, Run and Export (App.png, top right). While one task runs, its button shows a
 // spinner and the others wait; Stop lives in the status bar.
-import { Button, Spinner, Tooltip } from "@blocksy/ui"
+import { Button, Spinner, Tooltip, TooltipContent, TooltipTrigger } from "@blocksy/ui"
 import { buildMod, exportMod, runMod } from "../../shared/project-actions"
 import { useGradle } from "../../shared/stores/gradle"
 import { useProject } from "../../shared/stores/project"
@@ -13,22 +13,25 @@ export function BuildActions() {
   const busy = task !== null
   return (
     <div className="flex items-center gap-1">
-      <Tooltip label="Compile the mod">
-        <Button onClick={() => void buildMod()} disabled={busy}>
+      <Tooltip>
+        <TooltipTrigger render={<Button variant="secondary" onClick={() => void buildMod()} disabled={busy} />}>
           {task === "build" && <Spinner />}
           Build
-        </Button>
+        </TooltipTrigger>
+        <TooltipContent>Compile the mod</TooltipContent>
       </Tooltip>
-      <Tooltip label="Play it in Minecraft">
-        <Button onClick={() => void runMod()} disabled={busy}>
+      <Tooltip>
+        <TooltipTrigger render={<Button variant="secondary" onClick={() => void runMod()} disabled={busy} />}>
           {task === "run_client" && <Spinner />}
           Run
-        </Button>
+        </TooltipTrigger>
+        <TooltipContent>Play it in Minecraft</TooltipContent>
       </Tooltip>
-      <Tooltip label="Save the mod as a .jar file">
-        <Button onClick={() => void exportMod()} disabled={busy}>
+      <Tooltip>
+        <TooltipTrigger render={<Button variant="secondary" onClick={() => void exportMod()} disabled={busy} />}>
           Export
-        </Button>
+        </TooltipTrigger>
+        <TooltipContent>Save the mod as a .jar file</TooltipContent>
       </Tooltip>
     </div>
   )

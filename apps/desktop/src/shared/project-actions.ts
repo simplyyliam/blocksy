@@ -5,6 +5,7 @@
 // - Export builds first if there's no jar yet
 import { save } from "@tauri-apps/plugin-dialog"
 import { revealItemInDir } from "@tauri-apps/plugin-opener"
+import { toast } from "@blocksy/ui"
 import { commands, type GradleTask } from "./bindings"
 import { call, CommandError, errorMessage } from "./api"
 import { baseName, joinPath } from "./paths"
@@ -12,7 +13,6 @@ import { useGradle, type RunResult } from "./stores/gradle"
 import { useJava } from "./stores/java"
 import { useNavigation } from "./stores/navigation"
 import { useProject } from "./stores/project"
-import { useToasts } from "./stores/toasts"
 
 async function start(task: GradleTask): Promise<boolean> {
   const project = useProject.getState().current
@@ -30,7 +30,7 @@ async function start(task: GradleTask): Promise<boolean> {
     await useGradle.getState().start(task, { projectDir: project.dir, javaHome: java.home, modId: project.doc.modId, firstBuild })
     return true
   } catch (err) {
-    useToasts.getState().show({ message: errorMessage(err), tone: "error" })
+    toast.error(errorMessage(err))
     return false
   }
 }
@@ -62,19 +62,17 @@ export async function exportMod() {
   })
   if (!destination) return
 
-  const toasts = useToasts.getState()
   try {
     // Always build first, so the exported jar matches the project right now.
     if (!(await buildMod())) return
     const result = await finished()
     if (!result.success) return // the status bar already shows why
     await call(commands.exportJar(project.dir, destination))
-    toasts.show({
-      message: `Saved ${baseName(destination)}`,
-      action: { label: "Show", run: () => void revealItemInDir(destination) },
+    toast(`Saved ${baseName(destination)}`, {
+      action: { label: "Show", onClick: () => void revealItemInDir(destination) },
     })
   } catch (err) {
     const message = err instanceof CommandError && err.code === "not_found" ? "Build the mod before exporting" : errorMessage(err)
-    toasts.show({ message, tone: "error" })
+    toast.error(message)
   }
 }

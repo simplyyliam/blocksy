@@ -1,6 +1,6 @@
 // Failed: the last build or run ended with an error. Points to the log; dismissable.
 import { CircleAlert, X } from "lucide-react"
-import { Button, Pill } from "@blocksy/ui"
+import { Button, Badge } from "@blocksy/ui"
 import { useGradle } from "../../shared/stores/gradle"
 import { useNavigation } from "../../shared/stores/navigation"
 import type { StatusView } from "./types"
@@ -11,11 +11,11 @@ function FailedView() {
   const openLog = useNavigation((s) => s.setBottomPanel)
   return (
     <>
-      <Pill>
+      <Badge variant="secondary">
         <CircleAlert className="text-danger" strokeWidth={1.75} />
         {task === "run_client" ? "Minecraft stopped with an error" : "Build failed"}
-      </Pill>
-      <Button onClick={() => openLog(true)}>Show log</Button>
+      </Badge>
+      <Button variant="secondary" onClick={() => openLog(true)}>Show log</Button>
       <Button variant="ghost" size="icon" aria-label="Dismiss" onClick={clear}>
         <X strokeWidth={1.75} />
       </Button>
