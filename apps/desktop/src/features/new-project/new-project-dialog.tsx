@@ -147,11 +147,11 @@ export function NewProjectDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent showCloseButton={false} className="w-[720px] max-w-[calc(100vw-48px)] gap-0 rounded-dialog p-0 sm:max-w-[calc(100vw-48px)]">
-        <form onSubmit={submit} className="flex max-h-[calc(100vh-48px)] flex-col px-5 pt-5 pb-4">
+      <DialogContent showCloseButton={false} className="w-[clamp(600px,calc(100vw-620px),720px)] max-w-[calc(100vw-48px)] gap-0 rounded-dialog p-0 sm:max-w-[calc(100vw-48px)]">
+        <form onSubmit={submit} className="flex max-h-[min(680px,calc(100vh-120px))] flex-col px-5 pt-5 pb-4">
           <DialogTitle className="pl-px text-lg leading-normal text-fg">New project</DialogTitle>
 
-          <div className="mt-5 grid min-h-0 grid-cols-[176px_1fr] gap-x-6 overflow-y-auto">
+          <div className="mt-4 grid min-h-0 grid-cols-[164px_1fr] gap-x-6 overflow-y-auto">
             {/* Left column */}
             <div className="flex flex-col">
               <p className="pl-2 text-sm text-fg-muted">Start from</p>
@@ -168,7 +168,7 @@ export function NewProjectDialog() {
             </div>
 
             {/* Right column */}
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-4">
               <Field>
                 <FieldLabel htmlFor={ids.name}>Name</FieldLabel>
                 <Input
@@ -307,7 +307,7 @@ export function NewProjectDialog() {
                 <FieldLabel>What gets created</FieldLabel>
                 <pre
                   data-selectable
-                  className="h-[140px] overflow-auto rounded-lg px-4 py-3.5 font-mono text-xs leading-[15px] text-fg shadow-[inset_0_0_0_1px_var(--b-line)]"
+                  className="h-[112px] overflow-auto rounded-lg px-4 py-3.5 font-mono text-xs leading-[15px] text-fg shadow-[inset_0_0_0_1px_var(--b-line)]"
                 >
                   {tree ?? "Fill in the fields above to see the files."}
                 </pre>
@@ -315,7 +315,7 @@ export function NewProjectDialog() {
             </div>
           </div>
 
-          <div className="mt-6 flex shrink-0 items-center justify-between gap-4">
+          <div className="mt-5 flex shrink-0 items-center justify-between gap-4">
             <p className="min-h-5 text-base text-danger" role="alert">
               {error}
             </p>
