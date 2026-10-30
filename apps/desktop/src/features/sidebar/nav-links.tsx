@@ -2,6 +2,7 @@
 import { BookOpen, House } from "lucide-react"
 import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@blocksy/ui"
 import { useNavigation, type Page } from "../../shared/stores/navigation"
+import { ActiveHighlight, activeRow } from "./active-highlight"
 
 const links: { page: Page; label: string; Icon: typeof House }[] = [
   { page: "home", label: "Home", Icon: House },
@@ -18,10 +19,11 @@ export function NavLinks() {
           <SidebarMenuItem key={target}>
             <SidebarMenuButton
               isActive={page === target}
-              className="h-7"
+              className={`h-7 ${activeRow}`}
               aria-current={page === target ? "page" : undefined}
               onClick={() => go(target)}
             >
+              {page === target && <ActiveHighlight />}
               <Icon strokeWidth={1.75} />
               <span>{label}</span>
             </SidebarMenuButton>

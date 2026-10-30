@@ -3,6 +3,7 @@
 import { Settings } from "lucide-react"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@blocksy/ui"
 import { useNavigation } from "../../shared/stores/navigation"
+import { ActiveHighlight, activeRow } from "./active-highlight"
 
 export function SettingsButton() {
   const open = useNavigation((s) => s.settingsOpen)
@@ -10,7 +11,8 @@ export function SettingsButton() {
   return (
     <SidebarMenu className="gap-0">
       <SidebarMenuItem>
-        <SidebarMenuButton className="h-7" isActive={open} aria-haspopup="dialog" onClick={() => setSettings(true)}>
+        <SidebarMenuButton className={`h-7 ${activeRow}`} isActive={open} aria-haspopup="dialog" onClick={() => setSettings(true)}>
+          {open && <ActiveHighlight />}
           <Settings strokeWidth={1.75} />
           <span>Settings</span>
         </SidebarMenuButton>

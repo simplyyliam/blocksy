@@ -1,6 +1,8 @@
-// Game running: Minecraft is open from Run. Shows when our mod made it into the mod list.
+// Game running: Minecraft is open from Run. Shows when our mod made it into the mod list,
+// with a small pixel burst the moment it does.
 import { CircleCheck, Square } from "lucide-react"
-import { Button, Badge, Spinner } from "@blocksy/ui"
+import { motion } from "motion/react"
+import { Badge, Button, PixelBurst, Spinner } from "@blocksy/ui"
 import { statusChip } from "./chip"
 import { stopTask } from "../../shared/project-actions"
 import { useGradle } from "../../shared/stores/gradle"
@@ -15,10 +17,18 @@ function GameView() {
         {gameLoaded ? "Minecraft is running" : "Starting Minecraft"}
       </Badge>
       {modLoaded && (
-        <Badge variant="secondary" className={statusChip}>
-          <CircleCheck className="text-success" strokeWidth={1.75} />
-          Your mod is loaded
-        </Badge>
+        <motion.span
+          className="relative"
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 500, damping: 28 }}
+        >
+          <Badge variant="secondary" className={statusChip}>
+            <CircleCheck className="text-success" strokeWidth={1.75} />
+            Your mod is loaded
+          </Badge>
+          <PixelBurst />
+        </motion.span>
       )}
       <Button variant="secondary" size="sm" onClick={() => void stopTask()}>
         <Square className="fill-current" strokeWidth={0} />

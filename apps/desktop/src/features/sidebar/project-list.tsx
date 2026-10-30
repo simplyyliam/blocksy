@@ -5,6 +5,7 @@ import {
 } from "@blocksy/ui"
 import { ProjectImage } from "../../shared/project-image"
 import { ProjectContextMenu } from "../../shared/project-menu"
+import { ActiveHighlight, activeRow } from "./active-highlight"
 import { errorMessage } from "../../shared/api"
 import { useNavigation } from "../../shared/stores/navigation"
 import { useProject } from "../../shared/stores/project"
@@ -44,11 +45,12 @@ export function ProjectList() {
                 <ProjectContextMenu dir={project.dir} open={!active}>
                   <SidebarMenuButton
                     isActive={active}
-                    className="h-7"
+                    className={`h-7 ${activeRow}`}
                     aria-current={active ? "page" : undefined}
                     title={project.dir}
                     onClick={() => void open(project.dir)}
                   >
+                    {active && <ActiveHighlight />}
                     <ProjectImage dir={project.dir} grid={[4, 4]} className="size-3.5 shrink-0 overflow-hidden rounded-[4px]" />
                     <span>{project.name}</span>
                   </SidebarMenuButton>
