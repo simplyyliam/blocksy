@@ -1,6 +1,6 @@
 [package]
 name = "blocksy"
-version = "0.1.0"
+version = "0.1.1"
 description = "Make Minecraft mods with nodes, visual editors and live docs"
 authors = ["Liam Matthews"]
 license = ""
