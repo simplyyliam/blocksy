@@ -42,6 +42,8 @@ lang stays a plain en_us.json written by the generator.
 | Bench | `docs/perf/0.2.md`, ADR 0008 | all rows pass: cold start 1093 ms (quiet) / 1312 ms (busy), frame p95 16.8 ms, memory 450 MB (explained), preview ready 818 ms (budget 1000), idle 3D frames 0 |
 | In-game test | Liam, 2026-10-30 | creative tab, place, drops with the right tool: confirmed |
 | Docs check | Liam, 2026-10-30 | Docs tested, Kaupenjoe videos play |
+| Both themes | screenshots 2026-10-30 | Home, Docs, editor, Code tab, tab view, New project, Settings, JDK setup |
+| No v0.1 refactor | ADR 0006 | v0.1 `run_gradle` restored; prepare tasks use the new `run_gradle_prepare`; 0 removed lines in v0.1 Rust files |
 | E2E (release app) | `scratchpad/cdp/e2e.mjs` (not in repo) | Starter block → first build 60 s → Run → "Your mod is loaded"; jar holds ModBlocks, models, texture, loot table (drops itself), mineable/pickaxe tag |
 
 ## Still to do for v0.2
