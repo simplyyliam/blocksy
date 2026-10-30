@@ -1,0 +1,21 @@
+---
+title: Registries
+description: How Minecraft (and Blocksy) keep lists of things by id.
+---
+
+A **registry** is a list of things looked up by id: every block, every item, every creative
+tab. Mods add to these lists while the game starts, in their `onInitialize` method.
+
+In your mod, `onInitialize` calls `ModBlocks.initialize()` and `ModCreativeTabs.initialize()`.
+Those methods are empty on purpose: Java only runs a class's `static final` fields the first
+time the class is used, so calling them makes the registrations happen at the right moment.
+
+<Callout title="Blocksy works the same way">
+Blocksy itself is built from registries too: element types (Block, Creative tab), themes and
+loader targets each plug in with one registration line. New features plug in; old ones never
+get rewritten to make room.
+</Callout>
+
+<VideoLesson id="lVpV3B3yFsg" title="Fabric Modding Tutorial - Minecraft 1.21: Custom Tags" creator="Modding by Kaupenjoe">
+  tags, another kind of list Minecraft looks things up in
+</VideoLesson>

@@ -1,0 +1,39 @@
+/* Docs styles: Fumadocs' own CSS, with every Fumadocs colour pointed at a Blocksy
+   theme token, so the Docs follow Modern and Minecraft like the rest of the app (rule 9).
+   The app imports this after @blocksy/ui/styles.css (apps/desktop/src/index.css). */
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+/* Fumadocs' components and this package's MDX components use Tailwind classes. */
+@source "../node_modules/fumadocs-ui/dist";
+@source "./";
+
+@theme inline {
+  --color-fd-background: var(--b-bg);
+  --color-fd-foreground: var(--b-fg);
+  --color-fd-muted: var(--b-surface);
+  --color-fd-muted-foreground: var(--b-fg-muted);
+  --color-fd-popover: var(--b-bg);
+  --color-fd-popover-foreground: var(--b-fg);
+  --color-fd-card: var(--b-subtle);
+  --color-fd-card-foreground: var(--b-fg);
+  --color-fd-border: var(--b-line-subtle);
+  --color-fd-primary: var(--b-brand);
+  --color-fd-primary-foreground: var(--b-on-brand);
+  --color-fd-secondary: var(--b-surface);
+  --color-fd-secondary-foreground: var(--b-fg);
+  --color-fd-accent: var(--b-surface-hover);
+  --color-fd-accent-foreground: var(--b-fg);
+  --color-fd-ring: var(--b-focus);
+  --color-fd-overlay: var(--b-overlay);
+  --color-fd-info: var(--b-brand);
+  --color-fd-warning: var(--b-warning);
+  --color-fd-error: var(--b-danger);
+  --color-fd-success: var(--b-success);
+  --color-fd-idea: var(--b-project);
+}
+
+/* Inside Blocksy the Docs live in a page, not a browser window: no fixed top bar. */
+#nd-docs-layout {
+  --fd-nav-height: 0px;
+}

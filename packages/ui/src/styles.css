@@ -272,6 +272,8 @@
   background-size: 64px 64px; /* 32px art at 2x: chunky pixels */
   image-rendering: pixelated;
   -webkit-font-smoothing: auto;
+  /* Pixelify Sans has no "fi"/"fl" ligature glyphs: draw the letters one by one. */
+  font-variant-ligatures: none;
 }
 
 [data-theme="minecraft"] [data-slot="sidebar-inner"] {

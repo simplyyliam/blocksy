@@ -76,7 +76,7 @@ export function BlockInspector({ element, project, change, rename, select }: Ele
   }
 
   return (
-    <div className="flex flex-col divide-y divide-line-subtle">
+    <div className="flex flex-col divide-y divide-line-subtle py-1">
       <InspectorSection title="Block">
         <InspectorField label="Name" description={fieldDoc("name").description}>
           {(id) => (
@@ -108,10 +108,10 @@ export function BlockInspector({ element, project, change, rename, select }: Ele
                 <img
                   src={pngDataUrl(data.texture)}
                   alt=""
-                  className="size-8 rounded-sm [image-rendering:pixelated] shadow-[inset_0_0_0_1px_var(--b-line-subtle)]"
+                  className="size-7 shrink-0 rounded-md [image-rendering:pixelated]"
                 />
               )}
-              <Button id={id} variant="secondary" size="sm" onClick={() => fileInput.current?.click()}>
+              <Button id={id} variant="secondary" size="sm" className="px-2.5" onClick={() => fileInput.current?.click()}>
                 <ImageUp strokeWidth={1.75} /> {data.texture ? "Replace" : "Import"}
               </Button>
               {data.texture && (

@@ -1,0 +1,141 @@
+---
+title: Make your first block
+description: A textured block in its own creative tab that you can place, and that drops itself when mined with a pickaxe.
+---
+
+By the end of this lesson you will have a block of your own in Minecraft. You will also
+know where every piece lives in Java, because Blocksy shows you as you go. The video
+lessons come from **Modding by Kaupenjoe**, one of the best-loved Fabric teachers: they
+show the same steps written by hand, which is a great way to see what Blocksy does for you.
+
+<BlockDemo caption="This is what you're about to make. Drag to turn it." />
+
+## Before you start
+
+You need Blocksy with Java set up (Blocksy offers to set it up the first time). Nothing else:
+Blocksy downloads Minecraft and Fabric for you on the first build.
+
+<VideoLesson id="oU8-qV-ZtUY" title="Fabric Modding Tutorial - Minecraft 1.21: Getting Started" creator="Modding by Kaupenjoe">
+  how a Fabric mod project is set up by hand
+</VideoLesson>
+
+<Steps>
+<Step>
+
+### Create the project
+
+On **Home**, click **New project**. Keep **Starter block** selected on the left, give your mod
+a name and click **Create**.
+
+Blocksy writes the mod and starts the first build. It downloads Minecraft once, which takes
+a few minutes; later builds take seconds.
+
+</Step>
+<Step>
+
+### Meet the project editor
+
+When the build is done you are in the project editor:
+
+- the **project tree** on the left lists your blocks and creative tabs,
+- the **canvas** in the middle shows what is selected,
+- the **inspector** floats on the right while something is selected,
+- the small toolbar at the bottom switches between **Design** and **Code**.
+
+Click **First Block** in the tree. It turns in 3D: drag it to look around.
+
+</Step>
+<Step>
+
+### Give it a name and a texture
+
+In the inspector, change **Name** to something like *Ruby Block*. This is the name players see.
+
+Under **Look → Texture**, click **Replace** and pick a 16x16 PNG. Any pixel art program
+works. The preview updates straight away.
+
+<Callout title="Why 16x16?">
+Minecraft's own block textures are 16 by 16 pixels. Bigger images work in some cases,
+but 16x16 always looks at home next to vanilla blocks.
+</Callout>
+
+<VideoLesson id="9JpBpka5oBs" title="Fabric Modding Tutorial - Minecraft 1.21: Custom Blocks" creator="Modding by Kaupenjoe">
+  registering a block and its texture by hand
+</VideoLesson>
+
+</Step>
+<Step>
+
+### Decide how it mines
+
+Under **Mining**:
+
+- **Hardness** is how long it takes to break. Stone is 1.5.
+- **Tool** is the tool that breaks it fast. Keep **Pickaxe**.
+- **Drops only with it** means you must use that tool, or the block drops nothing (like stone).
+
+Each field shows the Java it becomes in small grey text, for example
+`.strength(1.5f, 6.0f)` and `.requiresCorrectToolForDrops()`.
+
+</Step>
+<Step>
+
+### Put it in a creative tab
+
+The starter already made a creative tab named after your mod, and your block is in it
+(**Creative tab → Shows in**). Click the tab in the project tree to see how it will look.
+
+<VideoLesson id="J1KbFLBPenA" title="Fabric Modding Tutorial - Minecraft 1.21: Item Groups" creator="Modding by Kaupenjoe">
+  creative tabs (called item groups in older versions)
+</VideoLesson>
+
+</Step>
+<Step>
+
+### Read the code
+
+Click **Code** in the bottom toolbar. Blocksy shows every file it writes:
+
+- `ModBlocks.java` registers your block and its item,
+- `ModCreativeTabs.java` makes the tab and lists the block in it,
+- `ModLootTableProvider.java` says the block **drops itself**,
+- `ModBlockTagProvider.java` says a **pickaxe** mines it,
+- `en_us.json` holds its English name.
+
+The code is read-only: change the block in **Design** and the code follows.
+
+<VideoLesson id="ELHvhvuGF3U" title="Fabric Modding Tutorial - Minecraft 1.21: Data Generation Setup" creator="Modding by Kaupenjoe">
+  data generation, which Blocksy uses for models, loot tables and tags
+</VideoLesson>
+
+</Step>
+<Step>
+
+### Try it in Minecraft
+
+Click **Run** in the title bar. Blocksy writes the files, generates the block's data and
+starts Minecraft. When the status bar says **Your mod is loaded**:
+
+1. Create a new world in **Creative** mode.
+2. Open the inventory and find your mod's tab: your block is in it.
+3. Place it. Switch to **Survival** (`/gamemode survival`), mine it with a pickaxe: it drops itself.
+4. Try mining it by hand: nothing drops, because it needs the right tool.
+
+<VideoLesson id="tpQ3VGUxhp8" title="Fabric Modding Tutorial - Minecraft 1.21: Custom Recipes & Loot Tables" creator="Modding by Kaupenjoe">
+  loot tables, the files that decide what a block drops
+</VideoLesson>
+
+</Step>
+</Steps>
+
+## What you learned
+
+- A block has an **id** (like `ruby_block`) that never changes, and a **name** players see.
+- It needs an **item** too, so you can hold it. Blocksy registers both.
+- **Loot tables** decide drops; **tags** decide which tool mines it.
+- **Data generation** writes the JSON files for models, loot tables and tags from Java.
+
+Next: read [What is a block?](/docs/concepts/what-is-a-block), or look up any field in the
+[Block reference](/docs/reference/block). Kaupenjoe's whole
+[Fabric 1.21 playlist](https://www.youtube.com/playlist?list=PLKGarocXCE1H_HxOYihQMq0mlpqiUJj4L)
+goes much further, one video at a time.

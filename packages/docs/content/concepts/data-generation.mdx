@@ -1,0 +1,23 @@
+---
+title: Data generation
+description: Why Blocksy describes models, loot tables and tags in Java, and lets Fabric write the JSON.
+---
+
+Much of a mod is **data**, not code: JSON files that say what a block looks like (models,
+blockstates), what it drops (loot tables) and which tool mines it (tags). Writing them by
+hand is easy to get wrong, so Fabric offers **data generation**: small Java classes
+(*providers*) describe the data, and a Gradle task called `runDatagen` writes the JSON.
+
+| Provider | Writes | Example line |
+| --- | --- | --- |
+| `ModModelProvider` | blockstates, block and item models | `blocks.createTrivialCube(ModBlocks.RUBY_BLOCK);` |
+| `ModLootTableProvider` | loot tables | `dropSelf(ModBlocks.RUBY_BLOCK);` |
+| `ModBlockTagProvider` | block tags | `builder(BlockTags.MINEABLE_WITH_PICKAXE)` |
+
+Blocksy writes these providers from your project, and runs `runDatagen` for you before
+Build and Run, only when something it reads has changed. The JSON lands in
+`src/main/generated` inside your project.
+
+<VideoLesson id="ELHvhvuGF3U" title="Fabric Modding Tutorial - Minecraft 1.21: Data Generation Setup" creator="Modding by Kaupenjoe">
+  setting up data generation by hand
+</VideoLesson>

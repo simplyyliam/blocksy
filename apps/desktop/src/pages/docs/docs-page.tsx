@@ -1,27 +1,45 @@
-// Docs: the full calm, visual docs arrive in v0.7. Until then, a short start guide.
-import { Page } from "../page"
+// Docs: the in-app documentation (@blocksy/docs, Fumadocs inside). Loaded lazily the
+// first time you open Docs, with a pixel loader meanwhile, so app start stays fast.
+// The page path lives in the navigation store; links inside Docs move it.
+import { getVersion } from "@tauri-apps/api/app"
+import { openUrl } from "@tauri-apps/plugin-opener"
+import { lazy, Suspense, useEffect, useState } from "react"
+import { PixelLoader } from "@blocksy/ui"
+import { registries } from "../../app/modules"
+import { useNavigation } from "../../shared/stores/navigation"
 
-const steps = [
-  { title: "Create a project", body: "Home → New project. Blocksy writes a ready-to-build mod with pinned, tested versions." },
-  { title: "Build", body: "The first build downloads Minecraft and the mod loader (a few minutes, once). Later builds take seconds." },
-  { title: "Run", body: "Opens Minecraft with your mod loaded. The status bar tells you when your mod shows up in the mod list." },
-  { title: "Export", body: "Saves your mod as a .jar you can drop into your mods folder or share." },
-]
+const DocsApp = lazy(() => import("@blocksy/docs").then((m) => ({ default: m.DocsApp })))
+
+// Stable for the docs' memoised page list (element types don't change while running).
+const elementTypes = registries.elementTypes.list()
+
+function Loading() {
+  return (
+    <div className="grid h-full place-items-center">
+      <span className="flex flex-col items-center gap-2.5 text-xs text-fg-muted">
+        <PixelLoader className="size-6 text-brand" label="Loading Docs" />
+        Loading Docs
+      </span>
+    </div>
+  )
+}
 
 export function DocsPage() {
+  const path = useNavigation((s) => s.docsPath)
+  const openDocs = useNavigation((s) => s.openDocs)
+  const [version, setVersion] = useState("0.2")
+  useEffect(() => {
+    void getVersion().then(setVersion).catch(() => {})
+  }, [])
+
+  // A new page starts at the top.
+  useEffect(() => {
+    document.querySelector("main")?.scrollTo({ top: 0 })
+  }, [path])
+
   return (
-    <Page title="Docs" subtitle="Guides, references and live demos arrive in v0.7. Here's how v0.1 works.">
-      <ol className="flex flex-col gap-6">
-        {steps.map((step, i) => (
-          <li key={step.title} className="flex gap-4">
-            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-surface text-xs text-fg-muted tabular-nums">{i + 1}</span>
-            <div>
-              <p className="text-base text-fg">{step.title}</p>
-              <p className="mt-1 text-base text-fg-muted">{step.body}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
-    </Page>
+    <Suspense fallback={<Loading />}>
+      <DocsApp path={path} navigate={openDocs} openExternal={(url) => void openUrl(url)} elementTypes={elementTypes} version={version} />
+    </Suspense>
   )
 }

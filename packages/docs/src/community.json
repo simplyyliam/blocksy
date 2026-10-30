@@ -1,0 +1,13 @@
+{
+  "_comment": "Community links (plan 11.3). Every entry credits its creator. Check links before each release and update lastChecked.",
+  "entries": [
+    { "title": "Fabric Documentation", "url": "https://docs.fabricmc.net/develop/", "creator": "Fabric Documentation team", "type": "docs", "loaders": ["fabric"], "minecraft": ["26.1", "26.3"], "lastChecked": "2026-10-30" },
+    { "title": "Fabric Wiki tutorials", "url": "https://wiki.fabricmc.net/tutorial:setup", "creator": "FabricMC community", "type": "docs", "loaders": ["fabric"], "minecraft": ["1.21"], "lastChecked": "2026-10-30" },
+    { "title": "NeoForge Documentation", "url": "https://docs.neoforged.net/docs/1.21.11/gettingstarted/", "creator": "NeoForged team", "type": "docs", "loaders": ["neoforge"], "minecraft": ["1.21"], "lastChecked": "2026-10-30" },
+    { "title": "Fabric Modding Tutorials (1.21)", "url": "https://www.youtube.com/playlist?list=PLKGarocXCE1H_HxOYihQMq0mlpqiUJj4L", "creator": "Modding by Kaupenjoe", "type": "video", "loaders": ["fabric"], "minecraft": ["1.21"], "lastChecked": "2026-10-30" },
+    { "title": "Fabric Modding Tutorials (1.20)", "url": "https://www.youtube.com/playlist?list=PLKGarocXCE1EO43Dlf5JGh7Yk-kRAXUEJ", "creator": "Modding by Kaupenjoe", "type": "video", "loaders": ["fabric"], "minecraft": ["1.20"], "lastChecked": "2026-10-30" },
+    { "title": "Blockbench formats", "url": "https://blockbench.net/wiki/blockbench/formats", "creator": "JannisX11 and contributors", "type": "tool", "loaders": [], "minecraft": [], "lastChecked": "2026-10-30" },
+    { "title": "misode's data pack generators", "url": "https://misode.github.io/", "creator": "Misode", "type": "tool", "loaders": [], "minecraft": ["1.21"], "lastChecked": "2026-10-30" },
+    { "title": "Minecraft Wiki: loot tables", "url": "https://minecraft.wiki/w/Loot_table", "creator": "Minecraft Wiki editors", "type": "reference", "loaders": [], "minecraft": [], "lastChecked": "2026-10-30" }
+  ]
+}

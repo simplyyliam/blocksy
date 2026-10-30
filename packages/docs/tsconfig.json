@@ -5,7 +5,13 @@
     "composite": true,
     "emitDeclarationOnly": true,
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    // The Docs shell is React (Fumadocs) running in the webview; MDX types for content.
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["mdx"],
+    "resolveJsonModule": true
   },
-  "include": ["src"]
+  "include": ["src", "src/*.json"],
+  "references": [{ "path": "../core" }, { "path": "../ui" }, { "path": "../model-studio" }, { "path": "../elements/block" }]
 }

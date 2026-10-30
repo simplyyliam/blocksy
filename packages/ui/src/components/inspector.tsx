@@ -2,17 +2,23 @@
 // Custom because shadcn has no "property inspector" layout; these only arrange
 // shadcn pieces (Field, Input) into compact rows, like Figma's right panel.
 //
-//   MINING                       <- InspectorSection
+// Looks like docs/design/visual-editor(assets).jpg: a white card, sections split by
+// hairlines, a Title-case header with an optional action (+) on the right.
+//
+//   Mining                    +  <- InspectorSection (title, action)
 //   Hardness            [ 1.5 ]  <- InspectorField (label left, control right)
 //   .strength(1.5f, 6f)          <- the Java hint under it (teaches as you edit)
 import { useEffect, useId, useState, type ReactNode } from "react"
 import { Input } from "./ui/input.tsx"
 import { cn } from "../lib/utils.ts"
 
-export function InspectorSection({ title, children, className }: { title: string; children: ReactNode; className?: string }) {
+export function InspectorSection({ title, action, children, className }: { title: string; action?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={cn("flex flex-col gap-2.5 py-3 first:pt-0 last:pb-0", className)}>
-      <h3 className="text-xs font-medium tracking-[0.04em] text-fg-muted uppercase">{title}</h3>
+    <section className={cn("flex flex-col gap-2.5 px-4 py-3.5", className)}>
+      <div className="flex min-h-6 items-center justify-between gap-2">
+        <h3 className="text-sm font-medium text-fg">{title}</h3>
+        {action}
+      </div>
       {children}
     </section>
   )
@@ -37,7 +43,7 @@ export function InspectorField({ label, java, description, stacked, children }: 
         <label htmlFor={id} title={description} className="shrink-0 text-sm text-fg">
           {label}
         </label>
-        <div className={cn("flex min-w-0 items-center justify-end", !stacked && "w-[148px]")}>{children(id)}</div>
+        <div className={cn("flex min-w-0 items-center justify-end", !stacked && "w-[140px]")}>{children(id)}</div>
       </div>
       {java && <code className="truncate font-mono text-xs text-fg-faint" title={java}>{java}</code>}
     </div>

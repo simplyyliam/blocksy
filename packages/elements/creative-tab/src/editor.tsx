@@ -15,7 +15,7 @@ const textureOf = (data: unknown) => {
 export function CreativeTabInspector({ element, project, change, rename, select }: ElementEditorProps<CreativeTabData>) {
   const entries = tabEntries(project, element.id)
   return (
-    <div className="flex flex-col divide-y divide-line-subtle">
+    <div className="flex flex-col divide-y divide-line-subtle py-1">
       <InspectorSection title="Creative tab">
         <InspectorField label="Title" java={`"itemGroup.${project.modId}.${element.id}"`}>
           {(id) => (
@@ -77,7 +77,9 @@ export function CreativeTabCanvas({ element, project, select }: ElementEditorPro
   const slots = Math.max(27, Math.ceil(entries.length / 9) * 9)
   return (
     <div className="relative grid size-full place-items-center">
-      <DotPattern width={18} height={18} cr={0.9} className="text-line [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]" />
+      <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_15%,transparent_65%)]">
+        <DotPattern width={18} height={18} cr={0.9} className="text-line" />
+      </div>
       <div className="relative flex flex-col">
         {/* The tab itself, sitting on the panel. */}
         <div className="flex w-fit items-center gap-2 rounded-t-lg bg-surface px-3 pt-2 pb-1.5">

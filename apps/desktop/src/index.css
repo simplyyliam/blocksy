@@ -1,5 +1,7 @@
 /* The design system (tokens, Tailwind, fonts) plus this app's own small additions. */
 @import "@blocksy/ui/styles.css";
+/* The Docs (Fumadocs), coloured by the same theme tokens. */
+@import "@blocksy/docs/docs.css";
 
 /* Scan the app's own components for Tailwind class names. */
 @source "./";

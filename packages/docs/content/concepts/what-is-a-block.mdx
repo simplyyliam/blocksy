@@ -1,0 +1,29 @@
+---
+title: What is a block?
+description: Blocks, their items and their ids, in plain words.
+---
+
+<BlockDemo caption="One block: a cube in the world, with one texture on all six faces." />
+
+A **block** is anything you can place in the world: stone, planks, a furnace. In code, a
+block is an object of the `Block` class with **properties** (how hard it is, what it sounds
+like, how much light it gives off).
+
+## A block and its item
+
+When a block is in your hand or inventory, it isn't a block: it's an **item** (a
+`BlockItem`) that places the block when you use it. So every block you make needs both,
+registered under the same id. Blocksy always registers the pair.
+
+## Ids never change
+
+Every block has an id like `ruby_mod:ruby_block`: your **mod id**, a colon, and the
+**block id**. Worlds save blocks by id, so if an id changed, every placed block would
+vanish from old worlds. That is why Blocksy makes the id from the block's *first* name and
+keeps it, even when you rename the block later.
+
+## Registering
+
+Minecraft keeps a list of every block, called a **registry**. Adding your block to it is
+called *registering* it, and it has to happen while the game starts. See
+[Registries](/docs/concepts/registries).
