@@ -20,7 +20,7 @@ import {
   Button, cn, ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, Input, Tooltip, TooltipContent, TooltipTrigger,
 } from "@blocksy/ui"
 import { elementModules, registries } from "../../app/modules"
-import { useEditor } from "../../shared/stores/editor"
+import { OVERVIEW, useEditor } from "../../shared/stores/editor"
 import { useProject } from "../../shared/stores/project"
 
 /** The small square tile every row starts with: a block's texture, else its type icon. */
@@ -65,7 +65,7 @@ export function ProjectTree() {
 
   const remove = (element: Element) => {
     documents.execute(removeElement(element.id))
-    if (selected === element.id) select("overview")
+    if (selected === element.id) select(OVERVIEW)
   }
 
   return (
@@ -81,7 +81,7 @@ export function ProjectTree() {
       </div>
 
       <nav aria-label="Project" className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto border-t border-line-subtle px-2 pt-3 pb-4">
-        <Button variant="ghost" size="sm" className={cn(row, selected === "overview" && "bg-surface-hover")} onClick={() => select("overview")}>
+        <Button variant="ghost" size="sm" className={cn(row, selected === OVERVIEW && "bg-surface-hover")} onClick={() => select(OVERVIEW)}>
           <Tile>
             <LayoutDashboard className="size-4" strokeWidth={1.75} />
           </Tile>

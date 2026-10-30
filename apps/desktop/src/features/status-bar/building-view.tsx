@@ -7,7 +7,7 @@ import { FIRST_BUILD_STEPS, useGradle } from "../../shared/stores/gradle"
 import type { StatusView } from "./types"
 
 function BuildingView() {
-  const step = useGradle((s) => s.step)
+  const step = useGradle((s) => s.stepNow)
   const label = step >= 0 ? FIRST_BUILD_STEPS[step]!.label : "Starting Gradle"
   return (
     <>

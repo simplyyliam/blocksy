@@ -15,10 +15,13 @@ import { useNavigation } from "./stores/navigation"
 import { useProject } from "./stores/project"
 import { syncGeneratedFiles } from "./sync-files"
 
+/** True from the click until Gradle has started, so a double click can't start twice. */
+let starting = false
+
 async function start(task: GradleTask): Promise<boolean> {
   const project = useProject.getState().current
   const java = useJava.getState().active
-  if (!project) return false
+  if (!project || starting || useGradle.getState().task !== null) return false
   if (!java) {
     useNavigation.getState().go("jdk")
     return false
@@ -27,6 +30,7 @@ async function start(task: GradleTask): Promise<boolean> {
   const firstBuild = !(await commands.pathExists(joinPath(project.dir, "build")))
   if (!firstBuild) useNavigation.getState().setBottomPanel(true)
   if (firstBuild) useNavigation.getState().go("project")
+  starting = true
   try {
     // Write the mod's files from the project first, so the build always matches what you see.
     const { prepare, markPrepared } = await syncGeneratedFiles(project.dir, project.doc)
@@ -41,6 +45,8 @@ async function start(task: GradleTask): Promise<boolean> {
   } catch (err) {
     toast.error(errorMessage(err))
     return false
+  } finally {
+    starting = false
   }
 }
 

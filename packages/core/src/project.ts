@@ -13,8 +13,11 @@ export const MOD_ID_PATTERN = /^[a-z][a-z0-9_]{1,63}$/
 export const PACKAGE_PATTERN = /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*$/
 
 /** One element in the mod (a block, an item, ...). `data` is checked by its element type. */
+/** Element ids (ruby_block): they end up in Java names and file paths, so keep them plain. */
+export const ELEMENT_ID_PATTERN = /^[a-z][a-z0-9_]{0,63}$/
+
 export const elementSchema = z.object({
-  id: z.string().min(1),
+  id: z.string().regex(ELEMENT_ID_PATTERN, "Element ids use lowercase letters, digits and _"),
   type: z.string().min(1),
   name: z.string().min(1),
   data: z.unknown(),

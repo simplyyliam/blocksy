@@ -16,6 +16,9 @@ import { TEXTURE_SIZE, type BlockData } from "./schema.ts"
 /** The id of the Creative tab element type (its own package). Data references, not imports. */
 const CREATIVE_TAB_TYPE = "creative_tab"
 
+/** "No tab" in the select. "@" can't start an element id, so no tab can collide with it. */
+const NO_TAB = "@none"
+
 interface Choice {
   value: string
   label: string
@@ -193,9 +196,9 @@ export function BlockInspector({ element, project, change, rename, select }: Ele
           {(id) => (
             <Choose
               id={id}
-              value={data.tab && tabs.some((t) => t.id === data.tab) ? data.tab : "none"}
-              items={[{ value: "none", label: "No tab" }, ...tabs.map((t) => ({ value: t.id, label: t.name }))]}
-              onChange={(v) => set({ tab: v === "none" ? null : v })}
+              value={data.tab && tabs.some((t) => t.id === data.tab) ? data.tab : NO_TAB}
+              items={[{ value: NO_TAB, label: "No tab" }, ...tabs.map((t) => ({ value: t.id, label: t.name }))]}
+              onChange={(v) => set({ tab: v === NO_TAB ? null : v })}
             />
           )}
         </InspectorField>

@@ -13,6 +13,8 @@ export interface DocsHost {
   elementTypes: ElementType[]
   /** App version, for the version badge. */
   version: string
+  /** What the docs are written for, from the registered loader target ("<loader> · Minecraft <versions>"). */
+  platform: string
 }
 
 export const DocsHostContext = createContext<DocsHost | null>(null)

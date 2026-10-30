@@ -133,18 +133,17 @@ pub async fn run_gradle(
         let mut result = (false, None);
         for (i, tasks) in runs.iter().enumerate() {
             if i > 0 {
-                let stopped = state.running.lock().unwrap().as_ref().map(|r| r.stopped).unwrap_or(true);
-                if stopped {
-                    break;
-                }
+                // Check for Stop, spawn and record the new pid under one lock: a Stop can't
+                // slip in between and kill the finished step's (possibly reused) pid.
+                let mut running = state.running.lock().unwrap();
+                let Some(run) = running.as_mut().filter(|r| !r.stopped) else { break };
                 match gradle_command(&dir, &wrapper, &java_home, tasks).spawn() {
                     Ok(next) => {
                         child = next;
-                        if let Some(r) = state.running.lock().unwrap().as_mut() {
-                            r.pid = child.id().unwrap_or_default();
-                        }
+                        run.pid = child.id().unwrap_or_default();
                     }
                     Err(e) => {
+                        drop(running);
                         let line = format!("Couldn't start Gradle: {e}");
                         let _ = GradleOutput { run_id, line, stream: OutputStream::Stderr }.emit(&app);
                         result = (false, None);

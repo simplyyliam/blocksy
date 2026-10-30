@@ -18,7 +18,7 @@ import { EditorIsland } from "../../features/project-editor/editor-island"
 import { Overview } from "../../features/project-editor/overview"
 import { ProjectTree } from "../../features/project-editor/project-tree"
 import { elementModules } from "../../app/modules"
-import { useEditor } from "../../shared/stores/editor"
+import { OVERVIEW, useEditor } from "../../shared/stores/editor"
 import { useGradle } from "../../shared/stores/gradle"
 import { useProject, type OpenProject } from "../../shared/stores/project"
 
@@ -62,7 +62,7 @@ export function ProjectPage() {
   // A freshly opened project starts on its Overview.
   const dir = project?.dir
   useEffect(() => {
-    useEditor.setState({ selected: "overview", view: "design" })
+    useEditor.setState({ selected: OVERVIEW, view: "design" })
   }, [dir])
 
   if (!project) return null

@@ -21,3 +21,13 @@ describe("element ids and names", () => {
     expect(store.get().elements[0]!.name).toBe("Ruby Block")
   })
 })
+
+describe("element id validation", () => {
+  it("refuses project files whose element ids could break Java names or paths", async () => {
+    const { loadProject } = await import("./migrations.ts")
+    const project = createProject({ name: "Mod", target: "fabric", minecraftVersion: "26.1.2" })
+    const withId = (id: string) => JSON.stringify({ ...project, elements: [{ id, type: "block", name: "X", data: {} }] })
+    expect(() => loadProject(withId("ruby_block"))).not.toThrow()
+    for (const bad of ["../escape", "Ruby", "a\"b", "@overview", "1st"]) expect(() => loadProject(withId(bad))).toThrow()
+  })
+})

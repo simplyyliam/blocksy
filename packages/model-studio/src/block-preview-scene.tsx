@@ -16,47 +16,47 @@ function CountFrames() {
   return null
 }
 
-/** Loads a PNG data URL as a pixel-crisp texture, and frees the old one when it changes. */
-function usePixelTexture(url: string | null): THREE.Texture | null {
+/**
+ * Loads each distinct PNG data URL once as a pixel-crisp texture (six faces usually share
+ * one), and frees textures that are no longer used. Returns url -> texture.
+ */
+function usePixelTextures(urls: (string | null)[]): Map<string, THREE.Texture> {
   const invalidate = useThree((s) => s.invalidate)
-  const [texture, setTexture] = useState<THREE.Texture | null>(null)
+  const [textures, setTextures] = useState(() => new Map<string, THREE.Texture>())
+  // One string for "which textures", so the effect only reruns when the set of URLs changes.
+  const key = [...new Set(urls.filter((u): u is string => !!u))].sort().join(" ")
   useEffect(() => {
-    if (!url) {
-      setTexture(null)
-      return
-    }
+    const wanted = key ? key.split(" ") : []
     let alive = true
-    let loaded: THREE.Texture | null = null
-    new THREE.TextureLoader().load(url, (t) => {
-      t.magFilter = THREE.NearestFilter
-      t.minFilter = THREE.NearestFilter
-      t.generateMipmaps = false
-      t.colorSpace = THREE.SRGBColorSpace
-      loaded = t
-      if (alive) {
-        setTexture(t)
-        invalidate() // draw one new frame with the new texture
-      } else t.dispose()
-    })
+    const loaded = new Map<string, THREE.Texture>()
+    let pending = wanted.length
+    if (pending === 0) setTextures(new Map())
+    for (const url of wanted) {
+      new THREE.TextureLoader().load(url, (t) => {
+        t.magFilter = THREE.NearestFilter
+        t.minFilter = THREE.NearestFilter
+        t.generateMipmaps = false
+        t.colorSpace = THREE.SRGBColorSpace
+        loaded.set(url, t)
+        if (!alive) return t.dispose()
+        if (--pending === 0) {
+          setTextures(new Map(loaded))
+          invalidate() // draw one new frame with the new textures
+        }
+      })
+    }
     return () => {
       alive = false
-      loaded?.dispose()
+      loaded.forEach((t) => t.dispose())
     }
-  }, [url, invalidate])
-  return texture
+  }, [key, invalidate])
+  return textures
 }
 
 function Cube({ model, placeholder, onReady }: { model: CubeModel; placeholder: string; onReady?: () => void }) {
-  // One texture per distinct URL (usually all six faces share one).
   const urls = BOX_FACE_ORDER.map((face) => faceTexture(model, face))
-  const textures = [
-    usePixelTexture(urls[0]!),
-    usePixelTexture(urls[1]!),
-    usePixelTexture(urls[2]!),
-    usePixelTexture(urls[3]!),
-    usePixelTexture(urls[4]!),
-    usePixelTexture(urls[5]!),
-  ]
+  const byUrl = usePixelTextures(urls)
+  const textures = urls.map((url) => (url ? (byUrl.get(url) ?? null) : null))
   // Unlit materials tinted per face give Minecraft's directional shading for free.
   const materials = useMemo(
     () =>
@@ -65,7 +65,8 @@ function Cube({ model, placeholder, onReady }: { model: CubeModel; placeholder: 
         const color = textures[i] ? new THREE.Color(shade, shade, shade) : new THREE.Color(placeholder).multiplyScalar(shade)
         return new THREE.MeshBasicMaterial({ map: textures[i], color, transparent: true, alphaTest: 0.1 })
       }),
-    [placeholder, ...textures],
+    // textures change exactly when byUrl (or the urls) do
+    [placeholder, byUrl, ...urls],
   )
   useEffect(() => () => materials.forEach((m) => m.dispose()), [materials])
 

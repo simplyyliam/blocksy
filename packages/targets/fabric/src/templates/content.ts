@@ -16,7 +16,12 @@ export interface Content {
 }
 
 export function content(ctx: GenerateContext): Content {
-  const elements = ctx.project.elements
+  return contentOf(ctx.project)
+}
+
+/** The same grouping straight from a project (for prepareTasks, which has no context). */
+export function contentOf(project: GenerateContext["project"]): Content {
+  const elements = project.elements
   return {
     blocks: elements.filter((e) => e.type === "block") as BlockElement[],
     tabs: elements.filter((e) => e.type === "creative_tab") as CreativeTabElement[],

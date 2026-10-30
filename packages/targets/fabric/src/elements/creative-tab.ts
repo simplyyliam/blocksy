@@ -15,12 +15,11 @@ export function creativeTabField(tab: CreativeTabElement, entries: string[], mod
   // A tab needs an icon even while empty: the barrier is a stand-in until a block joins.
   const icon = iconId ? `ModBlocks.${constant(iconId)}` : "Items.BARRIER"
   const accepts = entries.map((id) => `\t\t\t\toutput.accept(ModBlocks.${constant(id)});`).join("\n")
+  // One field per tab (named after its id), so two tabs can never clash.
   return `	// ${tab.name}: ${entries.length} block${entries.length === 1 ? "" : "s"}.
-	public static final ResourceKey<CreativeModeTab> ${name}_KEY = ResourceKey.create(
-		Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(MOD_ID, "${tab.id}"));
 	public static final CreativeModeTab ${name} = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
-		${name}_KEY,
+		ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(MOD_ID, "${tab.id}")),
 		FabricCreativeModeTab.builder()
 			.title(Component.translatable("itemGroup.${modId}.${tab.id}"))
 			.icon(() -> new ItemStack(${icon}))

@@ -18,11 +18,9 @@ import static com.example.first_block.FirstBlock.MOD_ID;
 /** The mod's tabs in the creative inventory. */
 public final class ModCreativeTabs {
 	// First Block: 2 blocks.
-	public static final ResourceKey<CreativeModeTab> FIRST_BLOCK_TAB_KEY = ResourceKey.create(
-		Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(MOD_ID, "first_block_tab"));
 	public static final CreativeModeTab FIRST_BLOCK_TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
-		FIRST_BLOCK_TAB_KEY,
+		ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(MOD_ID, "first_block_tab")),
 		FabricCreativeModeTab.builder()
 			.title(Component.translatable("itemGroup.first_block.first_block_tab"))
 			.icon(() -> new ItemStack(ModBlocks.GLOW_BLOCK))

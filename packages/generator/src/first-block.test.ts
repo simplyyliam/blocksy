@@ -53,6 +53,15 @@ describe("first block mod", () => {
     expect(fabricTarget.prepareTasks?.(createProject({ name: "Empty", target: "fabric", minecraftVersion: "26.1.2" }))).toEqual([])
   })
 
+  it("gives every creative tab its own Java field, even tabs named x and x_key", () => {
+    const store = createDocumentStore(createProject({ name: "Gems", target: "fabric", minecraftVersion: "26.1.2" }))
+    store.execute(addElement({ id: "gems", type: "creative_tab", name: "Gems", data: { icon: null } }))
+    store.execute(addElement({ id: "gems_key", type: "creative_tab", name: "Gems Key", data: { icon: null } }))
+    const java = generate(store.get(), setup()).find((f) => f.path.endsWith("ModCreativeTabs.java"))!
+    const fields = [...("contents" in java ? java.contents : "").matchAll(/public static final \w+ (\w+) =/g)].map((m) => m[1])
+    expect(fields).toEqual(["GEMS", "GEMS_KEY"])
+  })
+
   it("is pure", () => {
     expect(generate(firstBlockMod(), setup())).toEqual(generate(firstBlockMod(), setup()))
   })

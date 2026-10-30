@@ -7,6 +7,9 @@ import {
 } from "@blocksy/ui"
 import { tabEntries, type CreativeTabData } from "./element.ts"
 
+/** "First block" in the icon select. "@" can't start an element id, so no block collides. */
+const AUTO_ICON = "@auto"
+
 const textureOf = (data: unknown) => {
   const texture = (data as { texture?: unknown } | null)?.texture
   return typeof texture === "string" ? `data:image/png;base64,${texture}` : null
@@ -33,15 +36,15 @@ export function CreativeTabInspector({ element, project, change, rename, select 
         <InspectorField label="Icon">
           {(id) => (
             <Select
-              items={[{ value: "auto", label: "First block" }, ...entries.map((e) => ({ value: e.id, label: e.name }))]}
-              value={element.data.icon ?? "auto"}
-              onValueChange={(v) => v !== null && change({ icon: v === "auto" ? null : v })}
+              items={[{ value: AUTO_ICON, label: "First block" }, ...entries.map((e) => ({ value: e.id, label: e.name }))]}
+              value={element.data.icon ?? AUTO_ICON}
+              onValueChange={(v) => v !== null && change({ icon: v === AUTO_ICON ? null : v })}
             >
               <SelectTrigger id={id} size="sm" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent alignItemWithTrigger={false}>
-                <SelectItem value="auto">First block</SelectItem>
+                <SelectItem value={AUTO_ICON}>First block</SelectItem>
                 {entries.map((e) => (
                   <SelectItem key={e.id} value={e.id}>
                     {e.name}

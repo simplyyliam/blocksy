@@ -98,12 +98,12 @@ function MdxPage({ entry, title, description }: { entry: MdxEntry; title: string
 }
 
 function PageHeader({ title, description }: { title: string; description?: string }) {
-  const { version } = useDocsHost()
+  const { version, platform } = useDocsHost()
   return (
     <>
       {/* Version badge on every page, like Fabric's docs. */}
       <span className="not-prose mb-1 w-fit rounded-md bg-fd-muted px-1.5 py-0.5 text-xs text-fd-muted-foreground">
-        Blocksy {version} · Fabric · Minecraft 26.1+
+        Blocksy {version} · {platform}
       </span>
       <DocsTitle>{title}</DocsTitle>
       {description && <DocsDescription>{description}</DocsDescription>}

@@ -33,8 +33,10 @@ interface GradleState {
   firstBuild: boolean
   /** True when this run starts with prepare tasks (e.g. data generation for blocks). */
   prepares: boolean
-  /** Index into FIRST_BUILD_STEPS of the latest step reached. */
+  /** Index into FIRST_BUILD_STEPS of the furthest step reached (the first-build timeline). */
   step: number
+  /** Index of the step Gradle is on right now. Can go back: datagen runs before the build compiles again. */
+  stepNow: number
   /** runClient: the game finished loading mods, and ours was among them. */
   gameLoaded: boolean
   modLoaded: boolean
@@ -58,6 +60,7 @@ export const useGradle = create<GradleState>((set, get) => ({
   firstBuild: false,
   prepares: false,
   step: -1,
+  stepNow: -1,
   gameLoaded: false,
   modLoaded: false,
   lastResult: null,
@@ -67,7 +70,7 @@ export const useGradle = create<GradleState>((set, get) => ({
     logLines.length = 0
     pending = []
     watchedModId = modId
-    set({ task, firstBuild, prepares: prepare.length > 0, step: -1, gameLoaded: false, modLoaded: false, lastResult: null, logVersion: get().logVersion + 1 })
+    set({ task, firstBuild, prepares: prepare.length > 0, step: -1, stepNow: -1, gameLoaded: false, modLoaded: false, lastResult: null, logVersion: get().logVersion + 1 })
     try {
       const runId = await call(commands.runGradle(projectDir, task, javaHome, prepare))
       set({ runId })
@@ -89,6 +92,7 @@ function inspect(text: string) {
   const state = useGradle.getState()
   const step = FIRST_BUILD_STEPS.findIndex((s) => s.match.test(text))
   if (step > state.step) useGradle.setState({ step })
+  if (step >= 0 && step !== state.stepNow) useGradle.setState({ stepNow: step })
   if (state.task === "run_client") {
     // Fabric prints "Loading 52 mods:" followed by "\t- modid 1.0.0" lines.
     if (/Loading \d+ mods:/.test(text)) useGradle.setState({ gameLoaded: true })

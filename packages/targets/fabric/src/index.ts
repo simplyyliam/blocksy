@@ -4,7 +4,7 @@ import type { GeneratedFile, GenerateContext, LoaderTarget } from "@blocksy/core
 import { deriveClassName } from "@blocksy/core"
 import { buildGradle, gradleProperties, settingsGradle, wrapperProperties } from "./templates/gradle.ts"
 import { clientClass, fabricModJson, gitignore, langJson, mainClass } from "./templates/mod.ts"
-import { content, contentFiles, langEntries, needsDatagen } from "./templates/content.ts"
+import { content, contentFiles, contentOf, langEntries, needsDatagen } from "./templates/content.ts"
 import { blockTemplate } from "./elements/block.ts"
 import { creativeTabTemplate } from "./elements/creative-tab.ts"
 import { GRADLE_WRAPPER_JAR_BASE64, GRADLEW, GRADLEW_BAT } from "./wrapper.generated.ts"
@@ -58,5 +58,6 @@ export const fabricTarget: LoaderTarget = {
     creative_tab: creativeTabTemplate,
   },
   // Blocks need their models, loot tables and tags generated before building or running.
-  prepareTasks: (project) => (project.elements.some((e) => e.type === "block") ? ["runDatagen"] : []),
+  // Same rule that adds datagen to build.gradle and fabric.mod.json (needsDatagen).
+  prepareTasks: (project) => (needsDatagen(contentOf(project)) ? ["runDatagen"] : []),
 }

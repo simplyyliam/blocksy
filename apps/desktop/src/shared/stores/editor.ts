@@ -3,7 +3,10 @@
 // The project itself lives in the project store (commands + undo/redo), not here.
 import { create } from "zustand"
 
-/** "overview" or an element id. */
+/** The Overview page. "@" can never start an element id, so no element can take its place. */
+export const OVERVIEW = "@overview"
+
+/** OVERVIEW or an element id. */
 export type Selection = string
 
 interface EditorState {
@@ -16,7 +19,7 @@ interface EditorState {
 }
 
 export const useEditor = create<EditorState>((set) => ({
-  selected: "overview",
+  selected: OVERVIEW,
   view: "design",
   treeOpen: true,
   select: (selected) => set({ selected }),

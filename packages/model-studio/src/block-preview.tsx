@@ -4,7 +4,11 @@
 import { lazy, Suspense } from "react"
 import type { BlockPreviewProps } from "./block-preview-scene.tsx"
 
-const Scene = lazy(() => import("./block-preview-scene.tsx").then((m) => ({ default: m.BlockPreview })))
+const loadScene = () => import("./block-preview-scene.tsx")
+const Scene = lazy(() => loadScene().then((m) => ({ default: m.BlockPreview })))
+
+/** Starts fetching the 3D code early (e.g. when a project opens), so the first preview is quick. */
+export const preloadBlockPreview = () => void loadScene()
 
 export function BlockPreview(props: BlockPreviewProps) {
   return (

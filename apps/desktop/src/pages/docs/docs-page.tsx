@@ -13,6 +13,12 @@ const DocsApp = lazy(() => import("@blocksy/docs").then((m) => ({ default: m.Doc
 // Stable for the docs' memoised page list (element types don't change while running).
 const elementTypes = registries.elementTypes.list()
 
+/** "Fabric · Minecraft 26.1.2, 26.3", from the registered loader targets (core never names one). */
+const platform = registries.loaderTargets
+  .list()
+  .map((t) => `${t.name} · Minecraft ${t.versions.map((v) => v.minecraft).join(", ")}`)
+  .join(" / ")
+
 function Loading() {
   return (
     <div className="grid h-full place-items-center">
@@ -39,7 +45,7 @@ export function DocsPage() {
 
   return (
     <Suspense fallback={<Loading />}>
-      <DocsApp path={path} navigate={openDocs} openExternal={(url) => void openUrl(url)} elementTypes={elementTypes} version={version} />
+      <DocsApp path={path} navigate={openDocs} openExternal={(url) => void openUrl(url)} elementTypes={elementTypes} version={version} platform={platform} />
     </Suspense>
   )
 }
