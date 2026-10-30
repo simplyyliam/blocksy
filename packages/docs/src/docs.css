@@ -36,4 +36,8 @@
 /* Inside Blocksy the Docs live in a page, not a browser window: no fixed top bar. */
 #nd-docs-layout {
   --fd-nav-height: 0px;
+  /* Fumadocs centres its grid on wide screens by widening the sidebar column. In the
+     app the sidebar should hug the left edge at its own width, so the layout never
+     counts as "wider than the screen" and spare room goes to the page instead. */
+  --fd-layout-width: 100vw;
 }

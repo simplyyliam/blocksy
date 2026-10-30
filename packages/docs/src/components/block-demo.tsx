@@ -14,7 +14,7 @@ export function BlockDemo({ caption = "Drag to turn it. This is the same preview
   return (
     <figure className="not-prose my-6">
       <div className="relative h-64 overflow-hidden rounded-xl bg-fd-muted">
-        <BlockPreview className="absolute! inset-0" model={{ textures: { all: texture } }} placeholder={placeholder} shadow={shadow} onReady={() => setReady(true)} />
+        <BlockPreview className="absolute! inset-0" model={{ textures: { all: texture } }} placeholder={placeholder} shadow={shadow} zoom={2.2} onReady={() => setReady(true)} />
         <CanvasLoader ready={ready} label="Loading demo" />
       </div>
       <figcaption className="mt-2 text-center text-xs text-fd-muted-foreground">{caption}</figcaption>

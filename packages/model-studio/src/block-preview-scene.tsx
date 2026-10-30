@@ -102,9 +102,11 @@ export interface BlockPreviewProps {
   className?: string
   /** Called once, when the first frame with all textures is on screen. */
   onReady?: () => void
+  /** How close the camera starts: 1 = editor framing, 2 = twice as big (small demos). */
+  zoom?: number
 }
 
-export function BlockPreview({ model, placeholder = "#d4d4d4", shadow = "#000000", className, onReady }: BlockPreviewProps) {
+export function BlockPreview({ model, placeholder = "#d4d4d4", shadow = "#000000", className, onReady, zoom = 1 }: BlockPreviewProps) {
   const [dpr, setDpr] = useState(1.5)
   return (
     <Canvas
@@ -112,7 +114,7 @@ export function BlockPreview({ model, placeholder = "#d4d4d4", shadow = "#000000
       frameloop="demand"
       dpr={[1, dpr]}
       orthographic={false}
-      camera={{ position: [7.2, 5.8, 9.1], fov: 22 }}
+      camera={{ position: [7.2 / zoom, 5.8 / zoom, 9.1 / zoom], fov: 22 }}
       gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
     >
       <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
@@ -121,7 +123,7 @@ export function BlockPreview({ model, placeholder = "#d4d4d4", shadow = "#000000
       {/* frames={1}: the soft shadow is baked once, not redrawn every frame. */}
       <ContactShadows position={[0, -0.62, 0]} opacity={0.28} scale={3} blur={2.4} far={1.2} frames={1} color={shadow} />
       {/* Drag to turn the block. OrbitControls asks for a frame only while it moves. */}
-      <OrbitControls enablePan={false} enableZoom minDistance={6} maxDistance={20} enableDamping={false} />
+      <OrbitControls enablePan={false} enableZoom minDistance={6 / zoom} maxDistance={20 / zoom} enableDamping={false} />
     </Canvas>
   )
 }
