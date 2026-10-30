@@ -9,7 +9,9 @@ custom block to a full tech mod.
 
 ## Stack
 
-Tauri 2 (thin Rust layer) · React + TypeScript + Vite · pnpm workspaces
+Tauri 2 (thin Rust layer) · React + TypeScript + Vite · shadcn/ui (Base UI) + Tailwind 4 · pnpm workspaces
+
+Why these, and which versions are pinned: [docs/decisions](docs/decisions/README.md).
 
 ## Getting started
 
@@ -21,7 +23,15 @@ pnpm install
 pnpm dev        # start the desktop app
 ```
 
-Other commands: `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build`.
+Other commands:
+
+| Command | What it does |
+| --- | --- |
+| `pnpm typecheck` / `pnpm lint` / `pnpm test` | The everyday checks |
+| `pnpm test:gradle` | Generates a mod for each pinned Fabric version and builds it with real Gradle (slow) |
+| `pnpm bench` | Measures start-up, frame times and memory of a release build; writes `docs/perf/` |
+| `pnpm updater:keygen` | Creates the updater signing key (kept in `.private/`, never committed) |
+| `pnpm release` | Builds signed installers and a draft GitHub release with `latest.json` |
 
 ## Repository
 
