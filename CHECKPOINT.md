@@ -2,7 +2,7 @@
 
 Last updated: 2026-10-30. Read this first in a new session, then `CLAUDE.md` and
 `docs/release/blocksy-release-plan.md` (sections 2, 4, 5, 11 and "v0.2 First block" in 13).
-Work happens on branch `feature/v0.2-first-block`; merge to `main` with `--no-ff` when done.
+v0.2 work is merged into `main` (branch `feature/v0.2-first-block`, merged with `--no-ff`).
 
 ## The shape of v0.2 (decided, see ADR 0006)
 
@@ -38,12 +38,17 @@ lang stays a plain en_us.json written by the generator.
 | Lively bits | Dot Matrix (status), Dot Pattern (canvas), Confetti (first mod load) | CLAUDE.md "Make it alive" |
 | Security review | run 2026-10-30 | no findings; suggestion: validate element ids on load |
 
+| Code review | `/code-review` 2026-10-30 | 10 findings, all fixed (commit "fix: code review findings") |
+| Bench | `docs/perf/0.2.md`, ADR 0008 | cold start 1093 ms, frame p95 17.0 ms, memory 408 MB (+27% vs 0.1, explained), idle 3D frames 0 |
+| E2E (release app) | `scratchpad/cdp/e2e.mjs` (not in repo) | Starter block → first build 60 s → Run → "Your mod is loaded"; jar holds ModBlocks, models, texture, loot table (drops itself), mineable/pickaxe tag |
+
 ## Still to do for v0.2
 
-1. Bench results into `docs/perf/0.2.md` (running; memory rose from 320 MB because the bench now opens a WebGL preview: explain)
-2. `/code-review` findings (running in background) → fix
-3. E2E in the release app: `scratchpad/cdp/e2e.mjs` (create Starter block → first build → Run → "Your mod is loaded"); in-game place/mine check is Liam's
-4. Merge `feature/v0.2-first-block` into `main` with `--no-ff`; `/release` for 0.2.0 is Liam's call
+1. **Liam, in game:** open the creative tab, place First Block, mine it with a pickaxe (drops) and by hand (nothing).
+   Project for it: `~/Blocksy/blocksy_v02_e2e` (made by the e2e test; delete it afterwards if you like).
+2. `/release` for 0.2.0 when happy (Liam pushes with `pnpm release`).
+3. Notes for later: Docs MDX content names Fabric (tutorial content, not code); validate the
+   `.blocksy/generated.json` manifest; Docs search (v0.7); lang provider vs en_us.json (v0.3 lang editor).
 
 ## v0.1 "Foundation" (done, merged)
 
