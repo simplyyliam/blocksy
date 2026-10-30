@@ -11,7 +11,49 @@ permissions:
   contents: write # create the draft release and upload files
 
 jobs:
+  # Creates the draft release ONCE, before the builds. Without this, the three build jobs
+  # each saw "no release yet" at the same moment and all tried to create it; only the first
+  # won and the other two failed (v0.1.1). Now they only upload into this one draft.
+  create-release:
+    runs-on: ubuntu-22.04
+    outputs:
+      release_id: ${{ steps.release.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Release notes from CHANGELOG.md
+        id: notes
+        shell: bash
+        run: |
+          {
+            echo "body<<BLOCKSY_NOTES"
+            node scripts/changelog-section.mjs "${GITHUB_REF_NAME}"
+            echo "BLOCKSY_NOTES"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create the draft release (or reuse it when a run is retried)
+        id: release
+        uses: actions/github-script@v7
+        env:
+          BODY: ${{ steps.notes.outputs.body }}
+        with:
+          script: |
+            const tag = context.ref.replace("refs/tags/", "")
+            const releases = await github.paginate(github.rest.repos.listReleases, context.repo)
+            const existing = releases.find((r) => r.tag_name === tag)
+            if (existing) return existing.id
+            const { data } = await github.rest.repos.createRelease({
+              ...context.repo,
+              tag_name: tag,
+              name: `Blocksy ${tag}`,
+              body: process.env.BODY,
+              draft: true,
+              prerelease: false,
+            })
+            return data.id
+
   build:
+    needs: create-release
     strategy:
       fail-fast: false
       matrix:
@@ -48,16 +90,6 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Release notes from CHANGELOG.md
-        id: notes
-        shell: bash
-        run: |
-          {
-            echo "body<<BLOCKSY_NOTES"
-            node scripts/changelog-section.mjs "${GITHUB_REF_NAME}"
-            echo "BLOCKSY_NOTES"
-          } >> "$GITHUB_OUTPUT"
-
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -67,10 +99,7 @@ jobs:
         with:
           projectPath: apps/desktop
           tauriScript: pnpm tauri
-          tagName: ${{ github.ref_name }}
-          releaseName: Blocksy ${{ github.ref_name }}
-          releaseBody: ${{ steps.notes.outputs.body }}
-          releaseDraft: true
-          prerelease: false
+          # Upload into the draft made by create-release (never create one here).
+          releaseId: ${{ needs.create-release.outputs.release_id }}
           includeUpdaterJson: true # latest.json: what installed apps check
           args: ${{ matrix.args }}
