@@ -38,3 +38,4 @@ What becomes easier, harder, or must now be done.
 | [0005](0005-shadcn-ui.md) | shadcn/ui for every UI component, left as installed | accepted |
 | [0006](0006-element-adapters-and-datagen.md) | Loader code for elements lives in the target; Fabric data generation | accepted |
 | [0007](0007-router-layouts.md) | react-router with layout routes | accepted |
+| [0008](0008-perf-0.2-memory.md) | Memory rises in 0.2 because the bench now opens a 3D view | accepted |
