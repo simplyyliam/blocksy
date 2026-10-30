@@ -1,7 +1,7 @@
 // Idle: what the project is built with (loader + Minecraft version) and the JDK.
 import { AlertTriangle, CircleCheck, Package } from "lucide-react"
-import { Badge, Spinner, cn } from "@blocksy/ui"
-import { statusChip } from "./chip"
+import { Button, Spinner } from "@blocksy/ui"
+import { statusButton, statusItem } from "./chip"
 import { useJava } from "../../shared/stores/java"
 import { useNavigation } from "../../shared/stores/navigation"
 import { useProject } from "../../shared/stores/project"
@@ -15,21 +15,18 @@ function IdleView() {
   return (
     <>
       {project && (
-        <Badge variant="secondary" className={statusChip}>
+        <span className={statusItem}>
           <Package strokeWidth={1.75} />
           {project.targetName} {project.version.minecraft}
-        </Badge>
+        </span>
       )}
-      <Badge
-        variant="secondary"
-        render={<button type="button" onClick={() => go("jdk")} />}
-        className={cn(statusChip, "transition-colors hover:bg-surface-hover")}
-      >
-          {java.status === "checking" && <Spinner className="text-fg-muted" />}
-          {java.status === "ready" && <CircleCheck strokeWidth={1.75} />}
-          {java.status === "missing" && <AlertTriangle className="text-warning" strokeWidth={1.75} />}
-          {java.status === "checking" ? "Looking for Java" : java.status === "ready" ? `JDK ${java.active?.major} found` : "JDK needed"}
-      </Badge>
+      {/* Click to see or change which Java Blocksy uses. */}
+      <Button variant="ghost" size="xs" className={statusButton} onClick={() => go("jdk")}>
+        {java.status === "checking" && <Spinner className="text-fg-muted" />}
+        {java.status === "ready" && <CircleCheck strokeWidth={1.75} />}
+        {java.status === "missing" && <AlertTriangle className="text-warning" strokeWidth={1.75} />}
+        {java.status === "checking" ? "Looking for Java" : java.status === "ready" ? `JDK ${java.active?.major} found` : "JDK needed"}
+      </Button>
     </>
   )
 }

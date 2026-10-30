@@ -22,12 +22,13 @@ export function StatusBar() {
     .filter((view) => view.when(snapshot))
     .sort((a, b) => b.priority - a.priority)[0]!
 
+  // A thin, plain bar (VS Code / macOS menu bar style): text and icons, no pills.
   return (
-    <footer className="flex h-7 min-w-0 items-center justify-between gap-4" aria-label="Status">
+    <footer className="flex h-[26px] min-w-0 shrink-0 items-center justify-between gap-4 px-2" aria-label="Status">
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={active.id}
-          className="flex min-w-0 items-center gap-1"
+          className="flex min-w-0 items-center gap-0.5"
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
@@ -36,7 +37,7 @@ export function StatusBar() {
           <active.View />
         </motion.div>
       </AnimatePresence>
-      <div className="flex shrink-0 items-center gap-1">
+      <div className="flex shrink-0 items-center gap-0.5">
         {statusTrailing.map((Item, i) => (
           <Item key={i} />
         ))}

@@ -1,7 +1,7 @@
 // Building: what Gradle is doing right now, with a Stop button.
 import { Square } from "lucide-react"
-import { Button, Badge, Spinner } from "@blocksy/ui"
-import { statusChip } from "./chip"
+import { Button, Spinner } from "@blocksy/ui"
+import { statusButton, statusItem } from "./chip"
 import { stopTask } from "../../shared/project-actions"
 import { FIRST_BUILD_STEPS, useGradle } from "../../shared/stores/gradle"
 import type { StatusView } from "./types"
@@ -11,11 +11,11 @@ function BuildingView() {
   const label = step >= 0 ? FIRST_BUILD_STEPS[step]!.label : "Starting Gradle"
   return (
     <>
-      <Badge variant="secondary" className={statusChip}>
+      <span className={statusItem}>
         <Spinner className="text-brand" />
         Building · {label}
-      </Badge>
-      <Button variant="secondary" size="sm" onClick={() => void stopTask()}>
+      </span>
+      <Button variant="ghost" size="xs" className={statusButton} onClick={() => void stopTask()}>
         <Square className="fill-current" strokeWidth={0} />
         Stop
       </Button>
