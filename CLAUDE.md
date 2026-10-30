@@ -45,6 +45,9 @@ docs/                    plan, ADRs (decisions/), design inspiration, perf resul
 
 ## UI components (shadcn/ui)
 
+> **DO NOT MODIFY INSTALLED SHADCN COMPONENTS!** You may only replace the cn import with
+> `import { cn } from "@blocksy/ui/lib/utils"`. That is all.
+
 - Use shadcn/ui for every UI piece (buttons, inputs, dialogs, selects, tooltips, sidebar,
   toasts, ...). Write a custom component only when shadcn has nothing that fits, and say why
   in its header comment. Never delete or replace shadcn components with hand-made ones.
