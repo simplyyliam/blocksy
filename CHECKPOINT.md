@@ -47,7 +47,7 @@ Recipes and tags are plain JSON (same on both versions); item models use datagen
 ## Still to do for v0.3
 
 1. In-game check by Liam: craft Berry Dough (wheat + sweet berries), cook it in a furnace, eat the Berry Bun (Speed).
-2. Bench in `docs/perf/0.3.md`: all pass except block preview (1192 ms, same as 0.2 code re-benched today; ADR 0010). Re-run on a quiet machine.
+2. Bench in `docs/perf/0.3.md`: all pass after the backdrop fix (preview 733 ms) except idle 3D frames (8 in 2 of 5 runs); fix in v0.4 (ADR 0010).
 3. PR "v0.3 First item" is open (https://github.com/simplyyliam/blocksy/pull/1); Liam reviews and merges, then `/release` for 0.3.0.
 4. Notes for later: move pure ref helpers into a UI-free module shared by target and editors (ADR 0009);
    vanilla id list is the union of 26.1.2 and 26.3 (an id new in 26.3 won't load on 26.1.2).
