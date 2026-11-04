@@ -57,6 +57,11 @@ export const commands = {
 	historySave: (dir: string, message: string) => typedError<Version | null, AppError>(__TAURI_INVOKE("history_save", { dir, message })),
 	/**  One file's text at a saved version, e.g. blocksy.json to restore the project from it. */
 	historyFile: (dir: string, id: string, path: string) => typedError<string, AppError>(__TAURI_INVOKE("history_file", { dir, id, path })),
+	/**
+	 *  One of Minecraft's sound files (or sounds.json), base64, from the local asset cache.
+	 *  `not_found` until a first build has downloaded Minecraft.
+	 */
+	readMinecraftAsset: (path: string) => typedError<string, AppError>(__TAURI_INVOKE("read_minecraft_asset", { path })),
 	/**  The current updater state, for screens that open after an event was sent. */
 	updateStatus: () => __TAURI_INVOKE<UpdateStatus_Serialize>("update_status"),
 	/**  Checks right now (Settings > Check for updates). Returns the new version, if any. */

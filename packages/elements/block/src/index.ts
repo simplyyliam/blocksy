@@ -10,7 +10,7 @@ import { BlockInspector } from "./inspector.tsx"
 
 export { blockElement } from "./element.ts"
 export { blockDefaults, blockSchema, TEXTURE_SIZE, type BlockData } from "./schema.ts"
-export { MAP_COLORS, SOUNDS, TOOL_TIERS, TOOLS } from "./options.ts"
+export { COMMON_SOUNDS, MAP_COLORS, SOUNDS, TOOL_TIERS, TOOLS } from "./options.ts"
 export { encodePng, pngDataUrl, pngSize } from "./png.ts"
 export { starterTexture, STARTER_PALETTE } from "./starter-texture.ts"
 export { BlockCanvas, BlockInspector }

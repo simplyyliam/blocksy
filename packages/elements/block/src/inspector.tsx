@@ -9,7 +9,8 @@ import {
   Slider, Switch, toast,
 } from "@blocksy/ui"
 import { fieldDoc } from "./docs.ts"
-import { MAP_COLORS, SOUNDS, STRENGTH_EXAMPLES, TOOL_TIERS, TOOLS } from "./options.ts"
+import { MAP_COLORS, STRENGTH_EXAMPLES, TOOL_TIERS, TOOLS } from "./options.ts"
+import { SoundPicker } from "./sound-picker.tsx"
 import { pngDataUrl, pngSize } from "./png.ts"
 import { TEXTURE_SIZE, type BlockData } from "./schema.ts"
 
@@ -61,7 +62,7 @@ async function readTexture(file: File): Promise<string> {
 
 const fmt = (n: number) => (Number.isInteger(n) ? `${n}.0` : String(n))
 
-export function BlockInspector({ element, project, change, rename, select }: ElementEditorProps<BlockData>) {
+export function BlockInspector({ element, project, change, rename, select, playSound }: ElementEditorProps<BlockData>) {
   const data = element.data
   const set = (patch: Partial<BlockData>) => change({ ...data, ...patch })
   const fileInput = useRef<HTMLInputElement>(null)
@@ -186,8 +187,9 @@ export function BlockInspector({ element, project, change, rename, select }: Ele
             </div>
           )}
         </InspectorField>
-        <InspectorField label="Sound" java={`.sound(SoundType.${data.sound.toUpperCase()})`} description={fieldDoc("sound").description}>
-          {(id) => <Choose id={id} value={data.sound} items={SOUNDS.map((s) => ({ value: s.id, label: s.label }))} onChange={(v) => set({ sound: v as BlockData["sound"] })} />}
+        {/* v0.3: chips for the familiar sounds, "View all" with search, and play buttons. */}
+        <InspectorField label="Sound" java={`.sound(SoundType.${data.sound.toUpperCase()})`} description={fieldDoc("sound").description} stacked>
+          {() => <SoundPicker value={data.sound} onChange={(v) => set({ sound: v as BlockData["sound"] })} playSound={playSound} />}
         </InspectorField>
       </InspectorSection>
 

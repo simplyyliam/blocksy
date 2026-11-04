@@ -20,6 +20,7 @@ import { Overview } from "../../features/project-editor/overview"
 import { ProjectTree } from "../../features/project-editor/project-tree"
 import { elementModules, registries } from "../../app/modules"
 import { HISTORY, OVERVIEW, useEditor } from "../../shared/stores/editor"
+import { playMinecraftSound } from "../../shared/minecraft-sounds"
 import { useGradle } from "../../shared/stores/gradle"
 import { useProject, type OpenProject } from "../../shared/stores/project"
 
@@ -62,6 +63,8 @@ function editorProps(project: OpenProject, element: Element, select: (id: string
     select,
     // v0.3: editors that read other elements (the lang editor) get every element type.
     elementTypes: registries.elementTypes.list(),
+    // v0.3: hear vanilla sounds (block sound types) from the player's own Minecraft download.
+    playSound: playMinecraftSound,
   }
 }
 

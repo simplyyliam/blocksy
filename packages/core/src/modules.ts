@@ -148,4 +148,9 @@ export interface ElementEditorProps<Data = unknown> {
   select(id: string): void
   /** v0.3: every registered element type, for editors that read other elements (the lang editor). */
   elementTypes?: ElementType[]
+  /**
+   * v0.3: plays a vanilla sound event ("block.wood.break") from the player's own Minecraft
+   * download. Resolves false when it can't (nothing downloaded yet). Never bundled (rule 10).
+   */
+  playSound?(event: string): Promise<boolean>
 }
