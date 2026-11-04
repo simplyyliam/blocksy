@@ -2,6 +2,50 @@
 
 All notable changes to Blocksy are documented here. Versions follow docs/release/blocksy-release-plan.md.
 
+## [0.3.0] - 2026-11-04
+
+Your first item: paint it, give it recipes, cook it in a furnace and eat it in Minecraft.
+
+### Added
+
+- **Items.** Add an item from the project tree and set its stack size, rarity and fire resistance. Make it food with hunger, saturation and status effects, a furnace fuel, or compostable, and give it tooltip lines. Every setting shows the Java it turns into.
+- **Pixel texture editor.** Paint item textures right on the canvas with a pencil, eraser, paint bucket and colour picker, mirror both halves at once, and pick from a palette or the colours already in your texture. Add frames to animate a texture, with onion skin to line them up and a live preview at game size.
+- **Recipes.** A visual crafting grid for shaped and shapeless recipes, plus furnace, blast furnace, smoker and stonecutter recipes. Click a slot to pick any item, one of your own, or a tag. Blocksy tells you what's missing before a recipe is ready.
+- **Tags.** Group items or blocks into your own tags, or add them to existing ones like Minecraft's planks or the common tags other mods share.
+- **Translations.** A Languages editor lists every name, tab title and tooltip line your mod has, next to its English text, so translating is filling in a table.
+- **Version history.** Save a version of your project before a big change (Ctrl+S), and go back to any saved version from History. Going back can be undone.
+- **Starter item.** New project can now start with Berry Dough and a Berry Bun, with the recipes to craft, cook and eat them, ready to Run.
+- **Hear your block's sounds.** Pick from every block sound in Minecraft, search them all, and press play to hear a block broken, walked on or placed.
+- **Docs.** New lessons and guides: Make your first item, painting animated textures, adding recipes, translating your mod, saving versions, and what tags are. Every new element's reference page has a live editor to try.
+
+### Changed
+
+- **A fresh "What's new".** Each release gets its own little pixel world with a block in the middle, and the full list of changes, so you don't need to leave Blocksy to read them.
+- Creative tabs can hold items as well as blocks.
+- Opening a block, item or recipe in the editor is quicker.
+
+### Known issues
+
+- Windows may warn "Windows protected your PC" when you install, because the installer isn't code-signed yet. Click **More info**, then **Run anyway**.
+- Blocks are full cubes with one texture on all six faces; custom shapes and per-face textures come with Model Studio in 0.5.
+- Saving versions needs git installed on your computer; History tells you where to get it if it's missing.
+- Block sounds play after your first build, once Minecraft has been downloaded.
+- Only the Fabric loader is supported; NeoForge comes later.
+- You need Java 25 (a JDK) installed; Blocksy helps you find one but doesn't install it for you.
+- The first build of each project needs an internet connection and takes a few minutes; mods with blocks or items also generate their models, which adds a little time after changes.
+- Docs search and more lessons arrive in 0.7.
+
+### Privacy
+
+- Blocksy checks GitHub for updates when it starts and every few hours. No account or personal data is sent.
+- While building, Gradle downloads Minecraft, Fabric and code libraries from Mojang, Fabric and Maven repositories.
+- Block sounds play from the Minecraft files already downloaded on your computer; nothing is sent anywhere.
+- Saved versions stay in your project folder on your computer; nothing is uploaded.
+- Docs lesson pages show video thumbnails from YouTube; a video loads from YouTube only when you press play.
+- Links you open from the Docs or elsewhere in Blocksy open in your browser.
+- Textures and cover pictures you choose are stored in your project folder and never leave your computer.
+- There is no GitHub sign-in or sync in this version, and Blocksy collects no usage data.
+
 ## [0.2.0] - 2026-10-30
 
 Your first block: design it, give it a texture, and play it in Minecraft in its own creative tab.
