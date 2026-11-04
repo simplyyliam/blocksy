@@ -60,3 +60,10 @@ export { ProjectCover } from "./components/project-cover.tsx"
 export { PixelBurst } from "./components/pixel-burst.tsx"
 export { PixelLoader } from "./components/pixel-loader.tsx"
 export { CanvasLoader } from "./components/canvas-loader.tsx"
+// v0.3: pickers for items and tags (recipes, tags editor) and multi-line text (tooltips).
+export {
+  Combobox, ComboboxContent, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxLabel, ComboboxList, ComboboxSeparator,
+  ComboboxTrigger, ComboboxValue, ComboboxCollection,
+} from "./components/ui/combobox.tsx"
+export { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "./components/ui/popover.tsx"
+export { Textarea } from "./components/ui/textarea.tsx"
