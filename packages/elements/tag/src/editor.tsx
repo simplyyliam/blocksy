@@ -9,7 +9,7 @@ import { useState } from "react"
 import type { ElementEditorProps } from "@blocksy/core"
 import { ItemPicker, RefTile, refLabel, resolveRef } from "@blocksy/game-data"
 import {
-  Button, cn, DotPattern, Input, InspectorField, InspectorSection, Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Button, cn, CanvasBackdrop, Input, InspectorField, InspectorSection, Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@blocksy/ui"
 import { RESERVED_BLOCK_TAGS, TAG_ID, tagFilePath, type TagData } from "./schema.ts"
 import { tagDocs } from "./docs.ts"
@@ -23,9 +23,7 @@ export function TagCanvas({ element, project, change }: ElementEditorProps<TagDa
   const add = (ref: string) => !data.values.includes(ref) && set({ values: [...data.values, ref] })
   return (
     <div className="relative grid size-full place-items-center">
-      <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_85%)]">
-        <DotPattern width={18} height={18} cr={0.9} className="text-fg-faint opacity-60" />
-      </div>
+      <CanvasBackdrop />
       <div className="relative flex w-full max-w-xl flex-col gap-3 px-6 pb-20">
         <div className="flex items-center gap-2 text-fg">
           <span className="grid size-8 place-items-center rounded-lg bg-bg shadow-sm">

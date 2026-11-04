@@ -3,16 +3,14 @@
 // through `change`, so every stroke is one undo step.
 import type { ElementEditorProps } from "@blocksy/core"
 import { TextureEditor } from "@blocksy/pixel"
-import { DotPattern } from "@blocksy/ui"
+import { CanvasBackdrop } from "@blocksy/ui"
 import { TEXTURE_SIZE, type ItemData } from "./schema.ts"
 
 export function ItemCanvas({ element, change }: ElementEditorProps<ItemData>) {
   const data = element.data
   return (
     <div className="relative size-full">
-      <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_85%)]">
-        <DotPattern width={18} height={18} cr={0.9} className="text-fg-faint opacity-60" />
-      </div>
+      <CanvasBackdrop />
       <TextureEditor
         className="absolute inset-0"
         size={TEXTURE_SIZE}

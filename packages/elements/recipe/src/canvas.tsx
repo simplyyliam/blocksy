@@ -14,7 +14,7 @@ import { ArrowRight, Flame, Slice, X } from "lucide-react"
 import { useState, type ReactNode } from "react"
 import type { ElementEditorProps, Project } from "@blocksy/core"
 import { ItemPicker, RefTile, refLabel, resolveRef } from "@blocksy/game-data"
-import { cn, DotPattern, NumberInput, Tabs, TabsList, TabsTrigger } from "@blocksy/ui"
+import { cn, CanvasBackdrop, NumberInput, Tabs, TabsList, TabsTrigger } from "@blocksy/ui"
 import { changeKind, isCooking, isCrafting, RECIPE_KINDS, recipeProblems, type RecipeData, type RecipeKind } from "./schema.ts"
 
 const KIND_LABELS: Record<RecipeKind, string> = {
@@ -131,9 +131,7 @@ export function RecipeCanvas({ element, project, change }: ElementEditorProps<Re
 
   return (
     <div className="relative grid size-full place-items-center">
-      <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_85%)]">
-        <DotPattern width={18} height={18} cr={0.9} className="text-fg-faint opacity-60" />
-      </div>
+      <CanvasBackdrop />
 
       <div className="relative flex flex-col items-center gap-6 px-4 pb-20">
         <Tabs value={data.kind} onValueChange={(v) => v && change(changeKind(data, v as RecipeKind))}>

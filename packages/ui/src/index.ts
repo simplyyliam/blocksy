@@ -61,6 +61,8 @@ export { ProjectCover } from "./components/project-cover.tsx"
 export { PixelBurst } from "./components/pixel-burst.tsx"
 export { PixelLoader } from "./components/pixel-loader.tsx"
 export { CanvasLoader } from "./components/canvas-loader.tsx"
+export { CanvasBackdrop } from "./components/canvas-backdrop.tsx" // v0.3: cheap dot grid behind canvases
+export { GridPattern } from "./components/ui/grid-pattern.tsx"
 // v0.3: pickers for items and tags (recipes, tags editor) and multi-line text (tooltips).
 export {
   Combobox, ComboboxContent, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxLabel, ComboboxList, ComboboxSeparator,

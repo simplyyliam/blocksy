@@ -3,7 +3,7 @@
 // not Minecraft's GUI art): the tab on top, its blocks in a 9-wide slot grid.
 import type { ElementEditorProps } from "@blocksy/core"
 import {
-  Button, cn, DotPattern, Input, InspectorField, InspectorSection, Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Button, cn, CanvasBackdrop, Input, InspectorField, InspectorSection, Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@blocksy/ui"
 import { tabEntries, type CreativeTabData } from "./element.ts"
 
@@ -83,9 +83,7 @@ export function CreativeTabCanvas({ element, project, select }: ElementEditorPro
   const slots = Math.max(27, Math.ceil(entries.length / 9) * 9)
   return (
     <div className="relative grid size-full place-items-center">
-      <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_85%)]">
-        <DotPattern width={18} height={18} cr={0.9} className="text-fg-faint opacity-60" />
-      </div>
+      <CanvasBackdrop />
       <div className="relative flex flex-col">
         {/* The tab itself, sitting on the panel. */}
         <div className="flex w-fit items-center gap-2 rounded-t-lg bg-surface px-3 pt-2 pb-1.5">
