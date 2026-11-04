@@ -16,3 +16,17 @@ export const FABRIC_VERSIONS: TargetVersion[] = [
 
 /** The version the New project dialog selects first. */
 export const DEFAULT_MINECRAFT_VERSION = "26.1.2"
+
+/**
+ * v0.3: true when the project's Minecraft version is `min` or newer ("26.3" >= "26.1.2").
+ * Templates use it where Minecraft's API changed between pinned versions (fuel, compost).
+ */
+export function atLeast(ctx: { version: { minecraft: string } }, min: string): boolean {
+  const a = ctx.version.minecraft.split(".").map(Number)
+  const b = min.split(".").map(Number)
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const d = (a[i] ?? 0) - (b[i] ?? 0)
+    if (d !== 0) return d > 0
+  }
+  return true
+}

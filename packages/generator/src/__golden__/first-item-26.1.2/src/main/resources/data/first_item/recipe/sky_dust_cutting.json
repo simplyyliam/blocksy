@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "first_item:sky_gem",
+  "result": {
+    "id": "first_item:sky_dust",
+    "count": 4
+  }
+}

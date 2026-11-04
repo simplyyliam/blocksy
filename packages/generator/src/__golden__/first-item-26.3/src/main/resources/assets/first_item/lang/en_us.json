@@ -1,0 +1,11 @@
+{
+	"block.first_item.berry_crate": "Berry Crate",
+	"item.first_item.berry_dough": "Berry Dough",
+	"item.first_item.berry_bun": "Berry Bun",
+	"item.first_item.berry_bun.tooltip.0": "Fresh from the furnace",
+	"item.first_item.berry_bun.tooltip.1": "Still warm",
+	"item.first_item.sky_gem": "Sky Gem",
+	"item.first_item.sky_dust": "Sky Dust (pinch)",
+	"itemGroup.first_item.first_item_tab": "First Item",
+	"message.first_item.hello": "Hello!"
+}

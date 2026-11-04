@@ -7,10 +7,14 @@ import { clientClass, fabricModJson, gitignore, langJson, mainClass } from "./te
 import { content, contentFiles, contentOf, langEntries, needsDatagen } from "./templates/content.ts"
 import { blockTemplate } from "./elements/block.ts"
 import { creativeTabTemplate } from "./elements/creative-tab.ts"
+import { itemTemplate } from "./elements/item.ts"
+import { recipeTemplate } from "./elements/recipe.ts"
+import { mergedTemplate } from "./elements/tag.ts"
 import { GRADLE_WRAPPER_JAR_BASE64, GRADLEW, GRADLEW_BAT } from "./wrapper.generated.ts"
 import { FABRIC_VERSIONS } from "./versions.ts"
 
-export { DEFAULT_MINECRAFT_VERSION, FABRIC_VERSIONS } from "./versions.ts"
+export { atLeast, DEFAULT_MINECRAFT_VERSION, FABRIC_VERSIONS } from "./versions.ts"
+export { recipeJson } from "./elements/recipe.ts"
 
 /** Fabric's folder layout (with client code split out, as in the official template). */
 function paths(project: GenerateContext["project"]) {
@@ -56,8 +60,13 @@ export const fabricTarget: LoaderTarget = {
   adapters: {
     block: blockTemplate,
     creative_tab: creativeTabTemplate,
+    // v0.3 (ADR 0009): item textures and recipe JSON; tags and languages are merged in content.ts.
+    item: itemTemplate,
+    recipe: recipeTemplate,
+    tag: mergedTemplate,
+    language: mergedTemplate,
   },
-  // Blocks need their models, loot tables and tags generated before building or running.
+  // Blocks and items need their models (and blocks their loot tables and tags) generated first.
   // Same rule that adds datagen to build.gradle and fabric.mod.json (needsDatagen).
   prepareTasks: (project) => (needsDatagen(contentOf(project)) ? ["runDatagen"] : []),
 }

@@ -18,6 +18,10 @@
     { "path": "../core" },
     { "path": "../targets/fabric" },
     { "path": "../elements/block" },
-    { "path": "../elements/creative-tab" }
+    { "path": "../elements/creative-tab" },
+    { "path": "../elements/item" },
+    { "path": "../elements/recipe" },
+    { "path": "../elements/tag" },
+    { "path": "../elements/language" }
   ]
 }

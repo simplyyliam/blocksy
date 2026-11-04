@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:wheat",
+    "minecraft:sweet_berries"
+  ],
+  "result": {
+    "id": "first_item:berry_dough",
+    "count": 2
+  }
+}
