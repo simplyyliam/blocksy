@@ -1,0 +1,28 @@
+---
+title: Recipes are data
+description: Why recipes are JSON files, not Java, and where they live in your mod.
+---
+
+Some things in a mod are **code** (Java that runs: registering an item, what happens when you
+eat it) and some are **data** (files the game reads: recipes, tags, loot tables, translations).
+
+Recipes are data. Each one is a JSON file in `data/<modid>/recipe/`. When a world loads,
+Minecraft reads every recipe file from every mod and data pack. That's why:
+
+- a recipe can be changed by a data pack without touching any code,
+- a broken recipe file doesn't crash the game: it is skipped with a line in the log,
+- Blocksy can show a recipe as a picture and write the file for you.
+
+A shaped recipe in JSON looks like this:
+
+```json
+{
+  "type": "minecraft:crafting_shaped",
+  "key": { "W": "minecraft:wheat", "S": "minecraft:sweet_berries" },
+  "pattern": ["WSW"],
+  "result": { "id": "my_mod:berry_bun" }
+}
+```
+
+Each letter in `pattern` is one slot; `key` says which item each letter means. Blocksy picks
+the letters from the item names and trims empty rows and columns for you.

@@ -11,7 +11,12 @@
   "dependencies": {
     "@blocksy/core": "workspace:*",
     "@blocksy/element-block": "workspace:*",
+    "@blocksy/element-item": "workspace:*",
+    "@blocksy/element-language": "workspace:*",
+    "@blocksy/element-recipe": "workspace:*",
+    "@blocksy/element-tag": "workspace:*",
     "@blocksy/model-studio": "workspace:*",
+    "@blocksy/pixel": "workspace:*",
     "@blocksy/ui": "workspace:*",
     "fumadocs-core": "16.17.9",
     "fumadocs-mdx": "15.4.10",

@@ -1,0 +1,23 @@
+---
+title: Add a recipe
+description: Make an item craftable, smeltable or cuttable with the visual recipe editor.
+---
+
+<RecipeDemo />
+
+1. In the project tree, click **+** next to **Recipes** and give it a name (only you see it).
+2. Pick the kind at the top: **Shaped**, **Shapeless**, **Smelting**, **Blasting**, **Smoking** or **Stonecutting**.
+3. Click a slot and pick an ingredient. Search finds your mod's items and blocks, Minecraft's
+   items, and tags (like `#minecraft:planks`, which accepts every plank).
+4. Click the result slot and pick what the recipe makes. Set how many with the number under it.
+
+Until a recipe has a result and at least one ingredient, Blocksy doesn't write it, and says
+what's missing under the grid.
+
+<Callout title="Shaped patterns are trimmed">
+Empty rows and columns around a shaped pattern are removed, so a 2x2 pattern also works in
+the small crafting grid of your inventory.
+</Callout>
+
+Cooking recipes have a **time** and the **experience** you get per item in the inspector.
+Switch to **Code** to read the JSON: it's the same format as Minecraft's own recipes.

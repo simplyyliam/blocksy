@@ -59,12 +59,30 @@ importers:
       '@blocksy/element-creative-tab':
         specifier: workspace:*
         version: link:../../packages/elements/creative-tab
+      '@blocksy/element-item':
+        specifier: workspace:*
+        version: link:../../packages/elements/item
+      '@blocksy/element-language':
+        specifier: workspace:*
+        version: link:../../packages/elements/language
+      '@blocksy/element-recipe':
+        specifier: workspace:*
+        version: link:../../packages/elements/recipe
+      '@blocksy/element-tag':
+        specifier: workspace:*
+        version: link:../../packages/elements/tag
+      '@blocksy/game-data':
+        specifier: workspace:*
+        version: link:../../packages/game-data
       '@blocksy/generator':
         specifier: workspace:*
         version: link:../../packages/generator
       '@blocksy/model-studio':
         specifier: workspace:*
         version: link:../../packages/model-studio
+      '@blocksy/pixel':
+        specifier: workspace:*
+        version: link:../../packages/pixel
       '@blocksy/target-fabric':
         specifier: workspace:*
         version: link:../../packages/targets/fabric
@@ -155,9 +173,24 @@ importers:
       '@blocksy/element-block':
         specifier: workspace:*
         version: link:../elements/block
+      '@blocksy/element-item':
+        specifier: workspace:*
+        version: link:../elements/item
+      '@blocksy/element-language':
+        specifier: workspace:*
+        version: link:../elements/language
+      '@blocksy/element-recipe':
+        specifier: workspace:*
+        version: link:../elements/recipe
+      '@blocksy/element-tag':
+        specifier: workspace:*
+        version: link:../elements/tag
       '@blocksy/model-studio':
         specifier: workspace:*
         version: link:../model-studio
+      '@blocksy/pixel':
+        specifier: workspace:*
+        version: link:../pixel
       '@blocksy/ui':
         specifier: workspace:*
         version: link:../ui

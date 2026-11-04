@@ -26,6 +26,7 @@ import { BlockDemo } from "./components/block-demo.tsx"
 import { CommunityLinks } from "./components/community-links.tsx"
 import { CreditsFooter, CreditsList } from "./components/credits.tsx"
 import { ElementReference } from "./components/element-reference.tsx"
+import { LanguageDemo, RecipeDemo, TagDemo, TextureDemo } from "./components/element-demos.tsx"
 import { VideoLesson } from "./components/video-lesson.tsx"
 import { docs } from "./content.ts"
 import { DocsHostContext, useDocsHost, type DocsHost } from "./context.ts"
@@ -75,7 +76,7 @@ function referencePages(types: ElementType[]): VirtualFile[] {
 }
 
 /** Components MDX pages can use, on top of Fumadocs' defaults (Callout, Cards, ...). */
-const mdxComponents = { ...defaultMdxComponents, a: DocsLink, Steps, Step, VideoLesson, BlockDemo, CreditsList, CommunityLinks }
+const mdxComponents = { ...defaultMdxComponents, a: DocsLink, Steps, Step, VideoLesson, BlockDemo, TextureDemo, RecipeDemo, TagDemo, LanguageDemo, CreditsList, CommunityLinks }
 
 interface MdxEntry {
   load(): Promise<{ toc: ComponentProps<typeof DocsPage>["toc"] }>

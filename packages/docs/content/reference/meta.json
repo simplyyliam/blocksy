@@ -1,1 +1,1 @@
-{ "pages": ["index", "block", "creative-tab"] }
+{"pages": ["index", "block", "creative-tab", "item", "recipe", "tag", "language"]}

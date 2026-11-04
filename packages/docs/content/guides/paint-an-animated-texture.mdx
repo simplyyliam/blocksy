@@ -1,0 +1,20 @@
+---
+title: Paint an animated texture
+description: Add frames to an item's texture and set how fast they play.
+---
+
+1. Select an item. Its canvas is the texture editor.
+2. Paint the first frame. Then click **Duplicate frame** in the bar at the bottom and change
+   a few pixels. **Onion skin** (O) shows the previous frame faintly underneath.
+3. Set **ticks** (how long each frame shows; 20 ticks = 1 second) and turn on **Blend** for
+   smooth fading between frames.
+4. Press **Play preview** to watch it at game size.
+
+Blocksy writes the frames as one tall PNG (frame 1 on top) and a `.png.mcmeta` file:
+
+```json
+{ "animation": { "frametime": 8, "interpolate": false } }
+```
+
+Importing works too: a PNG 16 pixels wide with frames stacked below each other becomes an
+animation automatically.
