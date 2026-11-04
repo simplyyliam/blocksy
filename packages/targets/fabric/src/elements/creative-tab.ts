@@ -1,7 +1,7 @@
 // Fabric adapter for the Creative tab element (ADR 0006). One tab becomes a field in
 // ModCreativeTabs.java and a title in en_us.json. It writes no files of its own.
 import type { Element, GeneratedFile } from "@blocksy/core"
-import { constant } from "./block.ts"
+import { constant, oneLine } from "./block.ts"
 
 export type CreativeTabElement = Element & { data: { icon: string | null } }
 
@@ -20,7 +20,7 @@ export function creativeTabField(tab: CreativeTabElement, entries: string[], mod
   const accepts = all.map((id) => `\t\t\t\toutput.accept(${holder(id)});`).join("\n")
   const count = `${entries.length} block${entries.length === 1 ? "" : "s"}${items.length ? `, ${items.length} item${items.length === 1 ? "" : "s"}` : ""}`
   // One field per tab (named after its id), so two tabs can never clash.
-  return `	// ${tab.name}: ${count}.
+  return `	// ${oneLine(tab.name)}: ${count}.
 	public static final CreativeModeTab ${name} = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(MOD_ID, "${tab.id}")),

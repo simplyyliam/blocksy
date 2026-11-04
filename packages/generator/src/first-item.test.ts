@@ -86,3 +86,14 @@ describe("first item mod", () => {
     expect(text(files, "ModModelProvider.java")).toContain("items.generateFlatItem(ModItems.BERRY_BUN, ModelTemplates.FLAT_ITEM);")
   })
 })
+
+describe("generated Java stays safe", () => {
+  it("keeps element names inside their one-line comment", () => {
+    const project = firstItemMod()
+    const evil = { ...project, elements: project.elements.map((e) => (e.id === "sky_gem" ? { ...e, name: "Gem\nSystem.exit(0);" } : e)) }
+    const java = generate(evil, firstItemRegistries()).find((f) => f.path.endsWith("ModItems.java"))
+    const text = java && "contents" in java ? java.contents : ""
+    expect(text).toContain("// Gem System.exit(0);: stacks to 16.")
+    expect(text.split("\n").some((line) => line.trim().startsWith("System.exit"))).toBe(false)
+  })
+})

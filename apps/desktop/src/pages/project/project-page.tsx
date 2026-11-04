@@ -37,6 +37,9 @@ function useShortcuts(project: OpenProject | null) {
       // v0.3: Ctrl+S works even while typing: it opens History with the message box focused.
       if (key === "s") {
         e.preventDefault()
+        // Inspector fields commit on blur: blur first, so a half-typed edit is saved, not lost.
+        if (document.activeElement instanceof HTMLElement && document.activeElement.id !== "history-message") document.activeElement.blur()
+        useEditor.getState().setView("design") // History lives in Design view
         select(HISTORY)
         setTimeout(() => document.getElementById("history-message")?.focus(), 50)
         return

@@ -22,6 +22,9 @@ export interface BlockData {
 
 export type BlockElement = Element & { data: BlockData }
 
+/** A name made safe for a one-line Java comment: line breaks become spaces, so a name can never start a line of code. */
+export const oneLine = (text: string) => text.replace(/[\r\n\u2028\u2029]+/g, " ")
+
 /** Java constant name: "ruby_block" -> "RUBY_BLOCK". */
 export const constant = (id: string) => id.toUpperCase()
 
@@ -49,7 +52,7 @@ export function blockField(block: BlockElement): string {
   ].filter(Boolean)
   const mined =
     d.tool === "none" ? "mined by hand" : d.toolTier === "wood" ? `mined with ${article(d.tool)} ${d.tool}` : `needs ${article(d.toolTier)} ${d.toolTier} ${d.tool} or better`
-  return `	// ${block.name}: hardness ${d.hardness}, blast resistance ${d.resistance}, ${mined}.
+  return `	// ${oneLine(block.name)}: hardness ${d.hardness}, blast resistance ${d.resistance}, ${mined}.
 	public static final Block ${constant(block.id)} = register(
 		"${block.id}",
 		Block::new,

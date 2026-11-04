@@ -190,6 +190,12 @@ export function TextureEditor({ value, onChange, size = 16, animated = true, cla
     }
   }
 
+  // The latest redraw, for the ResizeObserver below (set up once, not on every render).
+  const redrawRef = useRef(redraw)
+  useEffect(() => {
+    redrawRef.current = redraw
+  })
+
   // Keep the canvas sharp: its backing size follows its CSS size times the screen's pixel ratio.
   useEffect(() => {
     const canvas = canvasRef.current
@@ -202,11 +208,11 @@ export function TextureEditor({ value, onChange, size = 16, animated = true, cla
         canvas.width = backing
         canvas.height = backing
       }
-      redraw()
+      redrawRef.current()
     })
     observer.observe(canvas)
     return () => observer.disconnect()
-  })
+  }, [size])
 
   useEffect(() => redraw())
 
@@ -256,10 +262,12 @@ export function TextureEditor({ value, onChange, size = 16, animated = true, cla
     commit(frames.map((f, i) => (i === current ? s.image : f)))
   }
 
-  const pickBrush = (next: Brush) => {
-    if (next.id === "picker" && brush.id !== "picker") previousBrush.current = brush
-    setBrush(next)
-  }
+  /** Switches tool; remembers the one before the picker, to return to it after a pick. */
+  const pickBrush = (next: Brush) =>
+    setBrush((prev) => {
+      if (next.id === "picker" && prev.id !== "picker") previousBrush.current = prev
+      return next
+    })
 
   // --- frames ---
   const addFrame = (copy: boolean) => {
@@ -322,7 +330,8 @@ export function TextureEditor({ value, onChange, size = 16, animated = true, cla
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  })
+    // pickBrush and the setters only use state updaters, so one listener for the editor's life is enough.
+  }, [])
 
   const textureColors = useMemo(() => usedColors(frames, 12), [frames])
   const isAnimated = frames.length > 1

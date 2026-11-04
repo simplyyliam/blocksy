@@ -1,6 +1,8 @@
 // The item picker: choose an item or tag for a recipe slot or a tag's list.
-// Custom arrangement of shadcn pieces (Popover + Input + Buttons): shadcn has no
-// "searchable grouped list with pictures" that fits a 36px crafting slot as its trigger.
+// Custom arrangement of shadcn pieces (Popover + Input + Buttons). Why not shadcn's
+// Combobox: its trigger is the text input (or a ComboboxTrigger that always adds a chevron
+// and replaces the trigger's own children), so it can't be a crafting slot showing a
+// texture. Keyboard works like a combobox: arrows move, Enter picks, Escape closes.
 //
 //   [ search items and tags ]
 //   This mod     ▣ Berry Dough   ▣ First Block
@@ -8,7 +10,7 @@
 //   Minecraft    W Wheat         S Sweet berries ...
 //   Use "c:foods/fruit"          <- any typed id works too
 import { Hash } from "lucide-react"
-import { useMemo, useState, type ReactElement } from "react"
+import { useId, useMemo, useState, type ReactElement } from "react"
 import type { Element, Project } from "@blocksy/core"
 import { Button, cn, Input, Popover, PopoverContent, PopoverTrigger } from "@blocksy/ui"
 import { ITEM_ELEMENT_TYPES, isValidRef, parseRef, prettyId, refElement, refLabel, TAG_ELEMENT_TYPE, tagIdOf } from "./refs.ts"
@@ -68,6 +70,9 @@ const LIMIT = 60
 export function ItemPicker({ project, onPick, allowTags = false, registry = "item", trigger }: ItemPickerProps) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
+  // The highlighted option (arrow keys), as an index into all shown options.
+  const [active, setActive] = useState(0)
+  const listId = useId()
 
   const groups = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -99,6 +104,18 @@ export function ItemPicker({ project, onPick, allowTags = false, registry = "ite
     onPick(ref)
     setOpen(false)
     setQuery("")
+    setActive(0)
+  }
+
+  // Every shown option in order (the "Use <typed id>" row last), for arrow keys.
+  const flat = [...groups.flatMap((g) => g.options.map((o) => o.ref)), ...(canUseTyped ? [typed] : [])]
+  const activeRef = flat[Math.min(active, flat.length - 1)]
+  const optionId = (ref: string) => `${listId}-${ref.replace(/[^a-z0-9]/gi, "_")}`
+  const move = (by: number) => {
+    if (flat.length === 0) return
+    const next = (Math.min(active, flat.length - 1) + by + flat.length) % flat.length
+    setActive(next)
+    document.getElementById(optionId(flat[next]!))?.scrollIntoView({ block: "nearest" })
   }
 
   return (
@@ -113,21 +130,42 @@ export function ItemPicker({ project, onPick, allowTags = false, registry = "ite
             placeholder={allowTags ? "Search items and tags" : "Search items"}
             aria-label="Search"
             className="h-8"
-            onChange={(e) => setQuery(e.target.value)}
+            role="combobox"
+            aria-expanded
+            aria-controls={listId}
+            aria-activedescendant={activeRef ? optionId(activeRef) : undefined}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              setActive(0)
+            }}
             onKeyDown={(e) => {
-              if (e.key !== "Enter") return
-              const first = groups[0]?.options[0]
-              if (first) pick(first.ref)
-              else if (canUseTyped) pick(typed)
+              if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                e.preventDefault()
+                move(e.key === "ArrowDown" ? 1 : -1)
+              } else if (e.key === "Enter" && activeRef) {
+                e.preventDefault()
+                pick(activeRef)
+              }
             }}
           />
         </div>
-        <div className="max-h-72 overflow-y-auto px-1 pb-1">
+        <div id={listId} role="listbox" aria-label={allowTags ? "Items and tags" : "Items"} className="max-h-72 overflow-y-auto px-1 pb-1">
           {groups.map((g) => (
             <div key={g.title} className="pb-1">
               <p className="px-2 pt-1.5 pb-1 text-xs text-fg-faint">{g.title}</p>
               {g.options.map((o) => (
-                <Button key={o.ref} variant="ghost" size="sm" className="w-full justify-start gap-2 px-2 font-normal" onClick={() => pick(o.ref)}>
+                <Button
+                  key={o.ref}
+                  id={optionId(o.ref)}
+                  role="option"
+                  aria-selected={o.ref === activeRef}
+                  tabIndex={-1}
+                  variant="ghost"
+                  size="sm"
+                  className={cn("w-full justify-start gap-2 px-2 font-normal", o.ref === activeRef && "bg-surface-hover")}
+                  onMouseMove={() => setActive(flat.indexOf(o.ref))}
+                  onClick={() => pick(o.ref)}
+                >
                   <span className="grid size-6 shrink-0 place-items-center">
                     <RefTile refValue={o.ref} project={project} className="size-5" />
                   </span>
@@ -138,7 +176,16 @@ export function ItemPicker({ project, onPick, allowTags = false, registry = "ite
             </div>
           ))}
           {canUseTyped && (
-            <Button variant="ghost" size="sm" className="w-full justify-start px-2 font-normal" onClick={() => pick(typed)}>
+            <Button
+              id={optionId(typed)}
+              role="option"
+              aria-selected={typed === activeRef}
+              tabIndex={-1}
+              variant="ghost"
+              size="sm"
+              className={cn("w-full justify-start px-2 font-normal", typed === activeRef && "bg-surface-hover")}
+              onClick={() => pick(typed)}
+            >
               Use <code className="font-mono text-xs">{typed}</code>
             </Button>
           )}

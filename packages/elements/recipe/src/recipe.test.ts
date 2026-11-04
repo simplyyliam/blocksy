@@ -28,3 +28,10 @@ describe("recipe element", () => {
     expect(recipeSchema.safeParse({ ...recipeDefaults(), grid: [null] }).success).toBe(false)
   })
 })
+
+describe("recipe problems with deleted things", () => {
+  it("says so instead of claiming the recipe is ready", () => {
+    const smelt = { ...recipeDefaults(), kind: "smelting" as const, ingredient: "gone_item", result: "minecraft:bread" }
+    expect(recipeProblems(smelt, (ref) => ref !== "gone_item")).toEqual(["Some slots point at things that were deleted: pick them again"])
+  })
+})

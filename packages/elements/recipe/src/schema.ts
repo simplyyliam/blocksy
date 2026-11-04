@@ -50,12 +50,18 @@ export const recipeDefaults = (): RecipeData => ({
   category: "misc",
 })
 
-/** What still blocks the recipe from being built (empty = ready). Plain-language for the UI. */
-export function recipeProblems(data: RecipeData): string[] {
+/**
+ * What still blocks the recipe from being built (empty = ready). Plain-language for the UI.
+ * `exists` says whether a reference still points at something (a deleted item doesn't);
+ * targets skip recipes with missing references, so the editor must say so too.
+ */
+export function recipeProblems(data: RecipeData, exists: (ref: string) => boolean = () => true): string[] {
   const problems: string[] = []
   if (!data.result) problems.push("Pick what the recipe makes")
   if (isCrafting(data.kind) && data.grid.every((s) => s === null)) problems.push("Put at least one ingredient in the grid")
   if (!isCrafting(data.kind) && !data.ingredient) problems.push("Pick the ingredient")
+  const used = [data.result, ...(isCrafting(data.kind) ? data.grid : [data.ingredient])].filter((r): r is string => r !== null)
+  if (used.some((r) => !exists(r))) problems.push("Some slots point at things that were deleted: pick them again")
   return problems
 }
 

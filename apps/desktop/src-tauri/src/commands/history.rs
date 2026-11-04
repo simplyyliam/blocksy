@@ -31,12 +31,15 @@ pub struct Version {
     pub files_changed: u32,
 }
 
-/// Runs git in `dir` with no console window. `-c` settings keep output plain and stable.
+/// Runs git in `dir` with no console window. `-c` settings keep output plain and stable, and
+/// keep a downloaded project's own git config from running programs (fsmonitor, hooks) or
+/// asking for a GPG passphrase: saving a version should be quiet and safe.
 fn git(dir: &Path, args: &[&str]) -> AppResult<Output> {
     quiet_command("git")
         .arg("-C")
         .arg(dir)
-        .args(["-c", "core.quotepath=false", "-c", "color.ui=false"])
+        .args(["-c", "core.quotepath=false", "-c", "color.ui=false", "-c", "core.fsmonitor=false"])
+        .args(["-c", "core.hooksPath=.blocksy-no-hooks", "-c", "commit.gpgsign=false"])
         .args(args)
         .output()
         .map_err(|_| AppError::new(ErrorCode::Unsupported, "Git isn't installed. Install it from git-scm.com to save versions."))
@@ -108,14 +111,21 @@ fn list(dir: &Path, limit: &str) -> AppResult<Vec<Version>> {
 #[tauri::command]
 #[specta::specta]
 pub async fn history_available() -> bool {
-    quiet_command("git").arg("--version").output().is_ok_and(|o| o.status.success())
+    blocking(|| Ok(quiet_command("git").arg("--version").output().is_ok_and(|o| o.status.success()))).await.unwrap_or(false)
+}
+
+/// Runs git (which can take a moment on a big project) off the async runtime's threads.
+async fn blocking<T: Send + 'static>(job: impl FnOnce() -> AppResult<T> + Send + 'static) -> AppResult<T> {
+    tauri::async_runtime::spawn_blocking(job)
+        .await
+        .map_err(|e| AppError::new(ErrorCode::Internal, e.to_string()))?
 }
 
 /// The project's saved versions, newest first (empty before the first save).
 #[tauri::command]
 #[specta::specta]
 pub async fn history_list(dir: String) -> AppResult<Vec<Version>> {
-    list(project_dir(&dir)?, "200")
+    blocking(move || list(project_dir(&dir)?, "200")).await
 }
 
 /// Saves a version: commits every file in the project (the .gitignore Blocksy writes keeps
@@ -124,9 +134,14 @@ pub async fn history_list(dir: String) -> AppResult<Vec<Version>> {
 #[tauri::command]
 #[specta::specta]
 pub async fn history_save(dir: String, message: String) -> AppResult<Option<Version>> {
-    let dir = project_dir(&dir)?;
+    blocking(move || save(&dir, &message)).await
+}
+
+fn save(dir: &str, message: &str) -> AppResult<Option<Version>> {
+    let dir = project_dir(dir)?;
     let message = message.trim();
-    if message.is_empty() || message.len() > 200 {
+    // Characters, not bytes, so "Größere Änderung" counts like the 200-character box in the UI.
+    if message.is_empty() || message.chars().count() > 200 {
         return Err(AppError::new(ErrorCode::InvalidInput, "Describe the version in 1 to 200 characters"));
     }
     if !has_repo(dir) {
@@ -137,7 +152,8 @@ pub async fn history_save(dir: String, message: String) -> AppResult<Option<Vers
         return Ok(None);
     }
     // Use the person's git name if they set one; otherwise sign versions as Blocksy.
-    let named = git(dir, &["config", "user.email"]).is_ok_and(|o| o.status.success() && !o.stdout.trim_ascii().is_empty());
+    let set = |key: &str| git(dir, &["config", key]).is_ok_and(|o| o.status.success() && !String::from_utf8_lossy(&o.stdout).trim().is_empty());
+    let named = set("user.name") && set("user.email");
     let mut args = vec![];
     if !named {
         args.extend(["-c", "user.name=Blocksy", "-c", "user.email=blocksy@localhost"]);
@@ -151,9 +167,13 @@ pub async fn history_save(dir: String, message: String) -> AppResult<Option<Vers
 #[tauri::command]
 #[specta::specta]
 pub async fn history_file(dir: String, id: String, path: String) -> AppResult<String> {
-    let dir = project_dir(&dir)?;
+    blocking(move || file_at(&dir, &id, &path)).await
+}
+
+fn file_at(dir: &str, id: &str, path: &str) -> AppResult<String> {
+    let dir = project_dir(dir)?;
     let id_ok = (4..=64).contains(&id.len()) && id.chars().all(|c| c.is_ascii_hexdigit());
-    let path_ok = !path.is_empty() && Path::new(&path).components().all(|c| matches!(c, Component::Normal(_)));
+    let path_ok = !path.is_empty() && Path::new(path).components().all(|c| matches!(c, Component::Normal(_)));
     if !id_ok || !path_ok {
         return Err(AppError::new(ErrorCode::InvalidInput, "Unknown version or file"));
     }

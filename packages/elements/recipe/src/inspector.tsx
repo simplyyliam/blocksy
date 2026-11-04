@@ -35,7 +35,7 @@ function Choose({ id, value, items, onChange }: { id: string; value: string; ite
 export function RecipeInspector({ element, project, change, rename }: ElementEditorProps<RecipeData>) {
   const data = element.data
   const set = (patch: Partial<RecipeData>) => change({ ...data, ...patch })
-  const problems = recipeProblems(data)
+  const problems = recipeProblems(data, (ref) => resolveRef(ref, project) !== null)
   const result = data.result ? resolveRef(data.result, project) : null
 
   return (

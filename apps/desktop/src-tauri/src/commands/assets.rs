@@ -3,11 +3,16 @@
 //! first build into ~/.gradle/caches/fabric-loom/assets: an index (path -> hash) plus the
 //! files named by hash. Only sounds are readable, so the editor can let you hear a block.
 
-use std::path::PathBuf;
+use std::collections::HashMap;
+use std::path::{Path, PathBuf};
+use std::sync::Mutex;
 
 use base64::Engine;
 
 use crate::error::{AppError, AppResult, ErrorCode};
+
+/// The newest asset index, parsed once per run: sound path -> file hash.
+static INDEX: Mutex<Option<HashMap<String, String>>> = Mutex::new(None);
 
 fn assets_dir() -> Option<PathBuf> {
     Some(dirs::home_dir()?.join(".gradle/caches/fabric-loom/assets"))
@@ -19,16 +24,41 @@ fn allowed(path: &str) -> bool {
     plain && (path == "minecraft/sounds.json" || (path.starts_with("minecraft/sounds/") && path.ends_with(".ogg")))
 }
 
-/// The newest asset index that lists `path`, and the file's hash in it.
-fn find_hash(root: &PathBuf, path: &str) -> Option<String> {
+/// Reads the newest index that has sounds and keeps just the sound entries.
+fn load_index(root: &Path) -> Option<HashMap<String, String>> {
     let mut indexes: Vec<_> = std::fs::read_dir(root.join("indexes")).ok()?.flatten().collect();
     indexes.sort_by_key(|e| std::cmp::Reverse(e.metadata().and_then(|m| m.modified()).ok()));
     indexes.iter().find_map(|entry| {
-        let text = std::fs::read_to_string(entry.path()).ok()?;
-        let json: serde_json::Value = serde_json::from_str(&text).ok()?;
-        let hash = json["objects"][path]["hash"].as_str()?.to_string();
-        (hash.len() == 40 && hash.chars().all(|c| c.is_ascii_hexdigit())).then_some(hash)
+        let json: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(entry.path()).ok()?).ok()?;
+        let objects = json["objects"].as_object()?;
+        let map: HashMap<String, String> = objects
+            .iter()
+            .filter(|(path, _)| allowed(path))
+            .filter_map(|(path, o)| Some((path.clone(), o["hash"].as_str()?.to_string())))
+            .filter(|(_, hash)| hash.len() == 40 && hash.chars().all(|c| c.is_ascii_hexdigit()))
+            .collect();
+        map.contains_key("minecraft/sounds.json").then_some(map)
     })
+}
+
+/// The file's hash, loading the index the first time (and again if it was missing before).
+fn find_hash(root: &Path, path: &str) -> Option<String> {
+    let mut cache = INDEX.lock().ok()?;
+    if cache.is_none() {
+        *cache = load_index(root);
+    }
+    cache.as_ref()?.get(path).cloned()
+}
+
+fn read(path: &str) -> AppResult<String> {
+    if !allowed(path) {
+        return Err(AppError::new(ErrorCode::InvalidInput, "Only Minecraft sounds can be read"));
+    }
+    let missing = || AppError::new(ErrorCode::NotFound, "Build a project once so Minecraft's sounds are downloaded");
+    let root = assets_dir().ok_or_else(missing)?;
+    let hash = find_hash(&root, path).ok_or_else(missing)?;
+    let bytes = std::fs::read(root.join("objects").join(&hash[..2]).join(&hash)).map_err(|_| missing())?;
+    Ok(base64::engine::general_purpose::STANDARD.encode(bytes))
 }
 
 /// One of Minecraft's sound files (or sounds.json), base64, from the local asset cache.
@@ -36,14 +66,9 @@ fn find_hash(root: &PathBuf, path: &str) -> Option<String> {
 #[tauri::command]
 #[specta::specta]
 pub async fn read_minecraft_asset(path: String) -> AppResult<String> {
-    if !allowed(&path) {
-        return Err(AppError::new(ErrorCode::InvalidInput, "Only Minecraft sounds can be read"));
-    }
-    let missing = || AppError::new(ErrorCode::NotFound, "Build a project once so Minecraft's sounds are downloaded");
-    let root = assets_dir().ok_or_else(missing)?;
-    let hash = find_hash(&root, &path).ok_or_else(missing)?;
-    let bytes = std::fs::read(root.join("objects").join(&hash[..2]).join(&hash)).map_err(|_| missing())?;
-    Ok(base64::engine::general_purpose::STANDARD.encode(bytes))
+    tauri::async_runtime::spawn_blocking(move || read(&path))
+        .await
+        .map_err(|e| AppError::new(ErrorCode::Internal, e.to_string()))?
 }
 
 #[cfg(test)]

@@ -126,7 +126,7 @@ export function RecipeCanvas({ element, project, change }: ElementEditorProps<Re
     ;[grid[from], grid[to]] = [grid[to]!, grid[from]!]
     set({ grid })
   }
-  const problems = recipeProblems(data)
+  const problems = recipeProblems(data, (ref) => resolveRef(ref, project) !== null)
   const Station = isCooking(data.kind) ? Flame : data.kind === "stonecutting" ? Slice : ArrowRight
 
   return (

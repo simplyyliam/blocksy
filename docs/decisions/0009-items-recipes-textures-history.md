@@ -55,6 +55,12 @@ Checked offline against the cached jars (`javap`, see CHECKPOINT "Useful facts")
 - A project with only items still builds: item models need datagen, so the prepare step runs.
 - If a future Minecraft version changes recipe JSON, only the Fabric recipe adapter changes.
 - Without git installed, History says so and links to git's download page; everything else works.
+- The Fabric target keeps a small copy of the reference rules (`elements/refs.ts`) and its own lang
+  keys, because the generator must not import packages with React in them (`@blocksy/game-data`
+  has the picker). Golden tests pin both. Cleanup for later: move the pure helpers into a UI-free
+  module that both import (code review 2026-11-04).
+- Block sounds play from the player's own Minecraft download (Loom's asset cache), never bundled
+  (rule 10). Git runs with fsmonitor, hooks and GPG signing switched off for its own commands.
 
 ## No earlier module was refactored (plan 2.4)
 

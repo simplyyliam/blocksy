@@ -7,7 +7,7 @@
 //   data file on 26.3 (Minecraft moved both into item properties there)
 // The shared files that collect these pieces are in ../templates/content.ts.
 import type { Element, GeneratedFile, GenerateContext } from "@blocksy/core"
-import { constant } from "./block.ts"
+import { constant, oneLine } from "./block.ts"
 import { atLeast } from "../versions.ts"
 
 /** The Item element's data, as far as this adapter needs it (the element checks the rest). */
@@ -138,7 +138,7 @@ export function itemField(item: ItemElement, ctx: GenerateContext): string {
     if (d.fuelTicks > 0) props.push(`.cookingFuel(provider("cooking/time_${item.id}"))`)
     if (d.compostChance > 0) props.push(`.compostable(provider("compostable/${item.id}"))`)
   }
-  return `	// ${item.name}: ${summary(d)}.
+  return `	// ${oneLine(item.name)}: ${summary(d)}.
 	public static final Item ${constant(item.id)} = register(
 		"${item.id}",
 		Item::new,

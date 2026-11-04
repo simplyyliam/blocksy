@@ -10,13 +10,16 @@ import { tabEntries, type CreativeTabData } from "./element.ts"
 /** "First block" in the icon select. "@" can't start an element id, so no block collides. */
 const AUTO_ICON = "@auto"
 
+/** v0.3: the order the game shows them in: blocks first, then items (as the targets write it). */
+const inGameOrder = <T extends { type: string }>(list: T[]) => [...list.filter((e) => e.type === "block"), ...list.filter((e) => e.type !== "block")]
+
 const textureOf = (data: unknown) => {
   const texture = (data as { texture?: unknown } | null)?.texture
   return typeof texture === "string" ? `data:image/png;base64,${texture}` : null
 }
 
 export function CreativeTabInspector({ element, project, change, rename, select }: ElementEditorProps<CreativeTabData>) {
-  const entries = tabEntries(project, element.id)
+  const entries = inGameOrder(tabEntries(project, element.id))
   return (
     <div className="flex flex-col divide-y divide-line-subtle py-1">
       <InspectorSection title="Creative tab">
@@ -36,7 +39,7 @@ export function CreativeTabInspector({ element, project, change, rename, select 
         <InspectorField label="Icon">
           {(id) => (
             <Select
-              items={[{ value: AUTO_ICON, label: "First block" }, ...entries.map((e) => ({ value: e.id, label: e.name }))]}
+              items={[{ value: AUTO_ICON, label: "First in tab" }, ...entries.map((e) => ({ value: e.id, label: e.name }))]}
               value={element.data.icon ?? AUTO_ICON}
               onValueChange={(v) => v !== null && change({ icon: v === AUTO_ICON ? null : v })}
             >
@@ -44,7 +47,7 @@ export function CreativeTabInspector({ element, project, change, rename, select 
                 <SelectValue />
               </SelectTrigger>
               <SelectContent alignItemWithTrigger={false}>
-                <SelectItem value={AUTO_ICON}>First block</SelectItem>
+                <SelectItem value={AUTO_ICON}>First in tab</SelectItem>
                 {entries.map((e) => (
                   <SelectItem key={e.id} value={e.id}>
                     {e.name}
@@ -75,7 +78,7 @@ export function CreativeTabInspector({ element, project, change, rename, select 
 }
 
 export function CreativeTabCanvas({ element, project, select }: ElementEditorProps<CreativeTabData>) {
-  const entries = tabEntries(project, element.id)
+  const entries = inGameOrder(tabEntries(project, element.id))
   const icon = entries.find((e) => e.id === element.data.icon) ?? entries[0]
   const slots = Math.max(27, Math.ceil(entries.length / 9) * 9)
   return (
