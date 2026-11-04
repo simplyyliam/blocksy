@@ -14,6 +14,10 @@ live docs, while teaching Java along the way. It scales from one block to a full
 - Build only what the current release covers; ideas for later releases go into their
   section of `docs/release/blocksy-release-plan.md` as notes, not code.
 - Decisions live in `docs/decisions/` (ADRs). New architectural choice = new ADR.
+- Work on a branch named release/<version>-<name> (for example release/0.3-first-item), never on main.
+Commit in small steps using Conventional Commits (feat, fix, chore, docs, refactor, test), with a short bullet-point body listing what was done.
+When done, open a PR with gh: title "v0.3 First item", a short summary, and the bench results table from docs/perf/ in the description.
+Never push to main or merge PRs yourself.
 
 ## Hard rules (plan section 2.2)
 
