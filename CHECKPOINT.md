@@ -1,4 +1,64 @@
-# Checkpoint: v0.2 "First block"
+# Checkpoint: v0.3 "First item, textures and recipes"
+
+Last updated: 2026-11-04. Read this first in a new session, then `CLAUDE.md` and
+`docs/release/blocksy-release-plan.md` (sections 2, 4 and "v0.3" in 13), and ADR 0009.
+Work happens on branch `release/0.3-first-item` (never main). When done: open a PR with gh
+titled "v0.3 First item" with the bench table; never merge it yourself.
+
+## The shape of v0.3 (decided, see ADR 0009)
+
+```text
+packages/pixel                  image model, PNG codec, brushes (PaintSurface), palette, TextureEditor
+packages/game-data              vanilla ids (generated from local jars), refs, ItemPicker
+packages/elements/item          stack, rarity, fire, food+effects, fuel, compost, tooltips, painted texture
+packages/elements/recipe        3x3 grid (shaped/shapeless), cooking, stonecutting
+packages/elements/tag           new tags or entries for existing ones; reserved tool tags refused
+packages/elements/language      lang editor (keys from ElementType.lang), en_us overrides
+packages/targets/fabric         item/recipe/tag/language adapters; atLeast(ctx, "26.3") for fuel/compost/cooking
+apps/desktop                    History page + Rust git commands, Starter item, Ctrl+S
+core                            ElementType.lang?, ElementEditorProps.elementTypes? (optional only)
+```
+
+Recipes and tags are plain JSON (same on both versions); item models use datagen. Refs:
+`minecraft:x`, `#minecraft:x`, `element_id`, `#tag_element_id`.
+
+## Done (v0.3)
+
+| Area | Where | Notes |
+| --- | --- | --- |
+| ADR 0009 | `docs/decisions/0009-...` | API differences 26.1.2 vs 26.3 checked with javap |
+| Pixel brushes + texture editor | `packages/pixel` | pencil/eraser/fill/picker, mirror, onion skin, frames, .mcmeta, import; 12 tests |
+| Item element | `packages/elements/item` | inspector shows Java per field; original starter art (dough, animated bun) |
+| Recipe, Tag, Language elements | `packages/elements/*` | canvases + inspectors, tests |
+| Fabric adapters | `packages/targets/fabric/src/elements/{item,recipe,tag,refs}.ts`, `templates/content.ts` | ModItems.java, recipe/tag/lang JSON, flat item models |
+| Golden + gradle tests | `packages/generator/src/first-item*.ts` | goldens for 26.1.2 and 26.3; `pnpm test:gradle` built both (passed 2026-11-04) |
+| History | `apps/desktop/src/features/project-editor/history.tsx`, Rust `commands/history.rs` | save/list/restore (undoable); cargo tests |
+| Starter item | `apps/desktop/src/features/new-project/starters.ts` | dough (shapeless) -> bun (furnace/smoker), food with Speed |
+| Docs | `packages/docs` | live demos on reference pages; first-item tutorial; 4 guides; 2 concepts |
+| Make it alive | Magic UI Blur Fade (history), pulsing flame (cooking), AnimatedNumber reuse | |
+| Plan rule 13 | plan 2.2 | "Prefer proven libraries" added at Liam's request |
+
+## Still to do for v0.3
+
+1. Visual check of every new screen in both themes (browser preview + CDP), fix overflow.
+2. E2E in the real app: Starter item -> Build -> Run -> mod loads; Liam checks craft/cook/eat in game.
+3. `pnpm bench`, write `docs/perf/0.3.md`.
+4. `/code-review` and `/security-review` on the branch; fix findings.
+5. PR "v0.3 First item" with the bench table.
+
+## Useful facts (v0.3)
+
+- Bash heredocs that contain apostrophes sometimes break in this environment: write scripts
+  with the Write tool into the scratchpad and run them with python (open files with
+  `encoding='utf-8', newline=''`).
+- Vanilla ids: `node packages/game-data/scripts/sync-vanilla-ids.mjs` (needs the Gradle cache).
+- 26.3 doubled blasting/smoking recipe times (stations run 2x); the adapter doubles them for 26.3.
+- 26.3 fuel/compost: `Item.Properties.cookingFuel/compostable(ResourceKey<ContextIntProvider>)` + data files
+  under `data/<modid>/context_int_provider/`; 26.1.2 uses Fabric `FuelValueEvents` and `ComposterBlock.COMPOSTABLES`.
+
+---
+
+# v0.2 "First block" (done, released as 0.2.0)
 
 Last updated: 2026-10-30. Read this first in a new session, then `CLAUDE.md` and
 `docs/release/blocksy-release-plan.md` (sections 2, 4, 5, 11 and "v0.2 First block" in 13).
