@@ -70,7 +70,6 @@ export function LanguageCanvas({ element, project, change, elementTypes = [] }: 
             <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search keys and text" aria-label="Search translations" className="h-8 pl-8 text-sm" />
           </label>
         </div>
-        {!isEnglish && total > 0 && <Progress value={(done / total) * 100} aria-label="Translated" className="h-1" />}
 
         <div className="overflow-hidden rounded-2xl bg-bg/95 shadow-md">
           <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,1.3fr)] gap-x-3 border-b border-line-subtle px-4 py-2 text-xs text-fg-muted">

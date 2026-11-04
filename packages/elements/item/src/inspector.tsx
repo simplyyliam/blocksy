@@ -117,7 +117,7 @@ export function ItemInspector({ element, project, change, rename, select }: Elem
           {(id) => <NumberInput id={id} value={data.maxStackSize} min={1} max={99} step={1} onCommit={(n) => set({ maxStackSize: Math.round(n) })} />}
         </InspectorField>
         <InspectorField label="Rarity" java={data.rarity !== "common" ? `.rarity(Rarity.${data.rarity.toUpperCase()})` : undefined} description={fieldDoc("rarity").description}>
-          {(id) => <Choose id={id} value={data.rarity} items={RARITIES.map((r) => ({ value: r.id, label: `${r.label} · ${r.note.toLowerCase()}` }))} onChange={(v) => set({ rarity: v as ItemData["rarity"] })} />}
+          {(id) => <Choose id={id} value={data.rarity} items={RARITIES.map((r) => ({ value: r.id, label: r.label }))} onChange={(v) => set({ rarity: v as ItemData["rarity"] })} />}
         </InspectorField>
         <InspectorField label="Fire resistant" java={data.fireResistant ? ".fireResistant()" : undefined} description={fieldDoc("fireResistant").description}>
           {(id) => <Switch id={id} size="sm" checked={data.fireResistant} onCheckedChange={(fireResistant) => set({ fireResistant })} />}

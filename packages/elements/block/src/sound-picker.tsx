@@ -77,16 +77,20 @@ export function SoundPicker({ value, onChange, playSound }: SoundPickerProps) {
           </button>
         ))}
       </div>
-      <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" className="-ml-1.5 px-1.5 text-fg-muted" onClick={() => setOpen(true)}>
-          View all {SOUNDS.length} sounds
-        </Button>
-        <span className="flex items-center gap-0.5 text-xs text-fg-faint">
+      {playSound && (
+        <div className="flex items-center gap-0.5 text-xs text-fg-muted">
+          <span className="mr-1">Hear it</span>
           {(["break", "step", "place"] as const).map((kind) => (
-            <PlayButton key={kind} sound={current} kind={kind} playSound={playSound} label={`Hear it ${kind === "step" ? "walked on" : kind === "break" ? "broken" : "placed"}`} />
+            <Button key={kind} variant="ghost" size="xs" className="gap-1 px-1.5 text-fg-muted active:scale-95" onClick={() => void play(current, kind, playSound)}>
+              <Play className="size-2.5 fill-current" strokeWidth={0} />
+              {kind[0]!.toUpperCase() + kind.slice(1)}
+            </Button>
           ))}
-        </span>
-      </div>
+        </div>
+      )}
+      <Button variant="ghost" size="sm" className="-ml-1.5 self-start px-1.5 text-fg-muted" onClick={() => setOpen(true)}>
+        View all {SOUNDS.length} sounds
+      </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="flex max-h-[min(80vh,640px)] max-w-lg flex-col gap-3">
