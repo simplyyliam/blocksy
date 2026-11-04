@@ -8,6 +8,8 @@
 @source "./";
 @source "../../../packages/elements";
 @source "../../../packages/model-studio/src";
+@source "../../../packages/pixel/src";
+@source "../../../packages/game-data/src";
 
 /* Pages fade in softly when you switch between them. */
 .page-enter {
