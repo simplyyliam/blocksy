@@ -63,6 +63,13 @@ Each kind of thing Blocksy knows about is a self-contained **module** registered
 10. **Never ship Minecraft's code or assets.** Sources, textures and GUI art are generated or read from the user's own machine at build time.
 11. **Never copy GPL code into Blocksy** (for example Blockbench, which is GPL-3.0). Study behaviour and file formats; write original code.
 12. **Decisions are written down.** Any architectural choice gets a short ADR in `docs/decisions/` (context, decision, consequences).
+13. **Prefer proven libraries.** Before building a mod-side system (effects, animation, spells, combat), research whether a maintained library already does it, and record the choice in an ADR: depend on it, or build our own. Examples of what to look for:
+    - Particles and effects: CooParticlesAPI (particle compositions, emitters, magic circles), Lodestone (screenshake, configurable particles)
+    - Animation: GeckoLib (keyframe animation for entities, blocks, items and armor), PlayerAnimator (player poses)
+    - Spells and combat: Spell Engine (data-driven spells), Better Combat (weapon animations)
+    - Shaders and screen effects: Satin API
+
+    For each candidate, check: license, supported loaders and Minecraft versions, extra dependencies (for example CooParticlesAPI needs the Kotlin language adapter), and whether it is still maintained. Every library becomes a module in the Libraries registry with its license, versions, the nodes it unlocks and a credit entry. GPL or unknown licenses are never added without warning the user, because they can affect the license of the user's own mod.
 
 ### 2.3 Repository layout: one monorepo
 
