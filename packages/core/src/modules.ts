@@ -84,6 +84,12 @@ export interface ElementType<Data = unknown> {
   plural?: string
   /** v0.2: the data behind this element's Docs reference page. */
   docs?: ElementDocs
+  /**
+   * v0.3: the translation keys this element adds, with their English text
+   * (e.g. { "item.my_mod.ruby": "Ruby" }). Keys follow Minecraft's own naming, so they are
+   * the same for every loader. The lang editor lists them; targets write them (ADR 0009).
+   */
+  lang?(element: Element & { data: Data }, project: Project): Record<string, string>
 }
 
 /** A visual theme: token values only, never layout or behaviour (plan section 5). */
