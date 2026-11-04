@@ -37,14 +37,20 @@ Recipes and tags are plain JSON (same on both versions); item models use datagen
 | Docs | `packages/docs` | live demos on reference pages; first-item tutorial; 4 guides; 2 concepts |
 | Make it alive | Magic UI Blur Fade (history), pulsing flame (cooking), AnimatedNumber reuse | |
 | Plan rule 13 | plan 2.2 | "Prefer proven libraries" added at Liam's request |
+| Block sounds (Liam's request) | `elements/block/src/sound-picker.tsx`, Rust `commands/assets.rs`, `shared/minecraft-sounds.ts` | 122 SoundTypes (generated), chips + View all dialog, play break/step/place from Loom's asset cache (never bundled) |
+| What's new redesign (Liam's request) | `features/whats-new/` | per-release pixel scene + isometric block, full changelog lines |
+| Code review | `/code-review high`, 2026-11-04 | 10 findings: 9 fixed, 1 (ref/lang duplication in target) explained in ADR 0009 |
+| Security review | `/security-review`, 2026-11-04 | no findings >= 8; hardened anyway: one-line Java comments, git fsmonitor/hooks/gpg off |
+| UI check, both themes | browser preview + CDP | editor, texture editor, recipes, tags, lang, history, sound dialog, What's new, docs demo |
+| E2E (dev app) | `scratchpad/cdp/e2e.mjs` (not in repo) | Starter item -> first build 66 s -> Save version (git commit) -> Run -> "Your mod is loaded"; client log clean |
 
 ## Still to do for v0.3
 
-1. Visual check of every new screen in both themes (browser preview + CDP), fix overflow.
-2. E2E in the real app: Starter item -> Build -> Run -> mod loads; Liam checks craft/cook/eat in game.
-3. `pnpm bench`, write `docs/perf/0.3.md`.
-4. `/code-review` and `/security-review` on the branch; fix findings.
-5. PR "v0.3 First item" with the bench table.
+1. In-game check by Liam: craft Berry Dough (wheat + sweet berries), cook it in a furnace, eat the Berry Bun (Speed).
+2. Bench results in `docs/perf/0.3.md` (see the PR).
+3. PR "v0.3 First item" is open; Liam reviews and merges, then `/release` for 0.3.0.
+4. Notes for later: move pure ref helpers into a UI-free module shared by target and editors (ADR 0009);
+   vanilla id list is the union of 26.1.2 and 26.3 (an id new in 26.3 won't load on 26.1.2).
 
 ## Useful facts (v0.3)
 
