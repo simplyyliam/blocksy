@@ -146,4 +146,6 @@ export interface ElementEditorProps<Data = unknown> {
   rename(name: string): void
   /** Selects another element in the project tree (e.g. "open this creative tab"). */
   select(id: string): void
+  /** v0.3: every registered element type, for editors that read other elements (the lang editor). */
+  elementTypes?: ElementType[]
 }

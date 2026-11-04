@@ -61,7 +61,7 @@ export function CreativeTabInspector({ element, project, change, rename, select 
           {entries.map((e) => (
             <Button key={e.id} variant="ghost" size="sm" className="justify-start gap-2 px-1.5" onClick={() => select(e.id)}>
               {textureOf(e.data) ? (
-                <img src={textureOf(e.data)!} alt="" className="size-4 [image-rendering:pixelated]" />
+                <img src={textureOf(e.data)!} alt="" className="size-4 object-cover object-top [image-rendering:pixelated]" />
               ) : (
                 <span className="size-4 rounded-xs bg-surface-pressed" />
               )}
@@ -87,7 +87,7 @@ export function CreativeTabCanvas({ element, project, select }: ElementEditorPro
         {/* The tab itself, sitting on the panel. */}
         <div className="flex w-fit items-center gap-2 rounded-t-lg bg-surface px-3 pt-2 pb-1.5">
           {icon && textureOf(icon.data) ? (
-            <img src={textureOf(icon.data)!} alt="" className="size-5 [image-rendering:pixelated]" />
+            <img src={textureOf(icon.data)!} alt="" className="size-5 object-cover object-top [image-rendering:pixelated]" />
           ) : (
             <span className="size-5 rounded-xs bg-surface-pressed" />
           )}
@@ -109,7 +109,7 @@ export function CreativeTabCanvas({ element, project, select }: ElementEditorPro
                   entry && "hover:-translate-y-0.5 hover:bg-surface-hover",
                 )}
               >
-                {texture && <img src={texture} alt={entry.name} className="size-6 [image-rendering:pixelated]" />}
+                {texture && <img src={texture} alt={entry.name} className="size-6 object-cover object-top [image-rendering:pixelated]" />}
               </button>
             )
           })}

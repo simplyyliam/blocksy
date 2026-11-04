@@ -13,4 +13,6 @@ export const blockElement: ElementType<BlockData> = {
   defaults: blockDefaults,
   templates: {},
   docs: blockDocs,
+  // v0.3: its English name, for the lang editor. Its item shares the key (useBlockDescriptionPrefix).
+  lang: (block, project) => ({ [`block.${project.modId}.${block.id}`]: block.name }),
 }
