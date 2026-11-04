@@ -59,12 +59,30 @@ importers:
       '@blocksy/element-creative-tab':
         specifier: workspace:*
         version: link:../../packages/elements/creative-tab
+      '@blocksy/element-item':
+        specifier: workspace:*
+        version: link:../../packages/elements/item
+      '@blocksy/element-language':
+        specifier: workspace:*
+        version: link:../../packages/elements/language
+      '@blocksy/element-recipe':
+        specifier: workspace:*
+        version: link:../../packages/elements/recipe
+      '@blocksy/element-tag':
+        specifier: workspace:*
+        version: link:../../packages/elements/tag
+      '@blocksy/game-data':
+        specifier: workspace:*
+        version: link:../../packages/game-data
       '@blocksy/generator':
         specifier: workspace:*
         version: link:../../packages/generator
       '@blocksy/model-studio':
         specifier: workspace:*
         version: link:../../packages/model-studio
+      '@blocksy/pixel':
+        specifier: workspace:*
+        version: link:../../packages/pixel
       '@blocksy/target-fabric':
         specifier: workspace:*
         version: link:../../packages/targets/fabric
@@ -155,9 +173,24 @@ importers:
       '@blocksy/element-block':
         specifier: workspace:*
         version: link:../elements/block
+      '@blocksy/element-item':
+        specifier: workspace:*
+        version: link:../elements/item
+      '@blocksy/element-language':
+        specifier: workspace:*
+        version: link:../elements/language
+      '@blocksy/element-recipe':
+        specifier: workspace:*
+        version: link:../elements/recipe
+      '@blocksy/element-tag':
+        specifier: workspace:*
+        version: link:../elements/tag
       '@blocksy/model-studio':
         specifier: workspace:*
         version: link:../model-studio
+      '@blocksy/pixel':
+        specifier: workspace:*
+        version: link:../pixel
       '@blocksy/ui':
         specifier: workspace:*
         version: link:../ui
@@ -234,6 +267,122 @@ importers:
         specifier: ^19.3.1
         version: 19.3.1
 
+  packages/elements/item:
+    dependencies:
+      '@blocksy/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@blocksy/pixel':
+        specifier: workspace:*
+        version: link:../../pixel
+      '@blocksy/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      lucide-react:
+        specifier: ^1.64.0
+        version: 1.64.0(@types/react@19.3.0)(react@19.3.1)
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: ^19.3.1
+        version: 19.3.1
+
+  packages/elements/language:
+    dependencies:
+      '@blocksy/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@blocksy/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      lucide-react:
+        specifier: ^1.64.0
+        version: 1.64.0(@types/react@19.3.0)(react@19.3.1)
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: ^19.3.1
+        version: 19.3.1
+
+  packages/elements/recipe:
+    dependencies:
+      '@blocksy/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@blocksy/game-data':
+        specifier: workspace:*
+        version: link:../../game-data
+      '@blocksy/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      lucide-react:
+        specifier: ^1.64.0
+        version: 1.64.0(@types/react@19.3.0)(react@19.3.1)
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: ^19.3.1
+        version: 19.3.1
+
+  packages/elements/tag:
+    dependencies:
+      '@blocksy/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@blocksy/game-data':
+        specifier: workspace:*
+        version: link:../../game-data
+      '@blocksy/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      lucide-react:
+        specifier: ^1.64.0
+        version: 1.64.0(@types/react@19.3.0)(react@19.3.1)
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: ^19.3.1
+        version: 19.3.1
+
+  packages/game-data:
+    dependencies:
+      '@blocksy/core':
+        specifier: workspace:*
+        version: link:../core
+      '@blocksy/ui':
+        specifier: workspace:*
+        version: link:../ui
+      lucide-react:
+        specifier: ^1.64.0
+        version: 1.64.0(@types/react@19.3.0)(react@19.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: ^19.3.1
+        version: 19.3.1
+
   packages/generator:
     dependencies:
       '@blocksy/core':
@@ -246,6 +395,18 @@ importers:
       '@blocksy/element-creative-tab':
         specifier: workspace:*
         version: link:../elements/creative-tab
+      '@blocksy/element-item':
+        specifier: workspace:*
+        version: link:../elements/item
+      '@blocksy/element-language':
+        specifier: workspace:*
+        version: link:../elements/language
+      '@blocksy/element-recipe':
+        specifier: workspace:*
+        version: link:../elements/recipe
+      '@blocksy/element-tag':
+        specifier: workspace:*
+        version: link:../elements/tag
       '@blocksy/target-fabric':
         specifier: workspace:*
         version: link:../targets/fabric
@@ -279,6 +440,22 @@ importers:
       react-dom:
         specifier: ^19.3.1
         version: 19.3.1(react@19.3.1)
+
+  packages/pixel:
+    dependencies:
+      '@blocksy/ui':
+        specifier: workspace:*
+        version: link:../ui
+      lucide-react:
+        specifier: ^1.64.0
+        version: 1.64.0(@types/react@19.3.0)(react@19.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      react:
+        specifier: ^19.3.1
+        version: 19.3.1
 
   packages/targets/fabric:
     dependencies:

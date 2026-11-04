@@ -1,0 +1,25 @@
+---
+title: What are tags?
+description: Named groups of items or blocks, and why recipes and other mods love them.
+---
+
+<TagDemo />
+
+A **tag** is a named list: `#minecraft:planks` holds every kind of plank, `#minecraft:logs`
+every log. Minecraft uses tags everywhere:
+
+- A **recipe** can ask for a tag instead of one item. The vanilla crafting table recipe asks
+  for `#minecraft:planks`, so any plank works.
+- **Block tags** change behaviour: `#minecraft:mineable/pickaxe` decides which blocks a pickaxe
+  mines quickly (Blocksy fills that one from each block's Tool setting).
+
+Tags merge. When your mod adds Berry Bun to `#c:foods/fruit`, Minecraft joins your list with
+every other mod's list of the same name. The `c:` ("common") tags are shared by Fabric and
+NeoForge mods, so adding your items there makes them work with other mods' recipes.
+
+In Blocksy, a **Tag** element either makes a new tag for your mod (`#<modid>:<id>`) or adds
+entries to an existing one. It is written as a small JSON file:
+
+```json
+{ "values": ["minecraft:apple", "my_mod:berry_bun"] }
+```

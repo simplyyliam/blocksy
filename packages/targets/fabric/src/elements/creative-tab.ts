@@ -1,7 +1,7 @@
 // Fabric adapter for the Creative tab element (ADR 0006). One tab becomes a field in
 // ModCreativeTabs.java and a title in en_us.json. It writes no files of its own.
 import type { Element, GeneratedFile } from "@blocksy/core"
-import { constant } from "./block.ts"
+import { constant, oneLine } from "./block.ts"
 
 export type CreativeTabElement = Element & { data: { icon: string | null } }
 
@@ -9,14 +9,18 @@ export type CreativeTabElement = Element & { data: { icon: string | null } }
 export const creativeTabTemplate = (): GeneratedFile[] => []
 
 /** The tab's field in ModCreativeTabs.java. `entries` are the ids of the blocks in it. */
-export function creativeTabField(tab: CreativeTabElement, entries: string[], modId: string): string {
+export function creativeTabField(tab: CreativeTabElement, entries: string[], modId: string, items: string[] = []): string {
   const name = constant(tab.id)
-  const iconId = entries.includes(tab.data.icon ?? "") ? tab.data.icon! : entries[0]
+  // v0.3: items join tabs too (after the blocks). The icon can be a block or an item.
+  const all = [...entries, ...items]
+  const holder = (id: string) => (items.includes(id) ? `ModItems.${constant(id)}` : `ModBlocks.${constant(id)}`)
+  const iconId = all.includes(tab.data.icon ?? "") ? tab.data.icon! : all[0]
   // A tab needs an icon even while empty: the barrier is a stand-in until a block joins.
-  const icon = iconId ? `ModBlocks.${constant(iconId)}` : "Items.BARRIER"
-  const accepts = entries.map((id) => `\t\t\t\toutput.accept(ModBlocks.${constant(id)});`).join("\n")
+  const icon = iconId ? holder(iconId) : "Items.BARRIER"
+  const accepts = all.map((id) => `\t\t\t\toutput.accept(${holder(id)});`).join("\n")
+  const count = `${entries.length} block${entries.length === 1 ? "" : "s"}${items.length ? `, ${items.length} item${items.length === 1 ? "" : "s"}` : ""}`
   // One field per tab (named after its id), so two tabs can never clash.
-  return `	// ${tab.name}: ${entries.length} block${entries.length === 1 ? "" : "s"}.
+  return `	// ${oneLine(tab.name)}: ${count}.
 	public static final CreativeModeTab ${name} = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(MOD_ID, "${tab.id}")),

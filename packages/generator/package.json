@@ -15,6 +15,10 @@
     "@blocksy/target-fabric": "workspace:*",
     "zod": "^4.6.7",
     "@blocksy/element-block": "workspace:*",
-    "@blocksy/element-creative-tab": "workspace:*"
+    "@blocksy/element-creative-tab": "workspace:*",
+    "@blocksy/element-item": "workspace:*",
+    "@blocksy/element-recipe": "workspace:*",
+    "@blocksy/element-tag": "workspace:*",
+    "@blocksy/element-language": "workspace:*"
   }
 }

@@ -35,3 +35,15 @@ describe("png helpers", () => {
     expect(pngSize(starterTexture())).toEqual({ width: 16, height: 16 })
   })
 })
+
+describe("block sounds (v0.3)", () => {
+  it("lists every vanilla sound type and keeps the v0.2 ones valid", async () => {
+    const { SOUNDS, COMMON_SOUNDS } = await import("./options.ts")
+    expect(SOUNDS.length).toBeGreaterThan(100)
+    for (const id of ["stone", "wood", "gravel", "grass", "sand", "snow", "wool", "glass", "metal", "copper", "amethyst", "deepslate", "netherrack", "mud", "moss", "bone_block"]) {
+      expect(blockSchema.safeParse({ ...blockDefaults(), sound: id }).success, id).toBe(true)
+    }
+    expect(COMMON_SOUNDS.every((id) => SOUNDS.some((s) => s.id === id))).toBe(true)
+    expect(SOUNDS.find((s) => s.id === "wood")?.events.break).toBe("block.wood.break")
+  })
+})

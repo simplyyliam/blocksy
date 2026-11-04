@@ -28,6 +28,30 @@ export default defineConfig({
     tailwindcss(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  // Dependencies that only load lazily (Docs, Code tab, 3D previews). Pre-bundling them at
+  // start-up stops Vite from discovering them mid-session, re-bundling, and leaving an open
+  // page with "Failed to fetch dynamically imported module" (v0.3: Docs demos pull in three.js).
+  optimizeDeps: {
+    include: [
+      "fumadocs-core/framework",
+      "fumadocs-core/source",
+      "fumadocs-ui/layouts/docs",
+      "fumadocs-ui/layouts/docs/page",
+      "fumadocs-ui/mdx",
+      "fumadocs-ui/components/steps",
+      "fumadocs-ui/provider/base",
+      "fumadocs-mdx/runtime/macro",
+      "shiki/core",
+      "shiki/engine/javascript",
+      "shiki/langs/java.mjs",
+      "shiki/langs/json.mjs",
+      "shiki/langs/groovy.mjs",
+      "shiki/langs/properties.mjs",
+      "three",
+      "@react-three/fiber",
+      "@react-three/drei",
+    ],
+  },
   resolve: {
      alias: {
        "@": path.resolve(__dirname, "./src"),

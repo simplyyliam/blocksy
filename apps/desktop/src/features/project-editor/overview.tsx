@@ -40,22 +40,26 @@ export function Overview() {
   if (!project) return null
   const { doc, version, targetName } = project
   const blocks = doc.elements.filter((e) => e.type === "block")
+  // v0.3: items count as things to try in game too.
+  const things = doc.elements.filter((e) => e.type === "block" || e.type === "item")
+  const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`
+  const counts = [blocks.length && plural(blocks.length, "block"), things.length - blocks.length && plural(things.length - blocks.length, "item")].filter(Boolean).join(", ")
 
   return (
     <div className="mx-auto w-full max-w-[640px] px-6 pt-10 pb-24">
       <h1 className="text-xl font-medium tracking-[-0.01em] break-words text-fg">{doc.name}</h1>
       <p className="mt-1.5 text-base text-fg-muted">
-        {blocks.length === 0
-          ? "No blocks yet. Add one from the project tree on the left."
-          : `${blocks.length} block${blocks.length === 1 ? "" : "s"}. Run it to try ${blocks.length === 1 ? "it" : "them"} in Minecraft.`}
+        {things.length === 0
+          ? "No blocks or items yet. Add one from the project tree on the left."
+          : `${counts}. Run it to try ${things.length === 1 ? "it" : "them"} in Minecraft.`}
       </p>
       <div className="mt-5 flex flex-wrap gap-2">
         <Button size="sm" onClick={() => void runMod()} disabled={busy}>
           <Play className="fill-current" strokeWidth={0} /> Run in Minecraft
         </Button>
-        {blocks[0] && (
-          <Button variant="secondary" size="sm" onClick={() => select(blocks[0]!.id)}>
-            <Box strokeWidth={1.75} /> Open {blocks[0].name}
+        {things[0] && (
+          <Button variant="secondary" size="sm" onClick={() => select(things[0]!.id)}>
+            <Box strokeWidth={1.75} /> Open {things[0].name}
           </Button>
         )}
       </div>

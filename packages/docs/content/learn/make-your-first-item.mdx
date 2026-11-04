@@ -1,0 +1,111 @@
+---
+title: Make your first item
+description: Paint an item, craft it, cook it in a furnace and eat it for a burst of speed.
+---
+
+In this lesson you make two items, **Berry Dough** and a **Berry Bun**, with recipes that
+connect them: craft the dough from wheat and sweet berries, cook it in a furnace, eat the bun.
+On the way you paint a texture (with an animation), write recipes without typing JSON, and
+see the Java and data files Blocksy writes.
+
+<TextureDemo caption="The bun you're about to make. It has two frames: the second one steams. Try painting on it." />
+
+## Before you start
+
+You need Blocksy with Java set up. If you made the [first block](/docs/learn/make-your-first-block),
+you're ready.
+
+<Steps>
+<Step>
+
+### Create the project
+
+On **Home**, click **New project**, pick **Starter item** on the left, name your mod and click
+**Create**. The first build downloads Minecraft once; later builds take seconds.
+
+The starter gives you a creative tab, the two items and three recipes, so you can play right
+away and then change everything.
+
+</Step>
+<Step>
+
+### Paint the texture
+
+Click **Berry Bun** in the project tree. The canvas is now the **texture editor**:
+
+- **Pencil** (B), **Eraser** (E), **Fill** (G) and **Picker** (I) on the left. Right-click
+  picks a colour with any tool.
+- **Mirror** (M) paints both halves at once: great for symmetrical items.
+- The **palette** on the right, plus the colours already in your texture.
+- **Frames** at the bottom: add a frame to animate the item. **Onion skin** (O) shows the
+  previous frame faintly, so the next one lines up.
+
+Every stroke is one undo step (Ctrl+Z).
+
+<Callout title="Animated textures">
+Minecraft animates a texture when its frames are stacked into one tall PNG with a small
+`.png.mcmeta` file next to it saying how long each frame shows (in ticks, 20 per second).
+Blocksy writes both for you.
+</Callout>
+
+</Step>
+<Step>
+
+### Make it food
+
+In the inspector, under **Food**, **Can be eaten** is on. **Nutrition** fills the hunger bar
+(2 per drumstick) and **Saturation** decides how long you stay full. Under **Effects**, the bun
+gives **Speed** for 10 seconds.
+
+The Java appears under each field, like `.nutrition(6)` and `MobEffects.SPEED`.
+
+</Step>
+<Step>
+
+### Read the recipes
+
+Click **Berry Dough** under **Recipes**. The crafting grid shows wheat and sweet berries, and
+**Shapeless** means any arrangement works. Click a slot to pick another item or a tag; drag
+a slot to move it.
+
+**Berry Bun (furnace)** is a **Smelting** recipe: dough in, bun out, 10 seconds. There's a
+**Smoker** version too, which cooks twice as fast.
+
+<VideoLesson id="tpQ3VGUxhp8" title="Fabric Modding Tutorial - Minecraft 1.21: Custom Recipes & Loot Tables" creator="Modding by Kaupenjoe">
+  writing recipe JSON by hand, which Blocksy does for you here
+</VideoLesson>
+
+</Step>
+<Step>
+
+### Save a version
+
+Press **Ctrl+S** (or click **History** under Overview), type *Starter item* and click
+**Save version**. Now you can experiment freely: **Restore** brings this moment back.
+
+</Step>
+<Step>
+
+### Craft it, cook it, eat it
+
+Click **Run**. When the status bar says **Your mod is loaded**:
+
+1. Make a world in **Survival** (or Creative and `/gamemode survival` later).
+2. `/give @s minecraft:wheat` and `/give @s minecraft:sweet_berries`, then craft **Berry Dough**.
+3. Put the dough in a **furnace** with some fuel and wait for the **Berry Bun**.
+4. Get a little hungry (sprint around), then eat the bun: you're faster for 10 seconds.
+
+Hover the bun to see its tooltip; look closely to see it steam.
+
+</Step>
+</Steps>
+
+## What you learned
+
+- An item has an **id** that never changes and a **name** players see. Its texture can be animated.
+- **Food** is a property of an item: nutrition, saturation and effects.
+- **Recipes** are JSON files in your mod's data. Shaped recipes keep their pattern; shapeless don't.
+- **Versions** are snapshots of your project you can go back to.
+
+Next: [Add a recipe](/docs/guides/add-a-recipe), [What are tags?](/docs/concepts/what-are-tags),
+or look things up in the [Item reference](/docs/reference/item).

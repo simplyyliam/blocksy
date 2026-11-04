@@ -5,6 +5,10 @@ import type { LucideIcon } from "lucide-react"
 import { createRegistries, type ElementEditorProps, type ElementType, type Project } from "@blocksy/core"
 import { blockModule } from "@blocksy/element-block"
 import { creativeTabModule } from "@blocksy/element-creative-tab"
+import { itemModule } from "@blocksy/element-item"
+import { languageModule } from "@blocksy/element-language"
+import { recipeModule } from "@blocksy/element-recipe"
+import { tagModule } from "@blocksy/element-tag"
 import { fabricTarget } from "@blocksy/target-fabric"
 import { minecraftTheme, modernTheme } from "@blocksy/ui"
 
@@ -36,6 +40,10 @@ registries.themes.register(modernTheme)
 registries.themes.register(minecraftTheme)
 registerElement(creativeTabModule)
 registerElement(blockModule)
+registerElement(itemModule)
+registerElement(recipeModule)
+registerElement(tagModule)
+registerElement(languageModule)
 
 /** Loaders shown greyed out in New project until their target module exists. */
 export const upcomingLoaders = [{ id: "neoforge", name: "NeoForge", note: "NeoForge support arrives after 1.0" }]

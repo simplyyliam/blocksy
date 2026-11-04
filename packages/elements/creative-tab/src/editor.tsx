@@ -3,12 +3,15 @@
 // not Minecraft's GUI art): the tab on top, its blocks in a 9-wide slot grid.
 import type { ElementEditorProps } from "@blocksy/core"
 import {
-  Button, cn, DotPattern, Input, InspectorField, InspectorSection, Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Button, cn, CanvasBackdrop, Input, InspectorField, InspectorSection, Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@blocksy/ui"
 import { tabEntries, type CreativeTabData } from "./element.ts"
 
 /** "First block" in the icon select. "@" can't start an element id, so no block collides. */
 const AUTO_ICON = "@auto"
+
+/** v0.3: the order the game shows them in: blocks first, then items (as the targets write it). */
+const inGameOrder = <T extends { type: string }>(list: T[]) => [...list.filter((e) => e.type === "block"), ...list.filter((e) => e.type !== "block")]
 
 const textureOf = (data: unknown) => {
   const texture = (data as { texture?: unknown } | null)?.texture
@@ -16,7 +19,7 @@ const textureOf = (data: unknown) => {
 }
 
 export function CreativeTabInspector({ element, project, change, rename, select }: ElementEditorProps<CreativeTabData>) {
-  const entries = tabEntries(project, element.id)
+  const entries = inGameOrder(tabEntries(project, element.id))
   return (
     <div className="flex flex-col divide-y divide-line-subtle py-1">
       <InspectorSection title="Creative tab">
@@ -36,7 +39,7 @@ export function CreativeTabInspector({ element, project, change, rename, select 
         <InspectorField label="Icon">
           {(id) => (
             <Select
-              items={[{ value: AUTO_ICON, label: "First block" }, ...entries.map((e) => ({ value: e.id, label: e.name }))]}
+              items={[{ value: AUTO_ICON, label: "First in tab" }, ...entries.map((e) => ({ value: e.id, label: e.name }))]}
               value={element.data.icon ?? AUTO_ICON}
               onValueChange={(v) => v !== null && change({ icon: v === AUTO_ICON ? null : v })}
             >
@@ -44,7 +47,7 @@ export function CreativeTabInspector({ element, project, change, rename, select 
                 <SelectValue />
               </SelectTrigger>
               <SelectContent alignItemWithTrigger={false}>
-                <SelectItem value={AUTO_ICON}>First block</SelectItem>
+                <SelectItem value={AUTO_ICON}>First in tab</SelectItem>
                 {entries.map((e) => (
                   <SelectItem key={e.id} value={e.id}>
                     {e.name}
@@ -61,7 +64,7 @@ export function CreativeTabInspector({ element, project, change, rename, select 
           {entries.map((e) => (
             <Button key={e.id} variant="ghost" size="sm" className="justify-start gap-2 px-1.5" onClick={() => select(e.id)}>
               {textureOf(e.data) ? (
-                <img src={textureOf(e.data)!} alt="" className="size-4 [image-rendering:pixelated]" />
+                <img src={textureOf(e.data)!} alt="" className="size-4 object-cover object-top [image-rendering:pixelated]" />
               ) : (
                 <span className="size-4 rounded-xs bg-surface-pressed" />
               )}
@@ -75,19 +78,17 @@ export function CreativeTabInspector({ element, project, change, rename, select 
 }
 
 export function CreativeTabCanvas({ element, project, select }: ElementEditorProps<CreativeTabData>) {
-  const entries = tabEntries(project, element.id)
+  const entries = inGameOrder(tabEntries(project, element.id))
   const icon = entries.find((e) => e.id === element.data.icon) ?? entries[0]
   const slots = Math.max(27, Math.ceil(entries.length / 9) * 9)
   return (
     <div className="relative grid size-full place-items-center">
-      <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_85%)]">
-        <DotPattern width={18} height={18} cr={0.9} className="text-fg-faint opacity-60" />
-      </div>
+      <CanvasBackdrop />
       <div className="relative flex flex-col">
         {/* The tab itself, sitting on the panel. */}
         <div className="flex w-fit items-center gap-2 rounded-t-lg bg-surface px-3 pt-2 pb-1.5">
           {icon && textureOf(icon.data) ? (
-            <img src={textureOf(icon.data)!} alt="" className="size-5 [image-rendering:pixelated]" />
+            <img src={textureOf(icon.data)!} alt="" className="size-5 object-cover object-top [image-rendering:pixelated]" />
           ) : (
             <span className="size-5 rounded-xs bg-surface-pressed" />
           )}
@@ -109,7 +110,7 @@ export function CreativeTabCanvas({ element, project, select }: ElementEditorPro
                   entry && "hover:-translate-y-0.5 hover:bg-surface-hover",
                 )}
               >
-                {texture && <img src={texture} alt={entry.name} className="size-6 [image-rendering:pixelated]" />}
+                {texture && <img src={texture} alt={entry.name} className="size-6 object-cover object-top [image-rendering:pixelated]" />}
               </button>
             )
           })}

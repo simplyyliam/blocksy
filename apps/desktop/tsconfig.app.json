@@ -22,6 +22,10 @@
     { "path": "../../packages/model-studio" },
     { "path": "../../packages/elements/block" },
     { "path": "../../packages/elements/creative-tab" },
+    { "path": "../../packages/elements/item" },
+    { "path": "../../packages/elements/recipe" },
+    { "path": "../../packages/elements/tag" },
+    { "path": "../../packages/elements/language" },
     { "path": "../../packages/docs" }
   ]
 }

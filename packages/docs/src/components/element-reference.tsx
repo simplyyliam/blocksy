@@ -3,13 +3,16 @@
 // as the element's editor panel.
 import type { ElementType } from "@blocksy/core"
 import { BlockDemo } from "./block-demo.tsx"
+import { ELEMENT_DEMOS } from "./element-demos.tsx"
 
 export function ElementReference({ type }: { type: ElementType }) {
   const docs = type.docs
+  const Demo = ELEMENT_DEMOS[type.id] // v0.3: a live sandbox of the element's real editor
   if (!docs) return <p>No reference yet.</p>
   return (
     <>
       {type.id === "block" && <BlockDemo caption="A block made with Blocksy's starter texture. Drag to turn it." />}
+      {Demo && <Demo />}
       <p>{docs.summary}</p>
       <h2 id="fields">Fields</h2>
       <div className="not-prose overflow-hidden rounded-xl shadow-[inset_0_0_0_1px_var(--color-fd-border)]">

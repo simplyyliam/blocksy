@@ -1,5 +1,6 @@
 // The choices the Block editor offers. Ids are Minecraft's own names in lowercase
 // ("stone"), so any loader target can turn them into code (Fabric: SoundType.STONE).
+import { SOUND_TYPES } from "./sounds.generated.ts"
 
 export const TOOLS = [
   { id: "none", label: "Any (hand)" },
@@ -17,25 +18,21 @@ export const TOOL_TIERS = [
   { id: "diamond", label: "Diamond or better" },
 ] as const
 
-/** What the block sounds like when placed, walked on and broken. */
-export const SOUNDS = [
-  { id: "stone", label: "Stone" },
-  { id: "wood", label: "Wood" },
-  { id: "gravel", label: "Gravel" },
-  { id: "grass", label: "Grass" },
-  { id: "sand", label: "Sand" },
-  { id: "snow", label: "Snow" },
-  { id: "wool", label: "Wool" },
-  { id: "glass", label: "Glass" },
-  { id: "metal", label: "Metal" },
-  { id: "copper", label: "Copper" },
-  { id: "amethyst", label: "Amethyst" },
-  { id: "deepslate", label: "Deepslate" },
-  { id: "netherrack", label: "Netherrack" },
-  { id: "mud", label: "Mud" },
-  { id: "moss", label: "Moss" },
-  { id: "bone_block", label: "Bone" },
-] as const
+/**
+ * What the block sounds like when placed, walked on and broken: every vanilla SoundType
+ * (generated from the game, scripts/sync-sounds.mjs), with the sound events it plays so
+ * the editor can let you hear it (from your own Minecraft download, never bundled).
+ */
+export const SOUNDS = SOUND_TYPES.map((s) => ({ id: s.id, label: soundLabel(s.id), events: s.events }))
+
+/** The familiar sounds shown first in the editor; "View all" lists every one (v0.3). */
+export const COMMON_SOUNDS = ["stone", "wood", "gravel", "grass", "sand", "wool", "glass", "metal"] as const
+
+/** "amethyst_cluster" -> "Amethyst cluster". */
+function soundLabel(id: string) {
+  const words = id.replaceAll("_", " ")
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}
 
 /**
  * The colour the block shows on maps. `rgb` is Minecraft's map colour value, used only
@@ -76,7 +73,8 @@ const ids = <T extends readonly { id: string }[]>(list: T) => list.map((o) => o.
 
 export const TOOL_IDS = ids(TOOLS)
 export const TOOL_TIER_IDS = ids(TOOL_TIERS)
-export const SOUND_IDS = ids(SOUNDS)
+/** Every sound id, for the schema (a tuple, as z.enum wants). */
+export const SOUND_IDS = SOUND_TYPES.map((s) => s.id) as unknown as [(typeof SOUND_TYPES)[number]["id"], ...(typeof SOUND_TYPES)[number]["id"][]]
 export const MAP_COLOR_IDS = ids(MAP_COLORS)
 
 /** Familiar blocks to compare against, shown next to hardness and resistance. */

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "F": "#first_item:fruits",
+    "D": "minecraft:diamond"
+  },
+  "pattern": [
+    "FD",
+    "DF"
+  ],
+  "result": {
+    "id": "first_item:sky_gem"
+  }
+}

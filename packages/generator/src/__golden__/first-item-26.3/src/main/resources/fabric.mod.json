@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "first_item",
+	"version": "${version}",
+	"name": "First Item",
+	"description": "Made with Blocksy.",
+	"authors": [],
+	"license": "All-Rights-Reserved",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.example.first_item.FirstItem"
+		],
+		"client": [
+			"com.example.first_item.client.FirstItemClient"
+		],
+		"fabric-datagen": [
+			"com.example.first_item.client.datagen.ModDataGenerator"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

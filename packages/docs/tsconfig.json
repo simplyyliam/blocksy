@@ -13,5 +13,5 @@
     "resolveJsonModule": true
   },
   "include": ["src", "src/*.json"],
-  "references": [{ "path": "../core" }, { "path": "../ui" }, { "path": "../model-studio" }, { "path": "../elements/block" }]
+  "references": [{ "path": "../core" }, { "path": "../ui" }, { "path": "../model-studio" }, { "path": "../elements/block" }, { "path": "../elements/item" }, { "path": "../elements/recipe" }, { "path": "../elements/tag" }, { "path": "../elements/language" }, { "path": "../pixel" }]
 }

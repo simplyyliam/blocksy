@@ -45,6 +45,23 @@ export const commands = {
 	gradleStatus: () => __TAURI_INVOKE<RunningTask | null>("gradle_status"),
 	/**  Copies the built mod jar (build/libs, not the -sources jar) to `destination`. */
 	exportJar: (projectDir: string, destination: string) => typedError<string, AppError>(__TAURI_INVOKE("export_jar", { projectDir, destination })),
+	/**  Is git installed? (History shows a friendly note when it isn't.) */
+	historyAvailable: () => __TAURI_INVOKE<boolean>("history_available"),
+	/**  The project's saved versions, newest first (empty before the first save). */
+	historyList: (dir: string) => typedError<Version[], AppError>(__TAURI_INVOKE("history_list", { dir })),
+	/**
+	 *  Saves a version: commits every file in the project (the .gitignore Blocksy writes keeps
+	 *  build output out). Starts the repository on the first save. Returns None when nothing
+	 *  changed since the last version.
+	 */
+	historySave: (dir: string, message: string) => typedError<Version | null, AppError>(__TAURI_INVOKE("history_save", { dir, message })),
+	/**  One file's text at a saved version, e.g. blocksy.json to restore the project from it. */
+	historyFile: (dir: string, id: string, path: string) => typedError<string, AppError>(__TAURI_INVOKE("history_file", { dir, id, path })),
+	/**
+	 *  One of Minecraft's sound files (or sounds.json), base64, from the local asset cache.
+	 *  `not_found` until a first build has downloaded Minecraft.
+	 */
+	readMinecraftAsset: (path: string) => typedError<string, AppError>(__TAURI_INVOKE("read_minecraft_asset", { path })),
 	/**  The current updater state, for screens that open after an event was sent. */
 	updateStatus: () => __TAURI_INVOKE<UpdateStatus_Serialize>("update_status"),
 	/**  Checks right now (Settings > Check for updates). Returns the new version, if any. */
@@ -195,6 +212,20 @@ export type UpdateStatus_Serialize = {
 	state: UpdateState,
 	version: string | null,
 	message: string | null,
+};
+
+/**  One saved version. */
+export type Version = {
+	/**  Full commit id. */
+	id: string,
+	/**  Short commit id, for display. */
+	short: string,
+	/**  The message the user typed. */
+	message: string,
+	/**  When it was saved, ISO 8601 (e.g. "2026-11-04T13:05:00+01:00"). */
+	date: string,
+	/**  How many files changed compared with the version before. */
+	files_changed: number,
 };
 
 /* Tauri Specta runtime */

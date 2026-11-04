@@ -25,6 +25,6 @@ public class ModModelProvider extends FabricModelProvider {
 
 	@Override
 	public void generateItemModels(ItemModelGenerators items) {
-		// Items arrive in Blocksy v0.3.
+		// No items yet: add one in Blocksy's project tree.
 	}
 }

@@ -51,6 +51,7 @@ export { Kbd, KbdGroup } from "./components/ui/kbd.tsx"
 export { DotMatrix, dotMatrixStates, type DotMatrixState } from "./components/ui/dot-matrix.tsx"
 export { DotPattern } from "./components/ui/dot-pattern.tsx"
 export { Confetti, ConfettiButton, type ConfettiRef } from "./components/ui/confetti.tsx"
+export { BlurFade } from "./components/ui/blur-fade.tsx" // v0.3: History entries fade in
 // Blocksy-only pieces (shadcn has nothing like them):
 export { CodeView, languageOf, type CodeLanguage } from "./components/code-view.tsx"
 export { InspectorField, InspectorSection, NumberInput } from "./components/inspector.tsx"
@@ -60,3 +61,12 @@ export { ProjectCover } from "./components/project-cover.tsx"
 export { PixelBurst } from "./components/pixel-burst.tsx"
 export { PixelLoader } from "./components/pixel-loader.tsx"
 export { CanvasLoader } from "./components/canvas-loader.tsx"
+export { CanvasBackdrop } from "./components/canvas-backdrop.tsx" // v0.3: cheap dot grid behind canvases
+export { GridPattern } from "./components/ui/grid-pattern.tsx"
+// v0.3: pickers for items and tags (recipes, tags editor) and multi-line text (tooltips).
+export {
+  Combobox, ComboboxContent, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxLabel, ComboboxList, ComboboxSeparator,
+  ComboboxTrigger, ComboboxValue, ComboboxCollection,
+} from "./components/ui/combobox.tsx"
+export { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "./components/ui/popover.tsx"
+export { Textarea } from "./components/ui/textarea.tsx"

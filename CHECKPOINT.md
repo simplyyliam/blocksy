@@ -1,4 +1,70 @@
-# Checkpoint: v0.2 "First block"
+# Checkpoint: v0.3 "First item, textures and recipes"
+
+Last updated: 2026-11-04. Read this first in a new session, then `CLAUDE.md` and
+`docs/release/blocksy-release-plan.md` (sections 2, 4 and "v0.3" in 13), and ADR 0009.
+Work happens on branch `release/0.3-first-item` (never main). When done: open a PR with gh
+titled "v0.3 First item" with the bench table; never merge it yourself.
+
+## The shape of v0.3 (decided, see ADR 0009)
+
+```text
+packages/pixel                  image model, PNG codec, brushes (PaintSurface), palette, TextureEditor
+packages/game-data              vanilla ids (generated from local jars), refs, ItemPicker
+packages/elements/item          stack, rarity, fire, food+effects, fuel, compost, tooltips, painted texture
+packages/elements/recipe        3x3 grid (shaped/shapeless), cooking, stonecutting
+packages/elements/tag           new tags or entries for existing ones; reserved tool tags refused
+packages/elements/language      lang editor (keys from ElementType.lang), en_us overrides
+packages/targets/fabric         item/recipe/tag/language adapters; atLeast(ctx, "26.3") for fuel/compost/cooking
+apps/desktop                    History page + Rust git commands, Starter item, Ctrl+S
+core                            ElementType.lang?, ElementEditorProps.elementTypes? (optional only)
+```
+
+Recipes and tags are plain JSON (same on both versions); item models use datagen. Refs:
+`minecraft:x`, `#minecraft:x`, `element_id`, `#tag_element_id`.
+
+## Done (v0.3)
+
+| Area | Where | Notes |
+| --- | --- | --- |
+| ADR 0009 | `docs/decisions/0009-...` | API differences 26.1.2 vs 26.3 checked with javap |
+| Pixel brushes + texture editor | `packages/pixel` | pencil/eraser/fill/picker, mirror, onion skin, frames, .mcmeta, import; 12 tests |
+| Item element | `packages/elements/item` | inspector shows Java per field; original starter art (dough, animated bun) |
+| Recipe, Tag, Language elements | `packages/elements/*` | canvases + inspectors, tests |
+| Fabric adapters | `packages/targets/fabric/src/elements/{item,recipe,tag,refs}.ts`, `templates/content.ts` | ModItems.java, recipe/tag/lang JSON, flat item models |
+| Golden + gradle tests | `packages/generator/src/first-item*.ts` | goldens for 26.1.2 and 26.3; `pnpm test:gradle` built both (passed 2026-11-04) |
+| History | `apps/desktop/src/features/project-editor/history.tsx`, Rust `commands/history.rs` | save/list/restore (undoable); cargo tests |
+| Starter item | `apps/desktop/src/features/new-project/starters.ts` | dough (shapeless) -> bun (furnace/smoker), food with Speed |
+| Docs | `packages/docs` | live demos on reference pages; first-item tutorial; 4 guides; 2 concepts |
+| Make it alive | Magic UI Blur Fade (history), pulsing flame (cooking), AnimatedNumber reuse | |
+| Plan rule 13 | plan 2.2 | "Prefer proven libraries" added at Liam's request |
+| Block sounds (Liam's request) | `elements/block/src/sound-picker.tsx`, Rust `commands/assets.rs`, `shared/minecraft-sounds.ts` | 122 SoundTypes (generated), chips + View all dialog, play break/step/place from Loom's asset cache (never bundled) |
+| What's new redesign (Liam's request) | `features/whats-new/` | per-release pixel scene + isometric block, full changelog lines |
+| Code review | `/code-review high`, 2026-11-04 | 10 findings: 9 fixed, 1 (ref/lang duplication in target) explained in ADR 0009 |
+| Security review | `/security-review`, 2026-11-04 | no findings >= 8; hardened anyway: one-line Java comments, git fsmonitor/hooks/gpg off |
+| UI check, both themes | browser preview + CDP | editor, texture editor, recipes, tags, lang, history, sound dialog, What's new, docs demo |
+| E2E (dev app) | `scratchpad/cdp/e2e.mjs` (not in repo) | Starter item -> first build 66 s -> Save version (git commit) -> Run -> "Your mod is loaded"; client log clean |
+
+## Still to do for v0.3
+
+1. In-game check by Liam: craft Berry Dough (wheat + sweet berries), cook it in a furnace, eat the Berry Bun (Speed).
+2. Bench in `docs/perf/0.3.md`: all pass after the backdrop fix (preview 733 ms) except idle 3D frames (8 in 2 of 5 runs); fix in v0.4 (ADR 0010).
+3. PR "v0.3 First item" is open (https://github.com/simplyyliam/blocksy/pull/1); Liam reviews and merges, then `/release` for 0.3.0.
+4. Notes for later: move pure ref helpers into a UI-free module shared by target and editors (ADR 0009);
+   vanilla id list is the union of 26.1.2 and 26.3 (an id new in 26.3 won't load on 26.1.2).
+
+## Useful facts (v0.3)
+
+- Bash heredocs that contain apostrophes sometimes break in this environment: write scripts
+  with the Write tool into the scratchpad and run them with python (open files with
+  `encoding='utf-8', newline=''`).
+- Vanilla ids: `node packages/game-data/scripts/sync-vanilla-ids.mjs` (needs the Gradle cache).
+- 26.3 doubled blasting/smoking recipe times (stations run 2x); the adapter doubles them for 26.3.
+- 26.3 fuel/compost: `Item.Properties.cookingFuel/compostable(ResourceKey<ContextIntProvider>)` + data files
+  under `data/<modid>/context_int_provider/`; 26.1.2 uses Fabric `FuelValueEvents` and `ComposterBlock.COMPOSTABLES`.
+
+---
+
+# v0.2 "First block" (done, released as 0.2.0)
 
 Last updated: 2026-10-30. Read this first in a new session, then `CLAUDE.md` and
 `docs/release/blocksy-release-plan.md` (sections 2, 4, 5, 11 and "v0.2 First block" in 13).

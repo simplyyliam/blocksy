@@ -6,7 +6,10 @@ import { create } from "zustand"
 /** The Overview page. "@" can never start an element id, so no element can take its place. */
 export const OVERVIEW = "@overview"
 
-/** OVERVIEW or an element id. */
+/** v0.3: the History page (saved versions). "@" keeps it apart from element ids too. */
+export const HISTORY = "@history"
+
+/** OVERVIEW, HISTORY or an element id. */
 export type Selection = string
 
 interface EditorState {

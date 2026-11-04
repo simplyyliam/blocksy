@@ -8,6 +8,8 @@
 @source "./";
 @source "../../../packages/elements";
 @source "../../../packages/model-studio/src";
+@source "../../../packages/pixel/src";
+@source "../../../packages/game-data/src";
 
 /* Pages fade in softly when you switch between them. */
 .page-enter {
@@ -18,5 +20,24 @@
   from {
     opacity: 0;
     transform: translateY(4px);
+  }
+}
+
+/* v0.3 "What's new" banner: the release block floats, sparkles twinkle (motion-safe only). */
+@keyframes whats-new-float {
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes whats-new-twinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
   }
 }

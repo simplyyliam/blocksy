@@ -84,6 +84,12 @@ export interface ElementType<Data = unknown> {
   plural?: string
   /** v0.2: the data behind this element's Docs reference page. */
   docs?: ElementDocs
+  /**
+   * v0.3: the translation keys this element adds, with their English text
+   * (e.g. { "item.my_mod.ruby": "Ruby" }). Keys follow Minecraft's own naming, so they are
+   * the same for every loader. The lang editor lists them; targets write them (ADR 0009).
+   */
+  lang?(element: Element & { data: Data }, project: Project): Record<string, string>
 }
 
 /** A visual theme: token values only, never layout or behaviour (plan section 5). */
@@ -140,4 +146,11 @@ export interface ElementEditorProps<Data = unknown> {
   rename(name: string): void
   /** Selects another element in the project tree (e.g. "open this creative tab"). */
   select(id: string): void
+  /** v0.3: every registered element type, for editors that read other elements (the lang editor). */
+  elementTypes?: ElementType[]
+  /**
+   * v0.3: plays a vanilla sound event ("block.wood.break") from the player's own Minecraft
+   * download. Resolves false when it can't (nothing downloaded yet). Never bundled (rule 10).
+   */
+  playSound?(event: string): Promise<boolean>
 }
