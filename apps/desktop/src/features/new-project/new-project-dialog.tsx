@@ -38,7 +38,7 @@ const startFrom: SideOption[] = [
 const projectTypes: SideOption[] = [
   { id: "empty", label: "Blank mod", Icon: FilePlus2, tile: "bg-brand" },
   { id: "block", label: "Starter block", Icon: Box, tile: "bg-success" },
-  { id: "item", label: "Starter item", Icon: Sword, tile: "bg-project", note: "A mod with one item to edit. Arrives in v0.3" },
+  { id: "item", label: "Starter item", Icon: Sword, tile: "bg-project" },
 ]
 
 function SideRow({ option, active, onClick }: { option: SideOption; active?: boolean; onClick?: () => void }) {
@@ -168,7 +168,7 @@ export function NewProjectDialog() {
                     key={t.id}
                     option={t}
                     active={t.id === starter}
-                    onClick={t.id === "empty" || t.id === "block" ? () => setStarter(t.id as StarterId) : undefined}
+                    onClick={() => setStarter(t.id as StarterId)}
                   />
                 ))}
               </div>

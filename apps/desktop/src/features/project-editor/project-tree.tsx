@@ -13,14 +13,14 @@
 //   └──────────────────────┘
 // A new element type shows up here with no change to this file. Right-click a row to
 // delete it (Ctrl+Z undoes).
-import { LayoutDashboard, Plus, Trash2 } from "lucide-react"
+import { History, LayoutDashboard, Plus, Trash2 } from "lucide-react"
 import { useState, type ReactNode } from "react"
 import { addElement, deriveElementId, removeElement, type Element } from "@blocksy/core"
 import {
   Button, cn, ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, Input, Tooltip, TooltipContent, TooltipTrigger,
 } from "@blocksy/ui"
 import { elementModules, registries } from "../../app/modules"
-import { OVERVIEW, useEditor } from "../../shared/stores/editor"
+import { HISTORY, OVERVIEW, useEditor } from "../../shared/stores/editor"
 import { useProject } from "../../shared/stores/project"
 
 /** The small square tile every row starts with: a block's texture, else its type icon. */
@@ -30,7 +30,7 @@ function Tile({ element, children }: { element?: Element; children?: ReactNode }
   return (
     <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-surface text-fg-muted">
       {typeof texture === "string" ? (
-        <img src={`data:image/png;base64,${texture}`} alt="" className="size-4 [image-rendering:pixelated]" />
+        <img src={`data:image/png;base64,${texture}`} alt="" className="size-4 object-cover object-top [image-rendering:pixelated]" />
       ) : Icon ? (
         <Icon className="size-4" strokeWidth={1.75} />
       ) : (
@@ -86,6 +86,13 @@ export function ProjectTree() {
             <LayoutDashboard className="size-4" strokeWidth={1.75} />
           </Tile>
           Overview
+        </Button>
+        {/* v0.3: saved versions (git), right under Overview. */}
+        <Button variant="ghost" size="sm" className={cn(row, "-mt-2.5", selected === HISTORY && "bg-surface-hover")} onClick={() => select(HISTORY)}>
+          <Tile>
+            <History className="size-4" strokeWidth={1.75} />
+          </Tile>
+          History
         </Button>
 
         {registries.elementTypes.list().map((type) => {

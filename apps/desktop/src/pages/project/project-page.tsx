@@ -15,22 +15,32 @@ import { renameElement, updateElement, type Element } from "@blocksy/core"
 import { FirstBuild } from "../../features/first-build/first-build"
 import { CodeTab } from "../../features/project-editor/code-tab"
 import { EditorIsland } from "../../features/project-editor/editor-island"
+import { History } from "../../features/project-editor/history"
 import { Overview } from "../../features/project-editor/overview"
 import { ProjectTree } from "../../features/project-editor/project-tree"
-import { elementModules } from "../../app/modules"
-import { OVERVIEW, useEditor } from "../../shared/stores/editor"
+import { elementModules, registries } from "../../app/modules"
+import { HISTORY, OVERVIEW, useEditor } from "../../shared/stores/editor"
 import { useGradle } from "../../shared/stores/gradle"
 import { useProject, type OpenProject } from "../../shared/stores/project"
 
-/** Undo/redo and tree toggle from the keyboard, except while typing in a field. */
+/** Undo/redo, tree toggle and Save version (Ctrl+S opens History) from the keyboard. */
 function useShortcuts(project: OpenProject | null) {
   const toggleTree = useEditor((s) => s.toggleTree)
+  const select = useEditor((s) => s.select)
   useEffect(() => {
     if (!project) return
     const onKey = (e: KeyboardEvent) => {
       const typing = e.target instanceof HTMLElement && e.target.closest("input, textarea, [contenteditable]")
-      if (!(e.ctrlKey || e.metaKey) || typing) return
+      if (!(e.ctrlKey || e.metaKey)) return
       const key = e.key.toLowerCase()
+      // v0.3: Ctrl+S works even while typing: it opens History with the message box focused.
+      if (key === "s") {
+        e.preventDefault()
+        select(HISTORY)
+        setTimeout(() => document.getElementById("history-message")?.focus(), 50)
+        return
+      }
+      if (typing) return
       if (key === "z" && !e.shiftKey) project.documents.undo()
       else if ((key === "z" && e.shiftKey) || key === "y") project.documents.redo()
       else if (key === "\\") toggleTree()
@@ -39,7 +49,7 @@ function useShortcuts(project: OpenProject | null) {
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [project, toggleTree])
+  }, [project, toggleTree, select])
 }
 
 /** The props every element canvas and inspector receives (core's ElementEditorProps). */
@@ -50,6 +60,8 @@ function editorProps(project: OpenProject, element: Element, select: (id: string
     change: (data: unknown) => project.documents.execute(updateElement(element.id, data)),
     rename: (name: string) => project.documents.execute(renameElement(element.id, name)),
     select,
+    // v0.3: editors that read other elements (the lang editor) get every element type.
+    elementTypes: registries.elementTypes.list(),
   }
 }
 
@@ -100,6 +112,8 @@ export function ProjectPage() {
         <div className="absolute inset-0 overflow-y-auto">
           {view === "code" ? (
             <CodeTab />
+          ) : selected === HISTORY ? (
+            <History />
           ) : module && props ? (
             // No key: switching between two blocks keeps the same 3D canvas (no new WebGL context).
             <module.Canvas {...props} />

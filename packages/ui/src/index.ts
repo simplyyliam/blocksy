@@ -51,6 +51,7 @@ export { Kbd, KbdGroup } from "./components/ui/kbd.tsx"
 export { DotMatrix, dotMatrixStates, type DotMatrixState } from "./components/ui/dot-matrix.tsx"
 export { DotPattern } from "./components/ui/dot-pattern.tsx"
 export { Confetti, ConfettiButton, type ConfettiRef } from "./components/ui/confetti.tsx"
+export { BlurFade } from "./components/ui/blur-fade.tsx" // v0.3: History entries fade in
 // Blocksy-only pieces (shadcn has nothing like them):
 export { CodeView, languageOf, type CodeLanguage } from "./components/code-view.tsx"
 export { InspectorField, InspectorSection, NumberInput } from "./components/inspector.tsx"

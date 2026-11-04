@@ -5,5 +5,6 @@ pub mod bench;
 pub mod covers;
 pub mod files;
 pub mod gradle;
+pub mod history;
 pub mod java;
 pub mod updater;
