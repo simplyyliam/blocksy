@@ -39,7 +39,7 @@ What becomes easier, harder, or must now be done.
 | [0006](0006-element-adapters-and-datagen.md) | Loader code for elements lives in the target; Fabric data generation | accepted |
 | [0007](0007-router-layouts.md) | react-router with layout routes | accepted |
 | [0008](0008-perf-0.2-memory.md) | Memory rises in 0.2 because the bench now opens a 3D view | accepted |
-| [0011](0011-vanilla-asset-reader.md) | Vanilla asset reader for real Minecraft previews | proposed |
+| [0011](0011-vanilla-asset-reader.md) | Vanilla asset reader and workspace index | proposed |
 | [0012](0012-depend-on-geckolib.md) | Depend on GeckoLib for animated blocks, items, armor and entities | proposed |
 | [0013](0013-own-gui-runtime.md) | GUI output: plain widget code and a small Blocksy UI runtime | proposed |
 | [0014](0014-shared-timeline-and-effects-runtime.md) | Shared timeline package and own effect runtime | proposed |

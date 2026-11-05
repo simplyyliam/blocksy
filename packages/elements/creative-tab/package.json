@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@blocksy/core": "workspace:*",
+    "@blocksy/game-data": "workspace:*",
     "@blocksy/ui": "workspace:*",
     "lucide-react": "^1.64.0",
     "zod": "^4.6.7"

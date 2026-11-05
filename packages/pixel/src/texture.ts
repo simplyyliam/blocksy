@@ -3,6 +3,7 @@
 //   textures/item/<id>.png         the strip, frame 0 on top
 //   textures/item/<id>.png.mcmeta  { "animation": { "frametime": 4, "interpolate": false } }
 import { createImage, joinFrames, splitFrames, type PixelImage } from "./image.ts"
+import type { StoredLayer } from "./layers.ts"
 import { decodePng, encodePng } from "./png.ts"
 
 export interface TextureAnimation {
@@ -17,6 +18,8 @@ export interface TextureValue {
   png: string | null
   /** Null for a still texture. Set once there is more than one frame. */
   animation: TextureAnimation | null
+  /** The paint layers behind the flat picture (v0.4), or null/absent for a single layer. */
+  layers?: StoredLayer[] | null
 }
 
 export const DEFAULT_ANIMATION: TextureAnimation = { frametime: 4, interpolate: false }

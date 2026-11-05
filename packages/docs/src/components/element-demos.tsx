@@ -7,7 +7,7 @@ import { berryBunTexture, berryDoughTexture, foodDefaults, itemDefaults, itemEle
 import { LanguageCanvas } from "@blocksy/element-language"
 import { RecipeCanvas, recipeDefaults } from "@blocksy/element-recipe"
 import { TagCanvas } from "@blocksy/element-tag"
-import { TextureEditor, type TextureValue } from "@blocksy/pixel"
+import { PaintStudio, type TextureValue } from "@blocksy/pixel"
 
 /** A small mod for the demos: dough, bun, a recipe, a tag and a German table. */
 function sandboxProject(): Project {
@@ -53,7 +53,7 @@ export function TextureDemo({ caption = "The real texture editor. Paint, fill, m
   })
   return (
     <Frame caption={caption} height="h-[30rem]">
-      <TextureEditor value={value} onChange={setValue} className="absolute inset-0" />
+      <PaintStudio kind="item" value={value} onChange={setValue} className="absolute inset-0" />
     </Frame>
   )
 }

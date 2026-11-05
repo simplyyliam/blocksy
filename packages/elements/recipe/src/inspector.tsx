@@ -65,10 +65,10 @@ export function RecipeInspector({ element, project, change, rename }: ElementEdi
       {isCooking(data.kind) && (
         <InspectorSection title="Cooking">
           <InspectorField label="Time (seconds)" java={`"cookingtime": ${data.cookingTime}`} description={fieldDoc("cookingTime").description}>
-            {(id) => <NumberInput id={id} value={data.cookingTime / 20} min={0.05} max={1600} onCommit={(s) => set({ cookingTime: Math.max(1, Math.round(s * 20)) })} />}
+            {(id) => <NumberInput id={id} value={data.cookingTime / 20} min={0.05} max={1600} unit="s" onCommit={(s) => set({ cookingTime: Math.max(1, Math.round(s * 20)) })} />}
           </InspectorField>
           <InspectorField label="Experience" java={`"experience": ${data.experience}`} description={fieldDoc("experience").description}>
-            {(id) => <NumberInput id={id} value={data.experience} min={0} max={100} onCommit={(experience) => set({ experience })} />}
+            {(id) => <NumberInput id={id} value={data.experience} min={0} max={100} unit="xp" onCommit={(experience) => set({ experience })} />}
           </InspectorField>
           <InspectorField label="Recipe book tab" java={`"category": "${data.category}"`} description={fieldDoc("category").description}>
             {(id) => <Choose id={id} value={data.category} items={CATEGORY_ITEMS} onChange={(v) => set({ category: v as RecipeData["category"] })} />}

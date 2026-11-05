@@ -2,8 +2,10 @@
 // The canvas is a calm sketch of a creative inventory page (Blocksy's own drawing,
 // not Minecraft's GUI art): the tab on top, its blocks in a 9-wide slot grid.
 import type { ElementEditorProps } from "@blocksy/core"
+import { elementToMcItem } from "@blocksy/game-data"
 import {
-  Button, cn, CanvasBackdrop, Input, InspectorField, InspectorSection, Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Button, Input, InspectorField, InspectorSection, McScreen, McStage, Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  type McSlotRect,
 } from "@blocksy/ui"
 import { tabEntries, type CreativeTabData } from "./element.ts"
 
@@ -77,46 +79,59 @@ export function CreativeTabInspector({ element, project, change, rename, select 
   )
 }
 
+/** Other tabs of the creative screen, only for company: a plausible icon each (vanilla art, drawn from the game's files). */
+const OTHER_TAB_ICONS = ["minecraft:bricks", "minecraft:grass_block", "minecraft:wooden_sword", "minecraft:redstone", "minecraft:apple", "minecraft:compass"]
+
+// The game's creative inventory, in its own pixels: 195 x 136 below a row of tabs.
+const PANEL = { w: 195, h: 136, top: 28 }
+const GRID = { x: 9, y: 18, cols: 9, rows: 5 }
+
 export function CreativeTabCanvas({ element, project, select }: ElementEditorProps<CreativeTabData>) {
   const entries = inGameOrder(tabEntries(project, element.id))
   const icon = entries.find((e) => e.id === element.data.icon) ?? entries[0]
-  const slots = Math.max(27, Math.ceil(entries.length / 9) * 9)
+  const shown = entries.slice(0, GRID.cols * GRID.rows)
+  const slots: McSlotRect[] = shown.map((entry, i) => ({
+    key: entry.id,
+    label: entry.name,
+    x: GRID.x + (i % GRID.cols) * 18,
+    y: PANEL.top + GRID.y + Math.floor(i / GRID.cols) * 18,
+  }))
+
   return (
-    <div className="relative grid size-full place-items-center">
-      <CanvasBackdrop />
-      <div className="relative flex flex-col">
-        {/* The tab itself, sitting on the panel. */}
-        <div className="flex w-fit items-center gap-2 rounded-t-lg bg-surface px-3 pt-2 pb-1.5">
-          {icon && textureOf(icon.data) ? (
-            <img src={textureOf(icon.data)!} alt="" className="size-5 object-cover object-top [image-rendering:pixelated]" />
-          ) : (
-            <span className="size-5 rounded-xs bg-surface-pressed" />
-          )}
-          <span className="text-sm text-fg">{element.name}</span>
-        </div>
-        <div className="grid grid-cols-9 gap-1 rounded-lg rounded-tl-none bg-surface p-2.5 shadow-md">
-          {Array.from({ length: slots }, (_, i) => {
-            const entry = entries[i]
-            const texture = entry && textureOf(entry.data)
-            return (
-              <button
-                key={entry?.id ?? `empty-${i}`}
-                type="button"
-                disabled={!entry}
-                title={entry?.name}
-                onClick={() => entry && select(entry.id)}
-                className={cn(
-                  "grid size-9 place-items-center rounded-sm bg-surface-pressed transition-transform duration-150 ease-out",
-                  entry && "hover:-translate-y-0.5 hover:bg-surface-hover",
-                )}
-              >
-                {texture && <img src={texture} alt={entry.name} className="size-6 object-cover object-top [image-rendering:pixelated]" />}
-              </button>
-            )
-          })}
-        </div>
-        <p className="mt-3 text-center text-xs text-fg-muted">How the tab will look in the creative inventory. Click a block to edit it.</p>
-      </div>
-    </div>
+    <McStage hint={entries.length > shown.length ? `Showing the first ${shown.length} of ${entries.length}. The game scrolls the rest.` : "How the tab looks in the creative inventory. Click an item or block to edit it."}>
+      {(scale) => (
+        <McScreen
+          label="Creative inventory"
+          width={PANEL.w}
+          height={PANEL.top + PANEL.h}
+          scale={scale}
+          needs={{
+            gui: ["container/creative_inventory/tab_items"],
+            sprites: [
+              "container/creative_inventory/tab_top_selected_1",
+              "container/creative_inventory/scroller_disabled",
+              ...OTHER_TAB_ICONS.map((_, i) => `container/creative_inventory/tab_top_unselected_${i + 2}`),
+            ],
+            items: OTHER_TAB_ICONS,
+            font: true,
+          }}
+          slots={slots}
+          onSlot={(key) => select(key)}
+          draw={(g) => {
+            g.gui("container/creative_inventory/tab_items", 0, 0, PANEL.w, PANEL.h, 0, PANEL.top)
+            // Tabs: ours is the selected one (first), the rest are the game's.
+            g.sprite("container/creative_inventory/tab_top_selected_1", 0, 0, 26, 32)
+            g.item(icon ? elementToMcItem(icon) : { vanilla: "minecraft:barrier" }, 5, 9)
+            OTHER_TAB_ICONS.forEach((id, i) => {
+              g.sprite(`container/creative_inventory/tab_top_unselected_${i + 2}`, 27 * (i + 1), 0, 26, 32)
+              g.item({ vanilla: id }, 27 * (i + 1) + 5, 9)
+            })
+            g.text(element.name, 8, PANEL.top + 6, "#404040", false)
+            g.sprite("container/creative_inventory/scroller_disabled", 175, PANEL.top + 18, 12, 15)
+            shown.forEach((entry, i) => g.item(elementToMcItem(entry), GRID.x + (i % GRID.cols) * 18 + 1, PANEL.top + GRID.y + Math.floor(i / GRID.cols) * 18 + 1))
+          }}
+        />
+      )}
+    </McStage>
   )
 }

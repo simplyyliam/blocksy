@@ -62,6 +62,17 @@ export const commands = {
 	 *  `not_found` until a first build has downloaded Minecraft.
 	 */
 	readMinecraftAsset: (path: string) => typedError<string, AppError>(__TAURI_INVOKE("read_minecraft_asset", { path })),
+	/**  Where the Minecraft client jar, the asset index and the loader jars are for this version. */
+	findWorkspaceFiles: (minecraftVersion: string) => typedError<WorkspaceFiles_Serialize, AppError>(__TAURI_INVOKE("find_workspace_files", { minecraftVersion })),
+	/**  One file from the jar as base64, or `None` when the jar has no such file. */
+	readJarEntry: (jar: string, entry: string) => typedError<string | null, AppError>(__TAURI_INVOKE("read_jar_entry", { jar, entry })),
+	/**  Names of the files in the jar below a folder (`assets/minecraft/items/`), not folders. */
+	listJarEntries: (jar: string, prefix: string) => typedError<string[], AppError>(__TAURI_INVOKE("list_jar_entries", { jar, prefix })),
+	/**
+	 *  Reads the asset objects the index points at (sounds, languages): hash -> bytes as base64.
+	 *  Only `assets/minecraft` style entries, same limits as jar entries.
+	 */
+	readAssetObject: (objectsDir: string, hash: string) => typedError<string | null, AppError>(__TAURI_INVOKE("read_asset_object", { objectsDir, hash })),
 	/**  The current updater state, for screens that open after an event was sent. */
 	updateStatus: () => __TAURI_INVOKE<UpdateStatus_Serialize>("update_status"),
 	/**  Checks right now (Settings > Check for updates). Returns the new version, if any. */
@@ -226,6 +237,34 @@ export type Version = {
 	date: string,
 	/**  How many files changed compared with the version before. */
 	files_changed: number,
+};
+
+/**
+ *  Paths the workspace index stores. Missing pieces are `None` / empty: the app then shows
+ *  "Build once to load Minecraft's look".
+ */
+export type WorkspaceFiles = WorkspaceFiles_Serialize | WorkspaceFiles_Deserialize;
+
+/**
+ *  Paths the workspace index stores. Missing pieces are `None` / empty: the app then shows
+ *  "Build once to load Minecraft's look".
+ */
+export type WorkspaceFiles_Deserialize = {
+	clientJar?: string | null,
+	assetIndex?: string | null,
+	assetObjects?: string | null,
+	loaderJars: string[],
+};
+
+/**
+ *  Paths the workspace index stores. Missing pieces are `None` / empty: the app then shows
+ *  "Build once to load Minecraft's look".
+ */
+export type WorkspaceFiles_Serialize = {
+	clientJar: string | null,
+	assetIndex: string | null,
+	assetObjects: string | null,
+	loaderJars: string[],
 };
 
 /* Tauri Specta runtime */

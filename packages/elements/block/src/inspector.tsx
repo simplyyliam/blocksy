@@ -6,7 +6,7 @@ import { useRef } from "react"
 import type { ElementEditorProps } from "@blocksy/core"
 import {
   Button, Input, InspectorField, InspectorSection, NumberInput, Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-  Slider, Switch, toast,
+  Slider, Checkbox, toast,
 } from "@blocksy/ui"
 import { fieldDoc } from "./docs.ts"
 import { MAP_COLORS, STRENGTH_EXAMPLES, TOOL_TIERS, TOOLS } from "./options.ts"
@@ -104,7 +104,7 @@ export function BlockInspector({ element, project, change, rename, select, playS
         </InspectorField>
       </InspectorSection>
 
-      <InspectorSection title="Look">
+      <InspectorSection title="Look" tab="texture">
         <InspectorField label="Texture" java={`textures/block/${element.id}.png`} description={fieldDoc("texture").description}>
           {(id) => (
             <div className="flex items-center gap-1.5">
@@ -147,7 +147,7 @@ export function BlockInspector({ element, project, change, rename, select, playS
         </InspectorField>
       </InspectorSection>
 
-      <InspectorSection title="Mining">
+      <InspectorSection title="Mining" tab="behaviour">
         <InspectorField label="Hardness" java={`.strength(${fmt(data.hardness)}f, ${fmt(data.resistance)}f)`} description={fieldDoc("hardness").description}>
           {(id) => <NumberInput id={id} value={data.hardness} min={0} max={100} onCommit={(hardness) => set({ hardness })} />}
         </InspectorField>
@@ -171,13 +171,13 @@ export function BlockInspector({ element, project, change, rename, select, playS
               {(id) => <Choose id={id} value={data.toolTier} items={TOOL_TIERS.map((t) => ({ value: t.id, label: t.label }))} onChange={(v) => set({ toolTier: v as BlockData["toolTier"] })} />}
             </InspectorField>
             <InspectorField label="Drops only with it" java={data.requiresTool ? ".requiresCorrectToolForDrops()" : undefined} description={fieldDoc("requiresTool").description}>
-              {(id) => <Switch id={id} size="sm" checked={data.requiresTool} onCheckedChange={(requiresTool) => set({ requiresTool })} />}
+              {(id) => <Checkbox id={id} checked={data.requiresTool} onCheckedChange={(requiresTool) => set({ requiresTool })} />}
             </InspectorField>
           </>
         )}
       </InspectorSection>
 
-      <InspectorSection title="World">
+      <InspectorSection title="World" tab="behaviour">
         <InspectorField label="Light level" java={data.light ? `.lightLevel(state -> ${data.light})` : undefined} description={fieldDoc("light").description}>
           {(id) => (
             <div className="flex w-full items-center gap-2.5">

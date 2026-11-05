@@ -97,6 +97,8 @@ async function benchBlockPreview() {
   await wait(300)
   const start = performance.now()
   const before = previewReadyCount()
+  // v0.4: a block opens in Paint mode; the 3D preview this measures is the Look mode.
+  useEditor.getState().setMode("block", "look")
   useEditor.getState().select("first_block")
   // Ready = the preview's first full frame with its texture (the moment the loader hides).
   while (previewReadyCount() === before && performance.now() - start < 10_000) await frame()

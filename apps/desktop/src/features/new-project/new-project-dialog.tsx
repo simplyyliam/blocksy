@@ -11,9 +11,8 @@ import {
 } from "@blocksy/ui"
 import { registries, upcomingLoaders } from "../../app/modules"
 import { errorMessage } from "../../shared/api"
-import { buildMod } from "../../shared/project-actions"
+import { prepareWorkspace } from "../../shared/project-actions"
 import { expandHome, joinPath, prettyPath } from "../../shared/paths"
-import { useJava } from "../../shared/stores/java"
 import { useNavigation } from "../../shared/stores/navigation"
 import { useProject } from "../../shared/stores/project"
 import { useSettings } from "../../shared/stores/settings"
@@ -134,8 +133,9 @@ export function NewProjectDialog() {
     try {
       await createAndOpen({ ...input, name: name.trim(), location }, starter)
       setOpen(false)
-      // Start the first build right away: it downloads Minecraft, which takes a while.
-      if (useJava.getState().active) void buildMod()
+      // Prepare the workspace right away: the first Gradle setup downloads Minecraft, which takes a
+      // while. It runs in the background with a progress view (quiet when there is no Java yet).
+      void prepareWorkspace()
     } catch (err) {
       setError(errorMessage(err))
     } finally {

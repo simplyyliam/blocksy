@@ -33,6 +33,8 @@ export const blockSchema = z.object({
       const size = pngSize(t)
       return size?.width === TEXTURE_SIZE && size.height === TEXTURE_SIZE
     }, "Textures must be 16x16 PNG images"),
+  /** The paint layers (v0.4); `texture` is always the merged picture. */
+  layers: z.array(z.object({ name: z.string().max(40), visible: z.boolean(), png: z.string() })).max(8).nullish(),
   /** The creative tab element it shows in, or null for none. */
   tab: z.string().nullable(),
 })

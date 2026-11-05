@@ -34,6 +34,9 @@ export const animationSchema = z.object({
   interpolate: z.boolean(),
 })
 
+/** v0.4: the paint layers behind the flat texture (saved as strip PNGs). Optional: older projects have none. */
+export const storedLayerSchema = z.object({ name: z.string().max(40), visible: z.boolean(), png: z.string() })
+
 export const itemSchema = z.object({
   /** How many fit in one inventory slot, 1 to 99. */
   maxStackSize: z.number().int().min(1, "Stacks hold at least 1").max(99, "Stacks hold up to 99"),
@@ -59,6 +62,8 @@ export const itemSchema = z.object({
     }, "Item textures are 16x16 PNGs (animated: 16 wide, frames stacked)"),
   /** Animation settings for a strip texture (written as <id>.png.mcmeta). */
   animation: animationSchema.nullable(),
+  /** The paint layers (v0.4); `texture` is always the merged picture. */
+  layers: z.array(storedLayerSchema).max(8).nullish(),
   /** The creative tab element it shows in, or null for none. */
   tab: z.string().nullable(),
 })

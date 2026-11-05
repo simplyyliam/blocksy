@@ -17,9 +17,8 @@ import {
 } from "@blocksy/ui"
 import { errorMessage } from "./api"
 import { openProject } from "./open-project"
+import { changeCover, closeProject } from "./project-menu-actions"
 import { useCovers } from "./stores/covers"
-import { useNavigation } from "./stores/navigation"
-import { useProject } from "./stores/project"
 import { useRecent } from "./stores/recent"
 
 export interface ProjectMenuOptions {
@@ -29,25 +28,12 @@ export interface ProjectMenuOptions {
   end?: "remove" | "close"
 }
 
-async function changeCover(dir: string) {
-  try {
-    if (await useCovers.getState().choose(dir)) toast("Cover updated")
-  } catch (err) {
-    toast.error(`Couldn't use that picture: ${errorMessage(err)}`)
-  }
-}
-
 async function resetCover(dir: string) {
   try {
     await useCovers.getState().reset(dir)
   } catch (err) {
     toast.error(errorMessage(err))
   }
-}
-
-function closeProject() {
-  useProject.getState().close()
-  useNavigation.getState().go("home")
 }
 
 /** The items. `kind` picks dropdown or context-menu parts; the actions are the same. */

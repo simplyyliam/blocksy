@@ -54,7 +54,7 @@ export { Confetti, ConfettiButton, type ConfettiRef } from "./components/ui/conf
 export { BlurFade } from "./components/ui/blur-fade.tsx" // v0.3: History entries fade in
 // Blocksy-only pieces (shadcn has nothing like them):
 export { CodeView, languageOf, type CodeLanguage } from "./components/code-view.tsx"
-export { InspectorField, InspectorSection, NumberInput } from "./components/inspector.tsx"
+export { InspectorField, InspectorSection, InspectorTabs, NumberInput, type InspectorTab } from "./components/inspector.tsx"
 export { AnimatedNumber } from "./components/animated-number.tsx"
 export { ElapsedTime } from "./components/elapsed-time.tsx"
 export { ProjectCover } from "./components/project-cover.tsx"
@@ -70,3 +70,21 @@ export {
 } from "./components/ui/combobox.tsx"
 export { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "./components/ui/popover.tsx"
 export { Textarea } from "./components/ui/textarea.tsx"
+// v0.4 editor shell: menu bar, command palette, resizable panels.
+export {
+  Menubar, MenubarCheckboxItem, MenubarContent, MenubarGroup, MenubarItem, MenubarLabel, MenubarMenu, MenubarSeparator, MenubarShortcut,
+  MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger,
+} from "./components/ui/menubar.tsx"
+export {
+  Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut,
+} from "./components/ui/command.tsx"
+export { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./components/ui/resizable.tsx"
+export { usePanelRef } from "react-resizable-panels" // handle to collapse/expand a panel from a command
+export { Checkbox } from "./components/ui/checkbox.tsx"
+export * from "./components/pixel-icons.tsx"
+// v0.4 Minecraft renderer (ADR 0011): canvas drawing in the game's own look, assets from the app.
+export { McMissing, McScreen, type McGraphics, type McSlotRect } from "./minecraft/screen.tsx"
+export { MinecraftProvider, useMinecraft } from "./minecraft/provider.tsx"
+export { drawCube, drawGuiSprite, drawRegion, drawSprite, drawText, frameIndexAt, isAnimated, measureText, TICK_MS } from "./minecraft/graphics.ts"
+export type { ItemRender, McAssets, McFont, McGlyph, McItem, McNeeds, McSprite, McStatus, NineSliceBorder, SpriteScaling } from "./minecraft/types.ts"
+export { McStage } from "./minecraft/stage.tsx"

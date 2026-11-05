@@ -16,6 +16,9 @@ interface NavigationState {
   settingsOpen: boolean
   /** The "What's new" dialog after an update (or opened from Settings). */
   whatsNewOpen: boolean
+  /** v0.4: the Ctrl+K command palette and the "?" shortcut sheet. */
+  paletteOpen: boolean
+  shortcutsOpen: boolean
   go(page: Page): void
   /** Opens the Docs at a page. */
   openDocs(path: string): void
@@ -23,6 +26,8 @@ interface NavigationState {
   setNewProject(open: boolean): void
   setSettings(open: boolean): void
   setWhatsNew(open: boolean): void
+  setPalette(open: boolean): void
+  setShortcuts(open: boolean): void
 }
 
 /** Set by the router: moves to a URL, and turns a page name into its URL. */
@@ -47,6 +52,8 @@ export const useNavigation = create<NavigationState>((set) => ({
   newProjectOpen: false,
   settingsOpen: false,
   whatsNewOpen: false,
+  paletteOpen: false,
+  shortcutsOpen: false,
   // Without a router (tests), just remember the page.
   go: (page) => (router ? router.navigate(router.pathFor(page)) : set({ page })),
   openDocs: (docsPath) => (router ? router.navigate(docsPath) : set({ page: "docs", docsPath })),
@@ -54,4 +61,6 @@ export const useNavigation = create<NavigationState>((set) => ({
   setNewProject: (newProjectOpen) => set({ newProjectOpen }),
   setSettings: (settingsOpen) => set({ settingsOpen }),
   setWhatsNew: (whatsNewOpen) => set({ whatsNewOpen }),
+  setPalette: (paletteOpen) => set({ paletteOpen }),
+  setShortcuts: (shortcutsOpen) => set({ shortcutsOpen }),
 }))

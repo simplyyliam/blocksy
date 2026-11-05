@@ -1,20 +1,18 @@
-// The Recipe's canvas: a visual crafting grid (Blocksy's own drawing, not Minecraft's GUI art).
+// The Recipe's canvas: the game's own crafting table, furnace, blast furnace, smoker or
+// stonecutter screen, drawn from Minecraft's files (ADR 0011), with your ingredients in it.
 //
 //   ( Shaped  Shapeless  Smelting  Blasting  Smoking  Stonecutting )
 //
-//      ┌───┬───┬───┐                    ┌───┐
-//      │   │ W │   │       ──▶          │ B │ ×1
-//      ├───┼───┼───┤                    └───┘
-//      │ W │ S │ W │
-//      └───┴───┴───┘
+//   ┌ the real screen, at GUI scale 1-4 ───────────┐
+//   │ Furnace                                      │
+//   │  [ingredient]   ▶ progress arrow   [result]  │
+//   └──────────────────────────────────────────────┘
 //
-// Click a slot to pick an item or tag; drag a filled slot onto another to move it; the
-// little × (or Delete) empties it. Every change is one undo step.
-import { ArrowRight, Flame, Slice, X } from "lucide-react"
-import { useState, type ReactNode } from "react"
-import type { ElementEditorProps, Project } from "@blocksy/core"
-import { ItemPicker, RefTile, refLabel, resolveRef } from "@blocksy/game-data"
-import { cn, CanvasBackdrop, NumberInput, Tabs, TabsList, TabsTrigger } from "@blocksy/ui"
+// Click a slot to pick an item or tag; Delete, Backspace or right-click empties it. Every change
+// is one undo step. Numbers (cooking time, experience) live in the inspector, not here.
+import type { ElementEditorProps } from "@blocksy/core"
+import { ItemPicker, refLabel, resolveRef, slotPicture, vanillaIds, type SlotPicture } from "@blocksy/game-data"
+import { McScreen, McStage, Tabs, TabsList, TabsTrigger, type McGraphics, type McSlotRect } from "@blocksy/ui"
 import { changeKind, isCooking, isCrafting, RECIPE_KINDS, recipeProblems, type RecipeData, type RecipeKind } from "./schema.ts"
 
 const KIND_LABELS: Record<RecipeKind, string> = {
@@ -35,165 +33,147 @@ const STATION: Record<RecipeKind, string> = {
   stonecutting: "Stonecutter",
 }
 
-interface SlotProps {
-  project: Project
-  value: string | null
-  label: string
-  onPick(ref: string): void
-  onClear(): void
-  allowTags?: boolean
-  big?: boolean
-  /** Drag and drop between grid slots. */
-  index?: number
-  onMove?(from: number, to: number): void
-  children?: ReactNode
+interface Layout {
+  /** The full GUI picture below textures/gui (176 x 166). */
+  gui: string
+  title: string
+  /** Title x in GUI pixels; null centers it (furnaces do). */
+  titleX: number | null
+  /** Where the picture of each slot's item goes (the slot box is one pixel bigger). */
+  slots: { key: string; x: number; y: number; label: string }[]
+  /** Sprites to draw on top (the cooking arrow and flame). */
+  sprites: { id: string; x: number; y: number; w: number; h: number }[]
 }
 
-/** One slot: empty, or showing the item (texture for this mod's things, a tile for vanilla). */
-function Slot({ project, value, label, onPick, onClear, allowTags = true, big, index, onMove, children }: SlotProps) {
-  const [over, setOver] = useState(false)
-  const missing = value !== null && resolveRef(value, project) === null
-  const name = value ? refLabel(value, project) : null
-  return (
-    <div
-      className="group relative"
-      onDragOver={(e) => {
-        if (onMove && e.dataTransfer.types.includes("application/x-blocksy-slot")) {
-          e.preventDefault()
-          setOver(true)
-        }
-      }}
-      onDragLeave={() => setOver(false)}
-      onDrop={(e) => {
-        setOver(false)
-        const from = Number(e.dataTransfer.getData("application/x-blocksy-slot"))
-        if (onMove && index !== undefined && Number.isInteger(from) && from !== index) onMove(from, index)
-      }}
-    >
-      <ItemPicker
-        project={project}
-        allowTags={allowTags}
-        onPick={onPick}
-        trigger={
-          <button
-            type="button"
-            aria-label={name ? `${label}: ${name}` : `${label}: empty`}
-            title={name ?? "Click to pick an item"}
-            draggable={!!value && index !== undefined}
-            onDragStart={(e) => {
-              if (index === undefined) return
-              e.dataTransfer.setData("application/x-blocksy-slot", String(index))
-              e.dataTransfer.effectAllowed = "move"
-            }}
-            onKeyDown={(e) => {
-              if ((e.key === "Delete" || e.key === "Backspace") && value) {
-                e.preventDefault()
-                onClear()
-              }
-            }}
-            className={cn(
-              "grid place-items-center rounded-md bg-surface-pressed shadow-[inset_0_1px_2px_rgb(0_0_0/0.08)] transition-[transform,background-color] duration-150 ease-out hover:bg-surface-hover active:scale-95",
-              big ? "size-16" : "size-12",
-              over && "ring-2 ring-brand",
-              missing && "ring-2 ring-danger/60",
-            )}
-          >
-            {value && <RefTile refValue={value} project={project} className={big ? "size-10" : "size-8"} />}
-          </button>
-        }
-      />
-      {value && (
-        <button
-          type="button"
-          aria-label={`Empty ${label.toLowerCase()}`}
-          onClick={onClear}
-          className="absolute -top-1.5 -right-1.5 hidden size-4 place-items-center rounded-full bg-fg text-bg shadow-sm group-hover:grid focus-visible:grid"
-        >
-          <X className="size-2.5" strokeWidth={3} />
-        </button>
-      )}
-      {children}
-    </div>
-  )
+const SCREEN = { w: 176, h: 166 }
+
+function layoutFor(kind: RecipeKind): Layout {
+  if (isCrafting(kind)) {
+    return {
+      gui: "container/crafting_table",
+      title: "Crafting",
+      titleX: 28,
+      slots: [
+        ...Array.from({ length: 9 }, (_, i) => ({ key: `grid-${i}`, x: 30 + (i % 3) * 18, y: 17 + Math.floor(i / 3) * 18, label: `Slot ${i + 1}` })),
+        { key: "result", x: 124, y: 35, label: "Result" },
+      ],
+      sprites: [],
+    }
+  }
+  if (kind === "stonecutting") {
+    return {
+      gui: "container/stonecutter",
+      title: "Stonecutter",
+      titleX: 8,
+      slots: [
+        { key: "ingredient", x: 20, y: 33, label: "Ingredient" },
+        { key: "result", x: 143, y: 33, label: "Result" },
+      ],
+      sprites: [],
+    }
+  }
+  // Furnace, blast furnace and smoker share one layout and each has its own pictures.
+  const name = kind === "blasting" ? "blast_furnace" : kind === "smoking" ? "smoker" : "furnace"
+  return {
+    gui: `container/${name}`,
+    title: STATION[kind],
+    titleX: null,
+    slots: [
+      { key: "ingredient", x: 56, y: 17, label: "Ingredient" },
+      { key: "result", x: 116, y: 35, label: "Result" },
+    ],
+    sprites: [
+      { id: `container/${name}/lit_progress`, x: 56, y: 36, w: 14, h: 14 },
+      { id: `container/${name}/burn_progress`, x: 79, y: 34, w: 24, h: 16 },
+    ],
+  }
+}
+
+/** The ref a slot key holds, and how to write a new one. */
+function slotRef(data: RecipeData, key: string): string | null {
+  if (key === "result") return data.result
+  if (key === "ingredient") return data.ingredient
+  return data.grid[Number(key.slice(5))] ?? null
+}
+
+function writeSlot(data: RecipeData, key: string, ref: string | null): RecipeData {
+  if (key === "result") return { ...data, result: ref }
+  if (key === "ingredient") return { ...data, ingredient: ref }
+  const index = Number(key.slice(5))
+  return { ...data, grid: data.grid.map((s, i) => (i === index ? ref : s)) }
 }
 
 export function RecipeCanvas({ element, project, change }: ElementEditorProps<RecipeData>) {
   const data = element.data
-  const set = (patch: Partial<RecipeData>) => change({ ...data, ...patch })
-  const setSlot = (i: number, ref: string | null) => set({ grid: data.grid.map((s, j) => (j === i ? ref : s)) })
-  const move = (from: number, to: number) => {
-    const grid = [...data.grid]
-    ;[grid[from], grid[to]] = [grid[to]!, grid[from]!]
-    set({ grid })
-  }
+  const layout = layoutFor(data.kind)
   const problems = recipeProblems(data, (ref) => resolveRef(ref, project) !== null)
-  const Station = isCooking(data.kind) ? Flame : data.kind === "stonecutting" ? Slice : ArrowRight
+  const pictures = new Map<string, SlotPicture>(layout.slots.map((s) => [s.key, slotPicture(slotRef(data, s.key), project)]))
+  const rects: McSlotRect[] = layout.slots.map((s) => ({ key: s.key, x: s.x - 1, y: s.y - 1, label: `${s.label}: ${slotRef(data, s.key) ? refLabel(slotRef(data, s.key)!, project) : "empty"}` }))
+
+  const draw = (g: McGraphics) => {
+    g.gui(layout.gui, 0, 0, SCREEN.w, SCREEN.h, 0, 0)
+    for (const sprite of layout.sprites) g.sprite(sprite.id, sprite.x, sprite.y, sprite.w, sprite.h)
+    const titleX = layout.titleX ?? Math.round((SCREEN.w - g.measure(layout.title)) / 2)
+    g.text(layout.title, titleX, 6, "#404040", false)
+    g.text("Inventory", 8, 72, "#404040", false)
+    for (const slot of layout.slots) {
+      const picture = pictures.get(slot.key)
+      if (picture?.kind === "item") g.item(picture.item, slot.x, slot.y)
+      if (picture?.kind === "tag") g.text("#", slot.x + 5, slot.y + 4, "#9a9a9a", true)
+    }
+    // The stack size, as the game draws it in the corner of the result slot.
+    const result = layout.slots.find((s) => s.key === "result")!
+    if (data.count > 1 && pictures.get("result")?.kind === "item") {
+      const label = String(data.count)
+      g.text(label, result.x + 17 - g.measure(label), result.y + 9, "#ffffff", true)
+    }
+  }
 
   return (
-    <div className="relative grid size-full place-items-center">
-      <CanvasBackdrop />
-
-      <div className="relative flex flex-col items-center gap-6 px-4 pb-20">
-        <Tabs value={data.kind} onValueChange={(v) => v && change(changeKind(data, v as RecipeKind))}>
-          <TabsList className="h-8 max-w-full overflow-x-auto bg-bg/90 shadow-sm backdrop-blur-md">
-            {RECIPE_KINDS.map((kind) => (
-              <TabsTrigger key={kind} value={kind} className="h-6 px-2.5 text-sm">
-                {KIND_LABELS[kind]}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-
-        {/* The station card: inputs, an arrow (or flame/saw), the result. */}
-        <div className="flex items-center gap-6 rounded-2xl bg-bg/95 p-6 shadow-md backdrop-blur-md">
-          {isCrafting(data.kind) ? (
-            <div className="grid grid-cols-3 gap-1.5" role="group" aria-label="Crafting grid">
-              {data.grid.map((slot, i) => (
-                <Slot
-                  key={i}
-                  index={i}
-                  project={project}
-                  value={slot}
-                  label={`Slot ${i + 1}`}
-                  onPick={(ref) => setSlot(i, ref)}
-                  onClear={() => setSlot(i, null)}
-                  onMove={move}
-                />
+    <McStage
+      hint={
+        problems.length > 0
+          ? `${problems[0]}. Until then this recipe isn't built.`
+          : `${STATION[data.kind]}: ${data.kind === "shapeless" ? "any arrangement works" : data.kind === "shaped" ? "the pattern counts, empty edges are trimmed" : "one in, one out"}. Click a slot to pick; Delete or right-click empties it.`
+      }
+    >
+      {(scale) => (
+        <div className="flex flex-col items-center gap-4">
+          <Tabs value={data.kind} onValueChange={(v) => v && change(changeKind(data, v as RecipeKind))}>
+            <TabsList className="h-7 max-w-full overflow-x-auto bg-bg/90 shadow-sm backdrop-blur-md">
+              {RECIPE_KINDS.map((kind) => (
+                <TabsTrigger key={kind} value={kind} className="h-5.5 px-2 text-xs">
+                  {KIND_LABELS[kind]}
+                </TabsTrigger>
               ))}
-            </div>
-          ) : (
-            <Slot project={project} value={data.ingredient} label="Ingredient" big onPick={(ingredient) => set({ ingredient })} onClear={() => set({ ingredient: null })} />
-          )}
-
-          <div className="flex flex-col items-center gap-1 text-fg-muted">
-            <Station className={cn("size-6", isCooking(data.kind) && "text-warning motion-safe:animate-pulse")} strokeWidth={1.75} />
-            {isCooking(data.kind) && <span className="text-xs tabular-nums">{data.cookingTime / 20}s</span>}
-          </div>
-
-          <div className="flex flex-col items-center gap-2">
-            <Slot project={project} value={data.result} label="Result" big allowTags={false} onPick={(result) => set({ result })} onClear={() => set({ result: null })} />
-            <label className="flex items-center gap-1 text-xs text-fg-muted">
-              ×
-              <NumberInput value={data.count} min={1} max={99} step={1} onCommit={(count) => set({ count: Math.round(count) })} className="h-7 w-12" />
-            </label>
-          </div>
+            </TabsList>
+          </Tabs>
+          <McScreen
+            label={`${STATION[data.kind]} screen`}
+            width={SCREEN.w}
+            height={SCREEN.h}
+            scale={scale}
+            needs={{
+              gui: [layout.gui],
+              sprites: layout.sprites.map((s) => s.id),
+              items: vanillaIds([...pictures.values()]),
+              font: true,
+            }}
+            slots={rects}
+            draw={draw}
+            onSlotClear={(key) => change(writeSlot(data, key, null))}
+            wrapSlot={(slot, button) => (
+              <ItemPicker
+                project={project}
+                allowTags={slot.key !== "result"}
+                onPick={(ref) => change(writeSlot(data, slot.key, ref))}
+                trigger={button}
+              />
+            )}
+          />
+          {isCooking(data.kind) && <p className="text-xs text-fg-muted tabular-nums">Cooks in {data.cookingTime / 20}s</p>}
         </div>
-
-        <div className="flex min-h-10 flex-col items-center gap-1 text-center">
-          {problems.length > 0 ? (
-            problems.map((p) => (
-              <p key={p} className="text-sm text-fg-muted">
-                {p}. Until then this recipe isn't built.
-              </p>
-            ))
-          ) : (
-            <p className="text-sm text-fg-muted">
-              {STATION[data.kind]}: {data.kind === "shapeless" ? "any arrangement works" : data.kind === "shaped" ? "the pattern counts, empty edges are trimmed" : "one in, one out"}.
-            </p>
-          )}
-          <p className="text-xs text-fg-faint">Click a slot to pick an item or tag. Drag to move, × to empty.</p>
-        </div>
-      </div>
-    </div>
+      )}
+    </McStage>
   )
 }

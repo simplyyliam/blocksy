@@ -13,7 +13,24 @@ When a release ships, move its notes to `docs/release/history/` and start fresh.
 
 ## Next step
 
-Start v0.4 on branch `release/0.4-editor-refresh`.
+Branch `release/0.4-editor-refresh` (not pushed). All workstreams are built; the plan is in `docs/release/releases/v0.4-plan.md` (local).
+Left: read the bench result in `docs/perf/0.4.md`, run `/code-review medium` and `/security-review` on the branch (fix what they find),
+then open the PR "v0.4 Editor refresh" with the bench table. Never push to main or merge.
+
+Built in v0.4 (see ADR 0011, still "proposed"):
+- Shell: one-row titlebar (back, title, menus, quick actions with pixel icons, search), tabs, Paint/Look mode bar, resizable tree and inspector,
+  bottom dock (Build log, Problems, History), command registry (`shared/commands/`), palette (Ctrl+K), shortcut sheet (?), layout memory per project.
+- Inspector: tabs (Properties, Texture/Behaviour, Code), collapsible sections, checkboxes, draggable number fields with units; sections choose a tab with `tab=`.
+- Workspace: `.blocksy/workspace-index.json` (paths only, git-ignored in every project, added to old projects on open), vanilla asset reader
+  (`shared/vanilla/`, Rust returns bytes from the jar only), setup progress screen, "Build once to load Minecraft's look" fallback.
+- Renderer in `packages/ui/src/minecraft/` (McScreen, McStage, nine-slice, cube, font). Creative tab and recipe editors draw the real screens.
+- Item: Paint (paint studio in `packages/pixel`: zoom/pan, grid, coordinates, HSV picker, layers, frames timeline, live preview) and Look (slot, tooltip, hotbar).
+  Block: Paint (studio + cube/tiled preview), Model (stub), Look (3D). Layers are optional data next to the flat texture (no formatVersion change).
+- Typed imports (Resources menu and drag-and-drop from the desktop): block/item textures change elements; GUI/particle textures, sounds (.ogg) and models (.json, .bbmodel)
+  are `resources` in the project document (optional, no format bump; ADR 0018). Rules in `packages/core/src/resources.ts`, files written by the generator, listed in the tree.
+
+Not done / decisions for Liam: free-floating panels; dropped .png files are routed by name (particle, gui) or the selected element, no chooser; block painting is on one shared texture (per-face painting needs
+per-face textures from Model Studio); creative tab grid shows the first 45 entries (no scrolling); vanilla items that need entity renderers draw a placeholder.
 
 ## Useful facts (keep only what still matters)
 
@@ -34,3 +51,6 @@ Start v0.4 on branch `release/0.4-editor-refresh`.
   26.1.2 uses Fabric `FuelValueEvents` and `ComposterBlock.COMPOSTABLES`.
 - Windows `cargo test` works because `build.rs` embeds the app manifest.
 - `origin/HEAD` is set locally to `origin/main` so `/security-review` can diff.
+- Heredocs with apostrophes or backslash escapes corrupt files (a `` became a backspace character): write files with the Write tool.
+- React Compiler mangled an unused factory parameter (`even is not defined`); keep component factories simple. Pure fixes for `any`: file-level eslint-disable with a reason.
+- Running the app: the dev server holds port 1420, so close other instances first. Bench: `BENCH_VERSION=0.4.0 pnpm bench` writes docs/perf/0.4.md (close the dev app first).
