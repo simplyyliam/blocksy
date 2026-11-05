@@ -129,7 +129,8 @@ export class VanillaAssets implements McAssets {
 
     const glyphs = new Map<string, McGlyph>()
     for (const provider of providers) {
-      const sheet = await this.loadSprite(textureEntry(provider.file) ?? "")
+      // Font providers name the file with its extension ("minecraft:font/ascii.png").
+      const sheet = await this.loadSprite(textureEntry(provider.file.replace(/\.png$/, "")) ?? "")
       if (!sheet) continue
       const rows = provider.chars.length
       const cols = Math.max(...provider.chars.map((r) => [...r].length))
@@ -145,7 +146,9 @@ export class VanillaAssets implements McAssets {
         glyphs.set(ch, { sheet, sx, sy, width: Math.max(1, width), height: cellH, advance: Math.max(1, width) + 1 })
       }
     }
-    glyphs.set(" ", { sheet: [...glyphs.values()][0]!.sheet, sx: 0, sy: 0, width: 0, height: 0, advance: 4 })
+    const first = [...glyphs.values()][0]
+    if (!first) return null // no sheet could be read: text falls back to plain placeholders
+    glyphs.set(" ", { sheet: first.sheet, sx: 0, sy: 0, width: 0, height: 0, advance: 4 })
     return { glyph: (ch) => glyphs.get(ch) ?? glyphs.get("?") ?? null, lineHeight: 8 }
   }
 }

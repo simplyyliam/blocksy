@@ -5,11 +5,11 @@
 // tree-shaking 480 icons for 11 is not worth it. One place to swap the set later.
 import type { SVGProps } from "react"
 
-function pixelIcon(name: string, paths: string[], even = false) {
+function pixelIcon(name: string, paths: string[]) {
   const Icon = ({ className, ...props }: SVGProps<SVGSVGElement>) => (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden shapeRendering="crispEdges" {...props}>
       {paths.map((d, i) => (
-        <path key={i} d={d} fillRule={even ? "evenodd" : undefined} />
+        <path key={i} d={d} />
       ))}
     </svg>
   )

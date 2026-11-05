@@ -87,3 +87,4 @@ export { McMissing, McScreen, type McGraphics, type McSlotRect } from "./minecra
 export { MinecraftProvider, useMinecraft } from "./minecraft/provider.tsx"
 export { drawCube, drawGuiSprite, drawRegion, drawSprite, drawText, frameIndexAt, isAnimated, measureText, TICK_MS } from "./minecraft/graphics.ts"
 export type { ItemRender, McAssets, McFont, McGlyph, McItem, McNeeds, McSprite, McStatus, NineSliceBorder, SpriteScaling } from "./minecraft/types.ts"
+export { McStage } from "./minecraft/stage.tsx"

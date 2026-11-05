@@ -7,7 +7,7 @@
 //
 // `draw` runs in GUI pixels. Assets are preloaded from `needs` first, so drawing is synchronous.
 // Without Minecraft's assets (no build yet) a calm "Build once" card replaces the canvas.
-import { useEffect, useReducer, useRef, useState } from "react"
+import { useEffect, useReducer, useRef, useState, type ReactElement } from "react"
 import { cn } from "../lib/utils.ts"
 import { Button } from "./../components/ui/button.tsx"
 import { drawCube, drawGuiSprite, drawRegion, drawSprite, drawText, isAnimated, measureText, TICK_MS } from "./graphics.ts"
@@ -52,13 +52,17 @@ interface Props {
   slots?: McSlotRect[]
   activeSlot?: string | null
   onSlot?(key: string, event: React.MouseEvent): void
+  /** Delete, Backspace or right-click on a slot (empty it). */
+  onSlotClear?(key: string): void
+  /** Wraps a slot's button, e.g. in an item picker that opens from it. */
+  wrapSlot?(slot: McSlotRect, button: ReactElement): ReactElement
   /** Screens made only of the user's own pixels need no Minecraft assets. */
   vanilla?: boolean
   label: string
   className?: string
 }
 
-export function McScreen({ width, height, scale = 2, needs = {}, draw, slots = [], activeSlot, onSlot, vanilla = true, label, className }: Props) {
+export function McScreen({ width, height, scale = 2, needs = {}, draw, slots = [], activeSlot, onSlot, onSlotClear, wrapSlot, vanilla = true, label, className }: Props) {
   "use no memo" // reads caches that change outside React (assets, user images, the clock)
   const { assets, status, onBuild } = useMinecraft()
   const canvas = useRef<HTMLCanvasElement>(null)
@@ -139,17 +143,29 @@ export function McScreen({ width, height, scale = 2, needs = {}, draw, slots = [
       <canvas ref={canvas} role="img" aria-label={label} className="block [image-rendering:pixelated]" style={{ width: width * scale, height: height * scale }} />
       {slots.map((slot) => {
         const size = slot.size ?? 18
-        return (
+        const button = (
           <button
             key={slot.key}
             type="button"
             aria-label={slot.label}
             aria-pressed={activeSlot === undefined ? undefined : activeSlot === slot.key}
             onClick={(e) => onSlot?.(slot.key, e)}
+            onContextMenu={(e) => {
+              if (!onSlotClear) return
+              e.preventDefault()
+              onSlotClear(slot.key)
+            }}
+            onKeyDown={(e) => {
+              if (onSlotClear && (e.key === "Delete" || e.key === "Backspace")) {
+                e.preventDefault()
+                onSlotClear(slot.key)
+              }
+            }}
             className="absolute rounded-[1px] outline-none hover:bg-white/25 focus-visible:ring-2 focus-visible:ring-white aria-pressed:ring-2 aria-pressed:ring-white/80"
             style={{ left: slot.x * scale, top: slot.y * scale, width: size * scale, height: size * scale }}
           />
         )
+        return wrapSlot ? <span key={slot.key}>{wrapSlot(slot, button)}</span> : button
       })}
     </div>
   )

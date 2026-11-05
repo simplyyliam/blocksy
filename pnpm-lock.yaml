@@ -225,6 +225,9 @@ importers:
       '@blocksy/core':
         specifier: workspace:*
         version: link:../../core
+      '@blocksy/game-data':
+        specifier: workspace:*
+        version: link:../../game-data
       '@blocksy/model-studio':
         specifier: workspace:*
         version: link:../../model-studio
@@ -250,6 +253,9 @@ importers:
       '@blocksy/core':
         specifier: workspace:*
         version: link:../../core
+      '@blocksy/game-data':
+        specifier: workspace:*
+        version: link:../../game-data
       '@blocksy/ui':
         specifier: workspace:*
         version: link:../../ui
@@ -272,6 +278,9 @@ importers:
       '@blocksy/core':
         specifier: workspace:*
         version: link:../../core
+      '@blocksy/game-data':
+        specifier: workspace:*
+        version: link:../../game-data
       '@blocksy/pixel':
         specifier: workspace:*
         version: link:../../pixel
