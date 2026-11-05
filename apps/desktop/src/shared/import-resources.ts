@@ -9,7 +9,7 @@ import { updateElement } from "@blocksy/core"
 import { pngSize } from "@blocksy/pixel"
 import { toast } from "@blocksy/ui"
 import { registries } from "../app/modules"
-import { createElementWith, selectedElement } from "./element-actions"
+import { createElement, newElementData, selectedElement } from "./element-actions"
 import { nameFromFile } from "./name-from-file"
 import { useProject } from "./stores/project"
 
@@ -52,21 +52,26 @@ export async function importTexture(type: TextureImport) {
     const size = pngSize(texture)!
     const animated = type === "item" && size.height > size.width
     const selected = selectedElement()
-    const base = selected?.type === type ? (selected.data as Record<string, unknown>) : (module.defaults() as Record<string, unknown>)
-    const data = {
-      ...base,
-      texture,
-      layers: null,
-      ...(type === "item" ? { animation: animated ? ((base.animation as object | null) ?? { frametime: 4, interpolate: false }) : null } : {}),
+    const replacing = selected?.type === type
+    // The data the picture goes into: the selected element's own, or a new element's starting data.
+    const withTexture = (from: unknown) => {
+      const base = from as Record<string, unknown>
+      return {
+        ...base,
+        texture,
+        layers: null,
+        ...(type === "item" ? { animation: animated ? ((base.animation as object | null) ?? { frametime: 4, interpolate: false }) : null } : {}),
+      }
     }
+    const data = withTexture(replacing ? selected.data : newElementData(type))
     const checked = module.schema.safeParse(data)
     if (!checked.success) throw new Error(checked.error.issues[0]?.message ?? "That picture doesn't fit")
 
-    if (selected?.type === type) {
+    if (replacing) {
       project.documents.execute(updateElement(selected.id, data))
       toast(`Texture of ${selected.name} replaced`)
     } else {
-      createElementWith(type, nameFromFile(file.name), data)
+      createElement(type, nameFromFile(file.name), withTexture)
       toast(`Made a new ${type} from ${file.name}`)
     }
   } catch (err) {

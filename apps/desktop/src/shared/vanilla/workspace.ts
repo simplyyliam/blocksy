@@ -37,6 +37,9 @@ function jarSource(jar: string) {
   }
 }
 
+/** Each refresh takes a number; only the newest one may write its result (projects can switch mid-way). */
+let latest = 0
+
 export const useWorkspace = create<WorkspaceState>((set, get) => ({
   status: "loading",
   index: null,
@@ -45,17 +48,23 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
   hideSetup: () => set({ setupHidden: true }),
 
   async refresh(dir, minecraft, loader, force = false) {
+    const mine = ++latest
+    // Keep `.blocksy/` out of git, also in older projects. A locked .gitignore must not hide the look.
+    await ensureIgnored(dir).catch(() => {})
     try {
-      await ensureIgnored(dir) // keep `.blocksy/` out of git, also in older projects
       const index = await loadOrBuildIndex(dir, minecraft, loader, force)
+      if (mine !== latest) return // another project or a newer refresh took over
       if (!index.clientJar) return set({ status: "missing", index, assets: null })
       // Keep the open reader (and its caches) when it already reads this very jar.
       const same = get().index?.clientJar === index.clientJar && get().assets
       set({ status: "ready", index, assets: same || new VanillaAssets(jarSource(index.clientJar)) })
     } catch {
-      set({ status: "missing", index: null, assets: null })
+      if (mine === latest) set({ status: "missing", index: null, assets: null })
     }
   },
 
-  reset: () => set({ status: "loading", index: null, assets: null, setupHidden: false }),
+  reset: () => {
+    latest++ // anything still loading belongs to the project that just closed
+    set({ status: "loading", index: null, assets: null, setupHidden: false })
+  },
 }))

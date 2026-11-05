@@ -97,7 +97,8 @@ export async function readIndex(dir: string): Promise<WorkspaceIndex | null> {
 export async function loadOrBuildIndex(dir: string, minecraft: string, loader: string, force = false): Promise<WorkspaceIndex> {
   if (!force) {
     const saved = await readIndex(dir)
-    if (saved && indexMatches(saved, minecraft, loader)) return saved
+    // A saved index only counts while the jar it names is still there (the cache may have been cleared).
+    if (saved && indexMatches(saved, minecraft, loader) && (await commands.pathExists(saved.clientJar!))) return saved
   }
   const index = makeIndex(minecraft, loader, await call(commands.findWorkspaceFiles(minecraft)))
   // Only write when something was found: an empty index would hide the "Build once" state.

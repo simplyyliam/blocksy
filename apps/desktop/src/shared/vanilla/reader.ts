@@ -37,7 +37,10 @@ export class VanillaAssets implements McAssets {
       hit = this.source
         .readBytes(entry)
         .then((bytes) => (bytes ? (JSON.parse(decoder.decode(bytes)) as unknown) : null))
-        .catch(() => null)
+        .catch(() => {
+          this.json.delete(entry) // an error (jar gone, unreadable) is not an answer: ask again next time
+          return null
+        })
       this.json.set(entry, hit)
     }
     return hit
@@ -63,7 +66,10 @@ export class VanillaAssets implements McAssets {
           interpolate: mcmeta.animation?.interpolate ?? false,
           scaling: mcmeta.scaling,
         } satisfies McSprite
-      })().catch(() => null)
+      })().catch(() => {
+        this.sprites.delete(entry) // not remembered: the file may be readable next time
+        return null
+      })
       this.sprites.set(entry, hit)
       void hit.then((s) => this.spriteDone.set(entry, s))
     }

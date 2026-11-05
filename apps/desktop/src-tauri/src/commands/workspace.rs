@@ -46,8 +46,18 @@ fn as_text(p: &Path) -> String {
     p.to_string_lossy().replace('\\', "/")
 }
 
-/// Jars named `<prefix>-<version>.jar` below a Gradle module folder (no sources jars).
-fn module_jars(root: &Path, group: &str, artifact: &str) -> Vec<String> {
+/// An asset index file name for exactly this version: "<version>-<digits>.json" ("1.21-5.json").
+/// A prefix test alone would also match another version's index ("1.21-pre1-5.json").
+fn is_index_for(name: &str, version: &str) -> bool {
+    name.strip_prefix(version)
+        .and_then(|rest| rest.strip_prefix('-'))
+        .and_then(|rest| rest.strip_suffix(".json"))
+        .is_some_and(|number| !number.is_empty() && number.chars().all(|c| c.is_ascii_digit()))
+}
+
+/// Jars named `<artifact>-<version>.jar` below a Gradle module folder (no sources jars).
+/// `only_for` keeps just jars built for one Minecraft version (Fabric API ends in "+26.1.2").
+fn module_jars(root: &Path, group: &str, artifact: &str, only_for: Option<&str>) -> Vec<String> {
     let base = root.join("modules-2/files-2.1").join(group).join(artifact);
     let mut found = Vec::new();
     let Ok(versions) = std::fs::read_dir(&base) else { return found };
@@ -57,7 +67,8 @@ fn module_jars(root: &Path, group: &str, artifact: &str) -> Vec<String> {
             let Ok(files) = std::fs::read_dir(hash.path()) else { continue };
             for file in files.flatten() {
                 let name = file.file_name().to_string_lossy().to_string();
-                if name.starts_with(artifact) && name.ends_with(".jar") && !name.contains("sources") && !name.contains("javadoc") {
+                let for_version = only_for.map_or(true, |mc| name.ends_with(&format!("+{mc}.jar")));
+                if name.starts_with(artifact) && name.ends_with(".jar") && !name.contains("sources") && !name.contains("javadoc") && for_version {
                     found.push(as_text(&file.path()));
                 }
             }
@@ -79,15 +90,16 @@ pub fn find_workspace_files(minecraft_version: String) -> AppResult<WorkspaceFil
     let jar = loom.join(&minecraft_version).join("minecraft-client.jar");
 
     // The asset index is named "<version>-<number>.json"; take the newest one for this version.
-    let prefix = format!("{minecraft_version}-");
     let mut indexes: Vec<_> = std::fs::read_dir(loom.join("assets/indexes"))
-        .map(|d| d.flatten().filter(|e| e.file_name().to_string_lossy().starts_with(&prefix)).collect())
+        .map(|d| d.flatten().filter(|e| is_index_for(&e.file_name().to_string_lossy(), &minecraft_version)).collect())
         .unwrap_or_default();
     indexes.sort_by_key(|e| std::cmp::Reverse(e.metadata().and_then(|m| m.modified()).ok()));
 
-    let mut loader_jars = module_jars(&root, "net.fabricmc", "fabric-loader");
-    loader_jars.extend(module_jars(&root, "net.fabricmc.fabric-api", "fabric-api"));
-    loader_jars.truncate(16);
+    // Fabric Loader works with every Minecraft version (the newest two are kept); Fabric API is
+    // built per version, so only this version's jars count.
+    let mut loader_jars: Vec<String> = module_jars(&root, "net.fabricmc", "fabric-loader", None).into_iter().rev().take(2).collect();
+    loader_jars.extend(module_jars(&root, "net.fabricmc.fabric-api", "fabric-api", Some(&minecraft_version)));
+    loader_jars.truncate(8);
 
     Ok(WorkspaceFiles {
         client_jar: jar.is_file().then(|| as_text(&jar)),
@@ -146,8 +158,12 @@ pub fn read_jar_entry(jar: String, entry: String) -> AppResult<Option<String>> {
         if file.size() > MAX_ENTRY_BYTES {
             return Err(AppError::new(ErrorCode::InvalidInput, "That file is too big"));
         }
-        let mut bytes = Vec::with_capacity(file.size() as usize);
-        file.read_to_end(&mut bytes)?;
+        // The declared size comes from the jar itself, so the read is bounded too.
+        let mut bytes = Vec::with_capacity(file.size().min(MAX_ENTRY_BYTES) as usize);
+        (&mut file).take(MAX_ENTRY_BYTES + 1).read_to_end(&mut bytes)?;
+        if bytes.len() as u64 > MAX_ENTRY_BYTES {
+            return Err(AppError::new(ErrorCode::InvalidInput, "That file is too big"));
+        }
         Ok(Some(base64::engine::general_purpose::STANDARD.encode(bytes)))
     })
 }
@@ -196,6 +212,15 @@ mod tests {
         assert!(checked_entry("META-INF/MANIFEST.MF").is_err());
         assert!(checked_entry("assets\\minecraft\\x.png").is_err());
         assert!(checked_entry("assets/Minecraft/X.png").is_err());
+    }
+
+    #[test]
+    fn asset_index_names_match_one_version_exactly() {
+        assert!(is_index_for("26.1.2-30.json", "26.1.2"));
+        assert!(!is_index_for("26.1.2-pre1-30.json", "26.1.2"));
+        assert!(!is_index_for("26.1.2-30.json.tmp", "26.1.2"));
+        assert!(!is_index_for("26.1-30.json", "26.1.2"));
+        assert!(is_index_for("1.21-5.json", "1.21") && !is_index_for("1.21-pre1-5.json", "1.21"));
     }
 
     #[test]

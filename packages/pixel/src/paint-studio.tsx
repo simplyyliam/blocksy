@@ -87,9 +87,15 @@ function Section({ title, action, children }: { title: string; action?: ReactNod
   )
 }
 
+/** Images are never changed after they are made (a stroke works on a copy), so their canvases are cached. */
+const canvases = new WeakMap<PixelImage, OffscreenCanvas>()
+
 function toCanvas(image: PixelImage): OffscreenCanvas {
+  const cached = canvases.get(image)
+  if (cached) return cached
   const canvas = new OffscreenCanvas(image.width, image.height)
   canvas.getContext("2d")!.putImageData(new ImageData(new Uint8ClampedArray(toRgbaBytes(image)), image.width, image.height), 0, 0)
+  canvases.set(image, canvas)
   return canvas
 }
 
@@ -138,6 +144,7 @@ export function PaintStudio({ value, onChange, size = 16, kind, className }: Pai
   const bgColor = useThemeToken("surface-hover")
 
   const layer = layers[active] ?? layers[0]!
+  const flatFrames = useMemo(() => flattenAll(layers, size), [layers, size])
   const frameCount = frameCountOf(layers)
   const frame = Math.min(current, frameCount - 1)
 
@@ -241,11 +248,14 @@ export function PaintStudio({ value, onChange, size = 16, kind, className }: Pai
     // Onion skin (the frame before), then the picture with the stroke in progress.
     if (onion && frame > 0) {
       ctx.globalAlpha = 0.28
-      ctx.drawImage(toCanvas(flattenFrame(layers, frame - 1, size)), panX, panY, w, w)
+      ctx.drawImage(toCanvas(flatFrames[frame - 1] ?? flattenFrame(layers, frame - 1, size)), panX, panY, w, w)
       ctx.globalAlpha = 1
     }
-    const live = stroke.current ? layers.map((l, i) => (i === active ? { ...l, frames: l.frames.map((f, fi) => (fi === frame ? stroke.current!.image : f)) } : l)) : layers
-    ctx.drawImage(toCanvas(flattenFrame(live, frame, size)), panX, panY, w, w)
+    // While a stroke is going the picture is merged afresh; otherwise the memoised frame is used.
+    const shown = stroke.current
+      ? flattenFrame(layers.map((l, i) => (i === active ? { ...l, frames: l.frames.map((f, fi) => (fi === frame ? stroke.current!.image : f)) } : l)), frame, size)
+      : (flatFrames[frame] ?? flattenFrame(layers, frame, size))
+    ctx.drawImage(toCanvas(shown), panX, panY, w, w)
 
     // Pixel grid (only when the pixels are big enough to be worth it).
     if (grid && zoom >= 6) {
@@ -392,7 +402,6 @@ export function PaintStudio({ value, onChange, size = 16, kind, className }: Pai
     written.current = value.png
     onChange({ ...value, animation })
   }
-  const flatFrames = useMemo(() => flattenAll(layers, size), [layers, size])
 
   // --- import ---
   const fileInput = useRef<HTMLInputElement>(null)
@@ -425,7 +434,10 @@ export function PaintStudio({ value, onChange, size = 16, kind, className }: Pai
   useEffect(() => {
     keys.current = (e) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return
-      if (e.target instanceof HTMLElement && e.target.closest("input, textarea, select, [contenteditable]")) return
+      // Not while typing, not on a focused button or tab (Space and Enter belong to it), and not
+      // while a dialog or menu is open on top.
+      if (e.target instanceof HTMLElement && e.target.closest("input, textarea, select, button, a, [role=tab], [role=menuitem], [role=slider], [contenteditable]")) return
+      if (document.querySelector("[role=dialog][data-open], [role=menu][data-open], [role=listbox][data-open]")) return
       if (e.code === "Space") {
         e.preventDefault()
         return setSpaceDown(true)
@@ -451,11 +463,14 @@ export function PaintStudio({ value, onChange, size = 16, kind, className }: Pai
   useEffect(() => {
     const down = (e: KeyboardEvent) => keys.current(e)
     const up = (e: KeyboardEvent) => e.code === "Space" && setSpaceDown(false)
+    const blur = () => setSpaceDown(false) // a held Space must not stay stuck when the window loses focus
     window.addEventListener("keydown", down)
     window.addEventListener("keyup", up)
+    window.addEventListener("blur", blur)
     return () => {
       window.removeEventListener("keydown", down)
       window.removeEventListener("keyup", up)
+      window.removeEventListener("blur", blur)
     }
   }, [])
 

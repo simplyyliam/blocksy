@@ -6,28 +6,26 @@ import { elementModules } from "../app/modules"
 import { useEditor } from "./stores/editor"
 import { useProject } from "./stores/project"
 
-/** Creates an element from a typed name and opens it in a tab. Returns its id, or null. */
-export function createElement(typeId: string, typed: string): string | null {
+/** The data a new element of this type starts with (its own `create`, else the defaults). */
+export function newElementData(typeId: string): unknown {
   const project = useProject.getState().current
   const module = elementModules.get(typeId)
-  const name = typed.trim()
-  if (!project || !module || !name) return null
-  const { doc, documents } = project
-  const id = deriveElementId(name, doc.elements.map((e) => e.id))
-  const data = module.create ? module.create(doc) : module.type.defaults()
-  documents.execute(addElement({ id, type: typeId, name, data }))
-  useEditor.getState().select(id)
-  return id
+  if (!project || !module) return null
+  return module.create ? module.create(project.doc) : module.type.defaults()
 }
 
-/** Like createElement, with the element's data already set (an import brings its texture along). */
-export function createElementWith(typeId: string, typed: string, data: unknown): string | null {
+/**
+ * Creates an element from a typed name and opens it in a tab. `change` can adjust the starting
+ * data first (an import brings its texture along). Returns its id, or null.
+ */
+export function createElement(typeId: string, typed: string, change?: (data: unknown) => unknown): string | null {
   const project = useProject.getState().current
   const name = typed.trim()
   if (!project || !elementModules.has(typeId) || !name) return null
   const { doc, documents } = project
   const id = deriveElementId(name, doc.elements.map((e) => e.id))
-  documents.execute(addElement({ id, type: typeId, name, data }))
+  const base = newElementData(typeId)
+  documents.execute(addElement({ id, type: typeId, name, data: change ? change(base) : base }))
   useEditor.getState().select(id)
   return id
 }

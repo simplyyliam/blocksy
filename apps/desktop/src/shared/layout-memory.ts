@@ -53,6 +53,7 @@ export function useLayoutMemory(dir: string | undefined): boolean {
     let alive = true
     let ready = false
     let timer: ReturnType<typeof setTimeout> | undefined
+    let dirty = false
 
     const save = async () => {
       const store = await loadJson<Store>(FILE, { byDir: {} })
@@ -61,7 +62,11 @@ export function useLayoutMemory(dir: string | undefined): boolean {
     const queue = () => {
       if (!ready) return
       clearTimeout(timer)
-      timer = setTimeout(() => void save().catch(() => {}), 600)
+      dirty = true
+      timer = setTimeout(() => {
+        dirty = false
+        void save().catch(() => {})
+      }, 600)
     }
 
     void loadJson<Store>(FILE, { byDir: {} }).then((store) => {
@@ -80,6 +85,7 @@ export function useLayoutMemory(dir: string | undefined): boolean {
     return () => {
       alive = false
       clearTimeout(timer)
+      if (dirty) void save().catch(() => {}) // a change in the last moments is not lost
       stopEditor()
       stopNav()
     }
