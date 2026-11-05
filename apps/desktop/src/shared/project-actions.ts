@@ -54,6 +54,16 @@ async function start(task: GradleTask): Promise<boolean> {
 }
 
 export const buildMod = () => start("build")
+
+/**
+ * v0.4: prepares the workspace (the first Gradle setup, which downloads Minecraft and the loader)
+ * in the background when a project is created, so the real Minecraft look is ready when the
+ * editor opens. Quiet on purpose: with no JDK yet it does nothing (no JDK page pops up).
+ */
+export async function prepareWorkspace(): Promise<boolean> {
+  if (!useJava.getState().active) return false
+  return start("build")
+}
 export const runMod = () => start("run_client")
 export const stopTask = () => useGradle.getState().stop()
 

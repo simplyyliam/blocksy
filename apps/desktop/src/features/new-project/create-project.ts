@@ -4,6 +4,7 @@ import { createProject, serializeProject, type NewProjectInput } from "@blocksy/
 import { fileTree, generate } from "@blocksy/generator"
 import { registries } from "../../app/modules"
 import { commands } from "../../shared/bindings"
+import { prepareWorkspace } from "../../shared/project-actions"
 import { call } from "../../shared/api"
 import { joinPath } from "../../shared/paths"
 import { PROJECT_FILE, useProject } from "../../shared/stores/project"
@@ -31,5 +32,6 @@ export async function createAndOpen(input: NewProjectInput & { location: string 
   await call(commands.writeProjectFiles(dir, generate(project, registries), false))
   await call(commands.writeTextFile(joinPath(dir, PROJECT_FILE), serializeProject(project)))
   await useProject.getState().open(dir)
+  void prepareWorkspace() // the one-time Gradle setup runs in the background (progress view)
   return dir
 }

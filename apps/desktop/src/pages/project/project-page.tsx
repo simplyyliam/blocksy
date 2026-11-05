@@ -25,6 +25,7 @@ import { useLayoutMemory } from "../../shared/layout-memory"
 import { HISTORY, useEditor } from "../../shared/stores/editor"
 import { playMinecraftSound } from "../../shared/minecraft-sounds"
 import { useGradle } from "../../shared/stores/gradle"
+import { useWorkspace } from "../../shared/vanilla/workspace"
 import { useProject, type OpenProject } from "../../shared/stores/project"
 
 /** The props every element canvas and inspector receives (core's ElementEditorProps). */
@@ -45,6 +46,10 @@ function editorProps(project: OpenProject, element: Element, select: (id: string
 export function ProjectPage() {
   const project = useProject((s) => s.current)
   const firstBuild = useGradle((s) => s.firstBuild)
+  // The setup screen only blocks the editor while Minecraft's look is not available yet
+  // and the user has not chosen "Open editor now".
+  const setupHidden = useWorkspace((s) => s.setupHidden)
+  const lookReady = useWorkspace((s) => s.status === "ready")
   const { selected, view, treeOpen, inspectorOpen, inspectorSide, treeWidth, inspectorWidth, select } = useEditor()
   const setLayout = useEditor((s) => s.setLayout)
   const layoutVersion = useEditor((s) => s.layoutVersion)
@@ -88,7 +93,7 @@ export function ProjectPage() {
   }, [doc])
 
   if (!project) return null
-  if (firstBuild) return <FirstBuild />
+  if (firstBuild && !setupHidden && !lookReady) return <FirstBuild />
   if (!layoutReady) return null // a few milliseconds: the saved panel sizes are being read
 
   const element = project.doc.elements.find((e) => e.id === selected)

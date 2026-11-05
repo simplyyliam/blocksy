@@ -10,8 +10,12 @@
 import { useEffect } from "react"
 import { Outlet, useParams } from "react-router-dom"
 import { preloadBlockPreview } from "@blocksy/model-studio"
+import { MinecraftProvider } from "@blocksy/ui"
 import { openProject } from "../../shared/open-project"
+import { buildMod } from "../../shared/project-actions"
+import { useGradle } from "../../shared/stores/gradle"
 import { useProject } from "../../shared/stores/project"
+import { useWorkspace } from "../../shared/vanilla/workspace"
 import { NewElementDialog } from "../../features/project-editor/new-element-dialog"
 import { BottomPanel } from "../../widgets/bottom-panel/bottom-panel"
 import { Header } from "../../widgets/header/header"
@@ -29,7 +33,25 @@ export function ProjectLayout() {
     if (dir && useProject.getState().current?.dir !== dir) void openProject(dir)
   }, [dir])
 
+  // Minecraft's look (v0.4): find this project's files through the workspace index, and look
+  // again after every successful Gradle run (which may just have downloaded Minecraft).
+  const project = useProject((s) => s.current)
+  const projectDir = project?.dir
+  const minecraft = project?.version.minecraft
+  const loader = project?.doc.target
+  const lastResult = useGradle((s) => s.lastResult)
+  const status = useWorkspace((s) => s.status)
+  const assets = useWorkspace((s) => s.assets)
+  useEffect(() => {
+    if (projectDir && minecraft && loader) void useWorkspace.getState().refresh(projectDir, minecraft, loader)
+  }, [projectDir, minecraft, loader])
+  useEffect(() => {
+    if (lastResult?.success && projectDir && minecraft && loader) void useWorkspace.getState().refresh(projectDir, minecraft, loader, true)
+  }, [lastResult, projectDir, minecraft, loader])
+  useEffect(() => () => useWorkspace.getState().reset(), [projectDir])
+
   return (
+    <MinecraftProvider assets={assets} status={status} onBuild={() => void buildMod()}>
     <div className="flex h-full min-h-0 flex-col">
       <Header />
       <main className="page-enter min-h-0 flex-1 overflow-hidden px-2.5">
@@ -39,5 +61,6 @@ export function ProjectLayout() {
       <StatusBar />
       <NewElementDialog />
     </div>
+    </MinecraftProvider>
   )
 }
