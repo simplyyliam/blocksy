@@ -2,6 +2,7 @@
 // It is saved as `blocksy.json` in the project folder. Editors never hold
 // their own copy; they change this document through commands (commands.ts).
 import { z } from "zod"
+import { resourceSchema } from "./resources.ts"
 
 /** Bump this only together with a new migration (see migrations.ts). */
 export const CURRENT_FORMAT_VERSION = 1
@@ -33,6 +34,8 @@ export const projectSchema = z.object({
   target: z.string().min(1),
   minecraftVersion: z.string().min(1),
   elements: z.array(elementSchema),
+  /** v0.4: imported GUI/particle textures, sounds and models. Optional, so no format bump. */
+  resources: z.array(resourceSchema).optional(),
 })
 
 export type Element = z.infer<typeof elementSchema>
