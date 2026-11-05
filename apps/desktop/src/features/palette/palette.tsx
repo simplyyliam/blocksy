@@ -23,6 +23,7 @@ function groupBy(commands: AppCommand[]): [string, AppCommand[]][] {
 }
 
 export function Palette() {
+  "use no memo" // reads command state from stores at render; the compiler would cache it
   const open = useNavigation((s) => s.paletteOpen)
   const setOpen = useNavigation((s) => s.setPalette)
   const project = useProject((s) => s.current)
@@ -80,6 +81,7 @@ export function Palette() {
 
 /** "?" opens this sheet: every shortcut, grouped like the menus. */
 export function ShortcutSheet() {
+  "use no memo" // reads command state from stores at render; the compiler would cache it
   const open = useNavigation((s) => s.shortcutsOpen)
   const setOpen = useNavigation((s) => s.setShortcuts)
   const hasProject = useProject((s) => s.current !== null)

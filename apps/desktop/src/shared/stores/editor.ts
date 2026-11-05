@@ -42,6 +42,8 @@ interface EditorState extends PanelLayout {
   selected: Selection
   view: "design" | "code"
   dockTab: DockTab
+  /** Bumped by Reset layout: the panel group remounts so the default sizes apply. */
+  layoutVersion: number
   /** The "New element" dialog (N): open, and the type chosen in it if any. */
   newElementOpen: boolean
   newElementType: string | null
@@ -73,6 +75,7 @@ export const useEditor = create<EditorState>((set, get) => ({
   selected: OVERVIEW,
   view: "design",
   dockTab: "log",
+  layoutVersion: 0,
   newElementOpen: false,
   newElementType: null,
   select: (selected) => set((s) => ({ selected, tabs: s.tabs.includes(selected) ? s.tabs : [...s.tabs, selected] })),
@@ -105,7 +108,7 @@ export const useEditor = create<EditorState>((set, get) => ({
   toggleInspector: () => set((s) => ({ inspectorOpen: !s.inspectorOpen })),
   swapInspectorSide: () => set((s) => ({ inspectorSide: s.inspectorSide === "right" ? "left" : "right" })),
   setLayout: (layout) => set(layout),
-  resetLayout: () => set(DEFAULT_LAYOUT),
+  resetLayout: () => set((s) => ({ ...DEFAULT_LAYOUT, layoutVersion: s.layoutVersion + 1 })),
   openNewElement: (type) => set({ newElementOpen: true, newElementType: type ?? null }),
   closeNewElement: () => set({ newElementOpen: false, newElementType: null }),
   resetTabs: () => set({ tabs: [OVERVIEW], selected: OVERVIEW, view: "design" }),

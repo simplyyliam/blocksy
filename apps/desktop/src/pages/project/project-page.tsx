@@ -45,6 +45,7 @@ export function ProjectPage() {
   const firstBuild = useGradle((s) => s.firstBuild)
   const { selected, view, treeOpen, inspectorOpen, inspectorSide, treeWidth, inspectorWidth, select } = useEditor()
   const setLayout = useEditor((s) => s.setLayout)
+  const layoutVersion = useEditor((s) => s.layoutVersion)
 
   // A freshly opened project starts on its Overview tab, with its remembered panel layout.
   const dir = project?.dir
@@ -60,13 +61,21 @@ export function ProjectPage() {
   useEffect(() => {
     const panel = treeRef.current
     if (!panel) return
-    if (treeOpen && panel.isCollapsed()) panel.expand()
+    if (treeOpen && panel.isCollapsed()) {
+      const width = useEditor.getState().treeWidth // read first: expanding reports the minimum width
+      panel.expand()
+      panel.resize(width)
+    }
     else if (!treeOpen && !panel.isCollapsed()) panel.collapse()
   }, [treeOpen, layoutReady, treeRef])
   useEffect(() => {
     const panel = inspectorRef.current
     if (!panel) return
-    if (showInspectorNow && panel.isCollapsed()) panel.expand()
+    if (showInspectorNow && panel.isCollapsed()) {
+      const width = useEditor.getState().inspectorWidth
+      panel.expand()
+      panel.resize(width)
+    }
     else if (!showInspectorNow && !panel.isCollapsed()) panel.collapse()
   }, [showInspectorNow, layoutReady, inspectorRef])
 
@@ -156,7 +165,7 @@ export function ProjectPage() {
   // The inspector can swap sides; only then does the group remount.
   const left = inspectorSide === "left"
   return (
-    <ResizablePanelGroup key={`${dir}-${inspectorSide}`} orientation="horizontal" id="project-editor" className="h-full min-h-0 pb-1">
+    <ResizablePanelGroup key={`${dir}-${inspectorSide}-${layoutVersion}`} orientation="horizontal" id="project-editor" className="h-full min-h-0 pb-1">
       {left ? inspector : tree}
       {handle("h1", left ? showInspector : treeOpen)}
       {centre}

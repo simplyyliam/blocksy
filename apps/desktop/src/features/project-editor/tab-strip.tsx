@@ -20,7 +20,9 @@ export function TabStrip() {
   const active = useRef<HTMLDivElement>(null)
 
   // Keep the selected tab in view when many are open.
-  useEffect(() => active.current?.scrollIntoView({ block: "nearest", inline: "nearest" }), [selected])
+  useEffect(() => {
+    active.current?.scrollIntoView({ block: "nearest", inline: "nearest" })
+  }, [selected])
 
   if (!project) return null
 

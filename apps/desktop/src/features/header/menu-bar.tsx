@@ -15,6 +15,7 @@ const item = "gap-2 rounded-lg px-2 py-1.5 font-normal"
 const keysText = (command: AppCommand) => (command.keys ? shortcutParts(command.keys).join("+") : undefined)
 
 function MenuItem({ id }: { id: string }) {
+  "use no memo" // reads command state from stores at render; the compiler would cache it
   const command = commandRegistry.require(id)
   const Icon = command.icon
   const disabled = !isEnabled(command)

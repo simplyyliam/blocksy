@@ -5,7 +5,7 @@ import { DEFAULT_LAYOUT, useEditor, type PanelLayout } from "./stores/editor"
 import { useNavigation } from "./stores/navigation"
 import { loadJson, saveJson } from "./stores/persist"
 
-const FILE = "editor-layouts.json"
+const FILE = "editor-layouts" // a plain name; the Rust side adds .json
 
 interface Saved extends PanelLayout {
   dockOpen: boolean

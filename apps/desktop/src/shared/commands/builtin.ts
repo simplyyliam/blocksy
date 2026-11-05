@@ -105,7 +105,7 @@ export function registerBuiltinCommands() {
 
   // ---- Window -----------------------------------------------------------------------------
   defineCommand({ id: "window.tree", group: "Window", title: "Project tree", icon: PanelLeft, keys: "Mod+\\", checked: () => editor().treeOpen, run: () => editor().toggleTree() })
-  defineCommand({ id: "window.inspector", group: "Window", title: "Inspector", icon: PanelRight, keys: "Mod+Shift+\\", checked: () => editor().inspectorOpen, run: () => editor().toggleInspector() })
+  defineCommand({ id: "window.inspector", group: "Window", title: "Inspector", icon: PanelRight, keys: "Mod+Alt+I", checked: () => editor().inspectorOpen, run: () => editor().toggleInspector() })
   defineCommand({ id: "window.dock", group: "Window", title: "Bottom dock", icon: PanelBottom, keys: "Mod+J", checked: () => nav().bottomPanelOpen, run: () => nav().setBottomPanel(!nav().bottomPanelOpen) })
   defineCommand({ id: "window.swap", group: "Window", title: "Swap inspector side", icon: ArrowLeftRight, run: () => editor().swapInspectorSide() })
   defineCommand({ id: "window.reset", group: "Window", title: "Reset layout", icon: RotateCcw, run: () => { editor().resetLayout(); nav().setBottomPanel(false) } })

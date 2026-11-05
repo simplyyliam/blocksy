@@ -22,7 +22,7 @@ export function NewElementDialog() {
 
 function Form({ preset, onDone }: { preset: string | null; onDone(): void }) {
   const types = registries.elementTypes.list()
-  const [typeId, setTypeId] = useState(preset ?? types[0]?.id ?? "")
+  const [typeId, setTypeId] = useState(preset ?? (types.some((t) => t.id === "block") ? "block" : types[0]?.id) ?? "")
   const [name, setName] = useState("")
   const type = types.find((t) => t.id === typeId)
 

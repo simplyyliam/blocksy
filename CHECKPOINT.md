@@ -13,7 +13,26 @@ When a release ships, move its notes to `docs/release/history/` and start fresh.
 
 ## Next step
 
-On branch `release/0.4-editor-refresh`. Plan + shell ASCII sketch written in `docs/release/releases/v0.4-plan.md` (local, gitignored). **Waiting for Liam to approve the sketch before any building.** Then follow the plan's work order (registry/menus, shell, tree+tabs, workspace setup, asset reader, renderer, editors).
+Branch `release/0.4-editor-refresh`. Plan approved (plan in `docs/release/releases/v0.4-plan.md`, local).
+**Workstreams 1, 2, 3 are built and checked in the real app (shell with menu bar, toolbar, palette, tabs,
+resizable panels, tree, dock). Liam asked to STOP here and review before workstream 5 onward.**
+Then follow the work order: 5 (workspace setup + index), 6 (asset reader, ADR 0011 update), 7 (renderer), 8 (editors), 4 (imports), 9 (polish, bench, review, e2e).
+
+Decisions from Liam when approving the plan:
+- `.blocksy/` (the workspace index holds machine-specific paths) goes into the `.gitignore` Blocksy writes into every project,
+  and is added to existing projects' `.gitignore` when they open. Never committed or synced. Do this in workstream 5.
+- History is not a dock tab (it is a page/tab with its own commit box); the dock has Build log and Problems.
+
+Shell facts (v0.4):
+- Command registry: `shared/commands/` (`builtin.ts` = every command, `menus.ts` = menu layout). Menus, toolbar, palette and shortcuts
+  read it. Components that show command state need `"use no memo"` (the compiler would cache `isEnabled`).
+- Tabs and panel state: `shared/stores/editor.ts`. Layout memory per project: `shared/layout-memory.ts` (app-data name must be
+  plain lowercase, no `.json`). Panels stay mounted and collapse (3D canvas must not restart); only swap side / Reset layout remount.
+- Resources menu imports are registered but disabled until workstream 4.
+- shadcn CLI: use `npx --no-install shadcn add <name>` in `packages/ui` (the `pnpm dlx` route hung on the network). It also writes
+  bad aliases (`@/blocksy/...`) besides `from "cn"`: fix them to `@blocksy/ui/...`.
+- Known: item editor's floating tools overlap when the dock is open (short canvas); fix in workstream 8.
+- Not yet run: `pnpm bench`, `cargo` checks, /code-review, /security-review, full e2e (Build, Run).
 
 ## Useful facts (keep only what still matters)
 

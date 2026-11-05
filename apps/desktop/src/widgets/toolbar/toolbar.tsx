@@ -16,6 +16,7 @@ const divider = <Separator orientation="vertical" className="mx-1 h-5 bg-line-su
 
 /** Design and Code as one segmented control. */
 function ViewSwitch() {
+  "use no memo" // reads command state from stores at render; the compiler would cache it
   useCommandState()
   const view = useEditor((s) => s.view)
   const options = [
@@ -63,10 +64,10 @@ export function Toolbar() {
       <ViewSwitch />
       <div className="min-w-0 flex-1" />
       {/* Opens the command palette; looks like a search field, like Linear and VS Code. */}
-      <Button variant="outline" size="sm" className="h-7 w-52 justify-start gap-2 px-2.5 font-normal text-fg-muted" onClick={() => runCommand("tools.palette")}>
+      <Button variant="outline" size="sm" className="h-7 w-64 min-w-0 shrink justify-start gap-2 px-2.5 font-normal text-fg-muted" onClick={() => runCommand("tools.palette")}>
         <Search strokeWidth={1.75} />
-        <span className="flex-1 text-left">Search commands…</span>
-        <KbdGroup>
+        <span className="min-w-0 flex-1 truncate text-left">Search commands…</span>
+        <KbdGroup className="shrink-0">
           {shortcutParts("Mod+K").map((p) => (
             <Kbd key={p}>{p}</Kbd>
           ))}

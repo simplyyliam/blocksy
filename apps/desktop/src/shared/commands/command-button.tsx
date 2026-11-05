@@ -15,6 +15,7 @@ interface Props {
 }
 
 export function CommandButton({ id, label, busy, className }: Props) {
+  "use no memo" // reads command state from stores at render; the compiler would cache it
   useCommandState()
   const command = commandRegistry.require(id)
   const Icon = command.icon
