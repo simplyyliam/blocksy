@@ -13,7 +13,7 @@ When a release ships, move its notes to `docs/release/history/` and start fresh.
 
 ## Next step
 
-Start v0.4 on branch `release/0.4-editor-refresh`.
+On branch `release/0.4-editor-refresh`. Plan + shell ASCII sketch written in `docs/release/releases/v0.4-plan.md` (local, gitignored). **Waiting for Liam to approve the sketch before any building.** Then follow the plan's work order (registry/menus, shell, tree+tabs, workspace setup, asset reader, renderer, editors).
 
 ## Useful facts (keep only what still matters)
 
