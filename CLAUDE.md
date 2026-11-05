@@ -5,14 +5,16 @@ live docs, while teaching Java along the way. It scales from one block to a full
 
 ## Read first
 
-- Before any release work: `docs/release/blocksy-release-plan.md` (the source of truth).
+- Before any release work: `CHECKPOINT.md`, then `docs/release/README.md` (the source of truth,
+  split into small files). Read only the current release file (`docs/release/releases/v0.X.md`)
+  and the plan sections its `/goal` prompt names, not the whole plan.
 - Before any UI work: `docs/design/`. The look to match now is `home-page(redesign).jpg`:
   calm, borderless, icon rail, good typography and space (13px base type, smooth motion).
   add-project.png is my Figma design for New project. Design editors (project editor, Model
   Studio, GUI Studio) follow `visual-editor(assets).jpg`: floating white cards on a grey canvas. Release-specific references are
   noted in the plan (project editor v0.2, Model Studio v0.5, sign-in window v0.7).
 - Build only what the current release covers; ideas for later releases go into their
-  section of `docs/release/blocksy-release-plan.md` as notes, not code.
+  file in `docs/release/releases/` as notes, not code.
 - Decisions live in `docs/decisions/` (ADRs). New architectural choice = new ADR.
 - Work on a branch named release/<version>-<name> (for example release/0.3-first-item), never on main.
 Commit in small steps using Conventional Commits (feat, fix, chore, docs, refactor, test), with a short bullet-point body listing what was done.
@@ -116,7 +118,21 @@ docs/                    plan, ADRs (decisions/), design inspiration, perf resul
 - I'm a junior developer and a visual learner: explain decisions in plain words,
   use diagrams or tables when they help, and keep code small and commented.
 - Every task ends with a **STATUS / CHECKS / NEEDS YOUR DECISION** block.
-- Before that block, at the end of release work: run `/code-review` and `/security-review` on the
-  branch (fix what they find), and run the end-to-end test in the real app (create a project, Build,
-  Run, check the release's "Done when" in game). Report all three under CHECKS.
+- Before that block, once at the end of a release (not after every task): run `/code-review medium`
+  and `/security-review` on the branch (fix what they find), and run the end-to-end test in the real
+  app (create a project, Build, Run, check the release's "Done when" in game). Report all three under CHECKS.
 - Release work keeps `CHECKPOINT.md` current as it goes, so a new session can pick up where the last stopped.
+  Keep it short (where we are, next step, useful facts); move a finished release's notes to `docs/release/history/`.
+
+## Saving usage (weekly limit)
+
+- One task per session. When a task is done: update `CHECKPOINT.md`, commit, then tell me
+  "good point to `/clear`" in the STATUS block. Don't carry old tasks in the conversation.
+- Read only what the task needs: use Grep/Glob to find the spot, then read that part of the file
+  (offset/limit), not whole large files. Don't re-read files already in the conversation.
+- Don't spawn subagents unless I ask. Skip the "make it alive" research when the picks listed
+  above already fit; do a short search only for a genuinely new kind of UI.
+- Keep command output small (`| tail -30`, `--reporter=dot`, `-q`); don't dump full logs or bindings.
+- Planning (plan mode) runs on Opus; carrying out a written plan runs on Sonnet (the `opusplan`
+  setting does this). If a task turns out to need deep thinking outside plan mode, say so and
+  suggest `/model opus`.
