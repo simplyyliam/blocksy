@@ -9,7 +9,7 @@
 // Tree and inspector are flush on the white page (Liam preferred it to floating cards).
 // Element canvases and inspectors come from element packages (app/modules.ts), so new
 // element types appear here without changes. The status bar sits below (App.tsx).
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { renameElement, updateElement, type Element } from "@blocksy/core"
 import { cn, InspectorTabs, ResizableHandle, ResizablePanel, ResizablePanelGroup, usePanelRef } from "@blocksy/ui"
 import { FirstBuild } from "../../features/first-build/first-build"
@@ -64,6 +64,15 @@ export function ProjectPage() {
   }, [dir])
   const layoutReady = useLayoutMemory(dir)
 
+  // The starting widths are read once per panel group. If `defaultSize` followed the live widths,
+  // every drag would change the props, the panels would re-register and fight the drag
+  // (sizes crept upward and resizing felt stuck). Resizing only writes to the store.
+  const groupKey = `${dir}-${inspectorSide}-${layoutVersion}`
+  const [start, setStart] = useState({ key: "", tree: 0, inspector: 0 })
+  if (layoutReady && start.key !== groupKey) {
+    setStart({ key: groupKey, tree: treeOpen ? treeWidth : 0, inspector: inspectorOpen && view === "design" ? inspectorWidth : 0 })
+  }
+
   // Menu and keyboard toggles (editor store) collapse or expand the panels.
   const treeRef = usePanelRef()
   const inspectorRef = usePanelRef()
@@ -115,7 +124,7 @@ export function ProjectPage() {
       panelRef={treeRef}
       collapsible
       collapsedSize={0}
-      defaultSize={treeOpen ? treeWidth : 0}
+      defaultSize={start.tree}
       minSize={170}
       maxSize={440}
       groupResizeBehavior="preserve-pixel-size"
@@ -133,7 +142,7 @@ export function ProjectPage() {
       panelRef={inspectorRef}
       collapsible
       collapsedSize={0}
-      defaultSize={showInspector ? inspectorWidth : 0}
+      defaultSize={start.inspector}
       minSize={240}
       maxSize={520}
       groupResizeBehavior="preserve-pixel-size"
@@ -191,7 +200,7 @@ export function ProjectPage() {
   const left = inspectorSide === "left"
   return (
     <>
-      <ResizablePanelGroup key={`${dir}-${inspectorSide}-${layoutVersion}`} orientation="horizontal" id="project-editor" className="h-full min-h-0 pb-1">
+      <ResizablePanelGroup key={groupKey} orientation="horizontal" id="project-editor" className="h-full min-h-0 pb-1">
         {left ? inspector : tree}
         {handle("h1", left ? showInspector : treeOpen)}
         {centre}
