@@ -11,7 +11,7 @@ Details: `docs/research/` (local) libraries.md, effects.md, gui-creation.md.
 
 ## Decision
 
-Generated mods that use animation depend on GeckoLib. It becomes the first module in the Libraries registry (v0.8), listed in `fabric.mod.json` `depends` with a credit entry and credits note.
+Generated mods that use animation depend on GeckoLib. It becomes the first module in the Libraries registry (v0.9), listed in `fabric.mod.json` `depends` with a credit entry and credits note.
 
 ## Consequences
 
