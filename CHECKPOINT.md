@@ -6,7 +6,8 @@ When a release ships, move its notes to `docs/release/history/` and start fresh.
 ## Where we are (2026-11-05)
 
 - v0.3 "First item" is released as 0.3.0 (PR #1 merged). Notes: `docs/release/history/checkpoint-v0.1-v0.3.md`.
-- **Next: v0.4 "Blueprint canvas"**: read `docs/release/releases/v0.4.md` and the sections its prompt names.
+- Research branch `docs/research-mods` (PR open) proposes an **Editor refresh** release before v0.4, plus Effect Studio and Combat and bosses; Liam decides in the PR review. Notes are local in `docs/research/`.
+- **Next: v0.4 "Blueprint canvas"** (or Editor refresh if accepted): read the release file and the sections its prompt names.
 - Carried over to v0.4: idle 3D frames over budget in 2 of 5 bench runs (ADR 0010); move pure ref
   helpers into a UI-free module shared by target and editors (ADR 0009).
 
