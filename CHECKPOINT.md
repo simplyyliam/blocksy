@@ -26,9 +26,10 @@ Built in v0.4 (see ADR 0011, still "proposed"):
 - Renderer in `packages/ui/src/minecraft/` (McScreen, McStage, nine-slice, cube, font). Creative tab and recipe editors draw the real screens.
 - Item: Paint (paint studio in `packages/pixel`: zoom/pan, grid, coordinates, HSV picker, layers, frames timeline, live preview) and Look (slot, tooltip, hotbar).
   Block: Paint (studio + cube/tiled preview), Model (stub), Look (3D). Layers are optional data next to the flat texture (no formatVersion change).
-- Typed imports: block and item textures (Resources menu). GUI/particle textures, sounds and models are greyed out until their studios exist.
+- Typed imports (Resources menu and drag-and-drop from the desktop): block/item textures change elements; GUI/particle textures, sounds (.ogg) and models (.json, .bbmodel)
+  are `resources` in the project document (optional, no format bump; ADR 0018). Rules in `packages/core/src/resources.ts`, files written by the generator, listed in the tree.
 
-Not done / decisions for Liam: free-floating panels and drag-from-desktop imports; block painting is on one shared texture (per-face painting needs
+Not done / decisions for Liam: free-floating panels; dropped .png files are routed by name (particle, gui) or the selected element, no chooser; block painting is on one shared texture (per-face painting needs
 per-face textures from Model Studio); creative tab grid shows the first 45 entries (no scrolling); vanilla items that need entity renderers draw a placeholder.
 
 ## Useful facts (keep only what still matters)
