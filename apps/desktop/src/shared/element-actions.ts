@@ -20,6 +20,18 @@ export function createElement(typeId: string, typed: string): string | null {
   return id
 }
 
+/** Like createElement, with the element's data already set (an import brings its texture along). */
+export function createElementWith(typeId: string, typed: string, data: unknown): string | null {
+  const project = useProject.getState().current
+  const name = typed.trim()
+  if (!project || !elementModules.has(typeId) || !name) return null
+  const { doc, documents } = project
+  const id = deriveElementId(name, doc.elements.map((e) => e.id))
+  documents.execute(addElement({ id, type: typeId, name, data }))
+  useEditor.getState().select(id)
+  return id
+}
+
 /** Copies an element ("Ruby Block copy") and opens the copy. */
 export function duplicateElement(element: Element): string | null {
   const project = useProject.getState().current
