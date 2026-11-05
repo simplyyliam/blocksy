@@ -2,6 +2,47 @@
 
 All notable changes to Blocksy are documented here. Versions follow docs/release/README.md.
 
+## [0.4.0] - 2026-11-05
+
+A new editor that looks and feels like a full creation tool, with previews drawn the way Minecraft draws them.
+
+### Added
+
+- **A full editor shell.** A menu bar, a row of quick actions, a project tree with your real textures as icons, tabs for several open items at once, panels you can drag to resize, and a bottom dock with the Build log, Problems and History.
+- **Command palette and shortcuts.** Press Ctrl+K to search every action, and press ? to see all keyboard shortcuts. Blocksy remembers your panel layout for each project.
+- **Minecraft's own look.** Creative tabs and recipes are now drawn on the real creative inventory, crafting and furnace screens, with Minecraft's pixel font. Items and blocks appear as they do in game, in both the Modern and Minecraft themes.
+- **Paint studio.** A bigger texture editor with zoom and pan, a pixel grid, a colour picker, layers, a frames timeline for animations and a live preview at game size. Items also get a Look mode that shows them in a slot, a tooltip and the hotbar; blocks get Paint, Model and Look modes.
+- **Importing files.** Bring in block and item textures, GUI and particle pictures, sounds and models from the Resources menu, or just drag them in from your desktop.
+- **Setting up when you create a project.** A new project shows what is being downloaded and how much is left while Blocksy gets Minecraft ready, so the real Minecraft look is there when the editor opens. Later projects reuse it.
+
+### Changed
+
+- The editor is denser and calmer: one title row with the menus and search, tabbed settings on the right (Properties, Texture or Behaviour, Code), and sections you can fold away.
+- Number settings can be dragged to change them, and show their units.
+- Projects made with earlier versions open as they are and get the new workspace setup the first time you open them.
+
+### Known issues
+
+- Windows may warn "Windows protected your PC" when you install, because the installer isn't code-signed yet. Click **More info**, then **Run anyway**.
+- Minecraft's look appears after the first setup or build. Until then you see Blocksy's simple preview with a "Build once to load Minecraft's look" note.
+- Blocks are still full cubes with one texture on all six faces; custom shapes and per-face painting come with Model Studio.
+- Panels can be resized and folded but not yet dragged out as free-floating windows.
+- A picture you drop in is placed by its name (for example particle or gui) or by the item you have selected; there is no chooser yet.
+- The creative tab preview shows the first 45 entries and doesn't scroll yet.
+- Some Minecraft items that need special drawing show a simple placeholder.
+- Saving versions needs git installed; you need Java 25 (a JDK); only the Fabric loader is supported; the first build needs an internet connection and takes a few minutes.
+
+### Privacy
+
+- Blocksy checks GitHub for updates when it starts and every few hours. No account or personal data is sent.
+- While setting up and building, Gradle downloads Minecraft, Fabric and code libraries from Mojang, Fabric and Maven repositories.
+- Minecraft's pictures, sounds and font are read from the files already downloaded on your computer, only to draw previews. They are kept in memory, never copied into your project, bundled or uploaded.
+- Files you import are stored in your project folder and never leave your computer.
+- Saved versions stay in your project folder on your computer; nothing is uploaded.
+- Docs lesson pages show video thumbnails from YouTube; a video loads from YouTube only when you press play.
+- Links you open from the Docs or elsewhere in Blocksy open in your browser.
+- There is no GitHub sign-in or sync in this version, and Blocksy collects no usage data.
+
 ## [0.3.0] - 2026-11-04
 
 Your first item: paint it, give it recipes, cook it in a furnace and eat it in Minecraft.
