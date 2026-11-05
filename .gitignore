@@ -42,3 +42,4 @@ docs/design
 # Private release plan and release files (kept locally, not on GitHub)
 docs/release/plan/
 docs/release/releases/
+docs/research/
