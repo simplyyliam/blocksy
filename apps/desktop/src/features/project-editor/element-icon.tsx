@@ -22,11 +22,11 @@ export function ElementIcon({ element, project, className }: { element?: Element
   const texture = element && project ? iconTexture(element, project) : null
   const Icon = element ? (elementModules.get(element.type)?.Icon ?? LayoutDashboard) : LayoutDashboard
   return (
-    <span className={cn("grid size-6 shrink-0 place-items-center rounded-md bg-surface text-fg-muted", className)}>
+    <span className={cn("grid size-5 shrink-0 place-items-center rounded-[5px] bg-surface text-fg-muted", className)}>
       {texture ? (
-        <img src={texture} alt="" className="size-4 object-cover object-top [image-rendering:pixelated]" />
+        <img src={texture} alt="" className="size-3.5 object-cover object-top [image-rendering:pixelated]" />
       ) : (
-        <Icon className="size-3.5" strokeWidth={1.75} />
+        <Icon className="size-3" strokeWidth={1.75} />
       )}
     </span>
   )

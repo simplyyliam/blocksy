@@ -54,7 +54,7 @@ export { Confetti, ConfettiButton, type ConfettiRef } from "./components/ui/conf
 export { BlurFade } from "./components/ui/blur-fade.tsx" // v0.3: History entries fade in
 // Blocksy-only pieces (shadcn has nothing like them):
 export { CodeView, languageOf, type CodeLanguage } from "./components/code-view.tsx"
-export { InspectorField, InspectorSection, NumberInput } from "./components/inspector.tsx"
+export { InspectorField, InspectorSection, InspectorTabs, NumberInput, type InspectorTab } from "./components/inspector.tsx"
 export { AnimatedNumber } from "./components/animated-number.tsx"
 export { ElapsedTime } from "./components/elapsed-time.tsx"
 export { ProjectCover } from "./components/project-cover.tsx"
@@ -80,3 +80,5 @@ export {
 } from "./components/ui/command.tsx"
 export { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./components/ui/resizable.tsx"
 export { usePanelRef } from "react-resizable-panels" // handle to collapse/expand a panel from a command
+export { Checkbox } from "./components/ui/checkbox.tsx"
+export * from "./components/pixel-icons.ts"

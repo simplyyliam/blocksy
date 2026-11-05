@@ -6,6 +6,7 @@ import { useRef } from "react"
 import { Button, cn } from "@blocksy/ui"
 import { BuildLog } from "../../features/bottom-panel/build-log"
 import { Problems } from "../../features/bottom-panel/problems"
+import { History } from "../../features/project-editor/history"
 import { useProblems } from "../../features/bottom-panel/use-problems"
 import { useEditor, type DockTab } from "../../shared/stores/editor"
 import { useNavigation } from "../../shared/stores/navigation"
@@ -35,6 +36,7 @@ export function BottomPanel() {
   const tabs: { id: DockTab; label: string; count?: number }[] = [
     { id: "log", label: "Build log" },
     { id: "problems", label: "Problems", count: problems },
+    { id: "history", label: "History" },
   ]
 
   return (
@@ -60,7 +62,7 @@ export function BottomPanel() {
             className="absolute inset-x-0 top-0 h-1.5 cursor-row-resize"
             aria-hidden
           />
-          <div className="flex h-9 shrink-0 items-center justify-between pr-2 pl-2">
+          <div className="flex h-8 shrink-0 items-center justify-between pr-1.5 pl-1.5">
             <div role="tablist" aria-label="Dock" className="flex items-center gap-0.5">
               {tabs.map((t) => (
                 <button
@@ -70,7 +72,7 @@ export function BottomPanel() {
                   aria-selected={tab === t.id}
                   onClick={() => setTab(t.id)}
                   className={cn(
-                    "flex h-6.5 items-center gap-1.5 rounded-md px-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                    "flex h-6 items-center gap-1.5 rounded-md px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
                     tab === t.id ? "bg-surface text-fg" : "text-fg-muted hover:text-fg",
                   )}
                 >
@@ -81,11 +83,11 @@ export function BottomPanel() {
                 </button>
               ))}
             </div>
-            <Button variant="ghost" size="icon-sm" aria-label="Close dock" onClick={() => setOpen(false)}>
+            <Button variant="ghost" size="icon-xs" aria-label="Close dock" onClick={() => setOpen(false)}>
               <X strokeWidth={1.75} />
             </Button>
           </div>
-          <div className="flex min-h-0 flex-1 flex-col border-t border-line-subtle">{tab === "log" ? <BuildLog /> : <Problems />}</div>
+          <div className="flex min-h-0 flex-1 flex-col border-t border-line-subtle">{tab === "log" ? <BuildLog /> : tab === "problems" ? <Problems /> : <div className="min-h-0 flex-1 overflow-y-auto"><History /></div>}</div>
         </section>
       </div>
     </div>

@@ -13,7 +13,7 @@ export const HISTORY = "@history"
 export type Selection = string
 
 /** The bottom dock's tabs. */
-export type DockTab = "log" | "problems"
+export type DockTab = "log" | "problems" | "history"
 
 /** The panel sizes and visibility that are remembered per project (see shared/layout-memory.ts). */
 export interface PanelLayout {
@@ -44,6 +44,8 @@ interface EditorState extends PanelLayout {
   dockTab: DockTab
   /** Bumped by Reset layout: the panel group remounts so the default sizes apply. */
   layoutVersion: number
+  /** The working mode per element type (item: paint or look), kept while the app runs. */
+  modeByType: Record<string, string>
   /** The "New element" dialog (N): open, and the type chosen in it if any. */
   newElementOpen: boolean
   newElementType: string | null
@@ -57,6 +59,7 @@ interface EditorState extends PanelLayout {
   /** Drops tabs for elements that no longer exist (after delete or undo). */
   pruneTabs(existing: Set<string>): void
   setView(view: "design" | "code"): void
+  setMode(type: string, mode: string): void
   setDockTab(tab: DockTab): void
   toggleTree(): void
   toggleInspector(): void
@@ -76,6 +79,7 @@ export const useEditor = create<EditorState>((set, get) => ({
   view: "design",
   dockTab: "log",
   layoutVersion: 0,
+  modeByType: {},
   newElementOpen: false,
   newElementType: null,
   select: (selected) => set((s) => ({ selected, tabs: s.tabs.includes(selected) ? s.tabs : [...s.tabs, selected] })),
@@ -103,6 +107,7 @@ export const useEditor = create<EditorState>((set, get) => ({
       return { tabs, selected: tabs.includes(s.selected) ? s.selected : OVERVIEW }
     }),
   setView: (view) => set({ view }),
+  setMode: (type, mode) => set((s) => ({ modeByType: { ...s.modeByType, [type]: mode } })),
   setDockTab: (dockTab) => set({ dockTab }),
   toggleTree: () => set((s) => ({ treeOpen: !s.treeOpen })),
   toggleInspector: () => set((s) => ({ inspectorOpen: !s.inspectorOpen })),

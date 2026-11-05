@@ -27,7 +27,7 @@ export function TabStrip() {
   if (!project) return null
 
   return (
-    <div role="tablist" aria-label="Open elements" className="flex h-9 shrink-0 items-end gap-0.5 overflow-x-auto px-2 pt-1.5 [scrollbar-width:none]">
+    <div role="tablist" aria-label="Open elements" className="flex h-8 min-w-0 flex-1 items-end gap-px overflow-x-auto pt-1 [scrollbar-width:none]">
       {tabs.map((id) => {
         const element = project.doc.elements.find((e) => e.id === id)
         const isActive = id === selected
@@ -45,7 +45,7 @@ export function TabStrip() {
                   onAuxClick={(e) => e.button === 1 && closeTab(id)}
                   onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && select(id)}
                   className={cn(
-                    "group flex h-7.5 max-w-44 min-w-0 shrink-0 cursor-default items-center gap-1.5 rounded-t-lg pr-1 pl-2 text-sm transition-colors outline-none",
+                    "group flex h-7 max-w-44 min-w-0 shrink-0 cursor-default items-center gap-1.5 rounded-t-md pr-1 pl-2 text-sm transition-colors outline-none",
                     "focus-visible:ring-2 focus-visible:ring-ring/50",
                     isActive ? "bg-surface text-fg" : "text-fg-muted hover:bg-surface-hover/60 hover:text-fg",
                   )}
@@ -57,7 +57,7 @@ export function TabStrip() {
               ) : id === HISTORY ? (
                 <History className="size-3.5 shrink-0" strokeWidth={1.75} />
               ) : (
-                <ElementIcon element={element} project={project.doc} className="size-5 bg-transparent" />
+                <ElementIcon element={element} project={project.doc} className="size-4 bg-transparent" />
               )}
               <span className="truncate">{label}</span>
               <button

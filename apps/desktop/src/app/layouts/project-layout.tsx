@@ -2,8 +2,7 @@
 // project. No icon rail; a back button at the top left returns to Home.
 //
 //   ┌───────────────────────────────────────────────┐
-//   │ File Edit Project Resources …           ─ ▢ ✕ │  menu bar (titlebar)
-//   │ ← ▣ My mod │ ⊕ 💾 │ ↶ ↷ │ Build Run │ 🔍     │  toolbar
+//   │ ← ▣ My mod │ File Edit … │ ＋ 💾 ↶ ↷ Build Run │ 🔍 ─ ▢ ✕ │  titlebar: menus + quick actions
 //   │ <Outlet />  (tree │ tabs + canvas │ inspector) │
 //   │ Build log | Problems                           │  bottom dock
 //   │ Status bar                                     │
@@ -17,7 +16,6 @@ import { NewElementDialog } from "../../features/project-editor/new-element-dial
 import { BottomPanel } from "../../widgets/bottom-panel/bottom-panel"
 import { Header } from "../../widgets/header/header"
 import { StatusBar } from "../../widgets/status-bar/statusbar"
-import { Toolbar } from "../../widgets/toolbar/toolbar"
 
 export function ProjectLayout() {
   // The router already decodes params, so this is the folder path as written.
@@ -34,7 +32,6 @@ export function ProjectLayout() {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <Header />
-      <Toolbar />
       <main className="page-enter min-h-0 flex-1 overflow-hidden px-2.5">
         <Outlet />
       </main>

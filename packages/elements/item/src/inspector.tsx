@@ -5,7 +5,7 @@ import { Plus, X } from "lucide-react"
 import type { ElementEditorProps } from "@blocksy/core"
 import {
   Button, Input, InspectorField, InspectorSection, NumberInput, Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-  Slider, Switch, Textarea,
+  Slider, Checkbox, Textarea,
 } from "@blocksy/ui"
 import { fieldDoc } from "./docs.ts"
 import { EFFECTS, FUEL_EXAMPLES, RARITIES, TICKS_PER_SMELT } from "./options.ts"
@@ -56,7 +56,7 @@ function EffectRow({ effect, onChange, onRemove }: { effect: EffectData; onChang
       <div className="grid grid-cols-3 gap-1.5 text-xs text-fg-muted">
         <label className="flex flex-col gap-1">
           Seconds
-          <NumberInput value={effect.seconds} min={0.05} max={3600} onCommit={(seconds) => onChange({ ...effect, seconds })} className="h-7" />
+          <NumberInput value={effect.seconds} min={0.05} max={3600} unit="s" onCommit={(seconds) => onChange({ ...effect, seconds })} className="h-7" />
         </label>
         <label className="flex flex-col gap-1">
           Level
@@ -64,7 +64,7 @@ function EffectRow({ effect, onChange, onRemove }: { effect: EffectData; onChang
         </label>
         <label className="flex flex-col gap-1">
           Chance %
-          <NumberInput value={Math.round(effect.chance * 100)} min={0} max={100} step={1} onCommit={(pct) => onChange({ ...effect, chance: pct / 100 })} className="h-7" />
+          <NumberInput value={Math.round(effect.chance * 100)} min={0} max={100} step={1} unit="%" onCommit={(pct) => onChange({ ...effect, chance: pct / 100 })} className="h-7" />
         </label>
       </div>
     </div>
@@ -114,24 +114,24 @@ export function ItemInspector({ element, project, change, rename, select }: Elem
 
       <InspectorSection title="Stack">
         <InspectorField label="Stack size" java={data.maxStackSize !== 64 ? `.stacksTo(${data.maxStackSize})` : undefined} description={fieldDoc("maxStackSize").description}>
-          {(id) => <NumberInput id={id} value={data.maxStackSize} min={1} max={99} step={1} onCommit={(n) => set({ maxStackSize: Math.round(n) })} />}
+          {(id) => <NumberInput id={id} value={data.maxStackSize} min={1} max={99} step={1} unit="items" onCommit={(n) => set({ maxStackSize: Math.round(n) })} />}
         </InspectorField>
         <InspectorField label="Rarity" java={data.rarity !== "common" ? `.rarity(Rarity.${data.rarity.toUpperCase()})` : undefined} description={fieldDoc("rarity").description}>
           {(id) => <Choose id={id} value={data.rarity} items={RARITIES.map((r) => ({ value: r.id, label: r.label }))} onChange={(v) => set({ rarity: v as ItemData["rarity"] })} />}
         </InspectorField>
         <InspectorField label="Fire resistant" java={data.fireResistant ? ".fireResistant()" : undefined} description={fieldDoc("fireResistant").description}>
-          {(id) => <Switch id={id} size="sm" checked={data.fireResistant} onCheckedChange={(fireResistant) => set({ fireResistant })} />}
+          {(id) => <Checkbox id={id} checked={data.fireResistant} onCheckedChange={(fireResistant) => set({ fireResistant })} />}
         </InspectorField>
       </InspectorSection>
 
-      <InspectorSection title="Food">
+      <InspectorSection title="Food" tab="behaviour">
         <InspectorField label="Can be eaten" description={fieldDoc("food").description}>
-          {(id) => <Switch id={id} size="sm" checked={!!food} onCheckedChange={(on) => set({ food: on ? foodDefaults() : null })} />}
+          {(id) => <Checkbox id={id} checked={!!food} onCheckedChange={(on) => set({ food: on ? foodDefaults() : null })} />}
         </InspectorField>
         {food && (
           <>
             <InspectorField label="Nutrition" java={`.nutrition(${food.nutrition})`} description="Hunger points it fills. Each drumstick on the hunger bar is 2; bread is 5, steak 8.">
-              {(id) => <NumberInput id={id} value={food.nutrition} min={0} max={20} step={1} onCommit={(n) => setFood({ nutrition: Math.round(n) })} />}
+              {(id) => <NumberInput id={id} value={food.nutrition} min={0} max={20} step={1} unit="hunger" onCommit={(n) => setFood({ nutrition: Math.round(n) })} />}
             </InspectorField>
             <InspectorField label="Saturation" java={`.saturationModifier(${float(food.saturation)})`} description="How long you stay full: saturation = nutrition × this × 2. Bread is 0.6, steak 0.8.">
               {(id) => <NumberInput id={id} value={food.saturation} min={0} max={5} onCommit={(saturation) => setFood({ saturation })} />}
@@ -140,7 +140,7 @@ export function ItemInspector({ element, project, change, rename, select }: Elem
               Fills {food.nutrition / 2} drumstick{food.nutrition === 2 ? "" : "s"}, adds {Math.round(food.nutrition * food.saturation * 2 * 10) / 10} saturation.
             </p>
             <InspectorField label="Always edible" java={food.alwaysEdible ? ".alwaysEdible()" : undefined} description="Can be eaten even with a full hunger bar, like golden apples.">
-              {(id) => <Switch id={id} size="sm" checked={food.alwaysEdible} onCheckedChange={(alwaysEdible) => setFood({ alwaysEdible })} />}
+              {(id) => <Checkbox id={id} checked={food.alwaysEdible} onCheckedChange={(alwaysEdible) => setFood({ alwaysEdible })} />}
             </InspectorField>
             <div className="flex items-center justify-between">
               <span className="text-sm text-fg" title={fieldDoc("effects").description}>
@@ -175,14 +175,14 @@ export function ItemInspector({ element, project, change, rename, select }: Elem
         )}
       </InspectorSection>
 
-      <InspectorSection title="Furnace and composter">
+      <InspectorSection title="Furnace and composter" tab="behaviour">
         <InspectorField label="Burns as fuel" description={fieldDoc("fuelTicks").description}>
-          {(id) => <Switch id={id} size="sm" checked={data.fuelTicks > 0} onCheckedChange={(on) => set({ fuelTicks: on ? 300 : 0 })} />}
+          {(id) => <Checkbox id={id} checked={data.fuelTicks > 0} onCheckedChange={(on) => set({ fuelTicks: on ? 300 : 0 })} />}
         </InspectorField>
         {data.fuelTicks > 0 && (
           <>
             <InspectorField label="Burn time (ticks)" java={`burn time ${data.fuelTicks} ticks`}>
-              {(id) => <NumberInput id={id} value={data.fuelTicks} min={1} max={32000} step={1} onCommit={(n) => set({ fuelTicks: Math.round(n) })} />}
+              {(id) => <NumberInput id={id} value={data.fuelTicks} min={1} max={32000} step={1} unit="ticks" onCommit={(n) => set({ fuelTicks: Math.round(n) })} />}
             </InspectorField>
             <p className="-mt-1 text-xs text-fg-muted">
               Smelts {Number.isInteger(smelts) ? plural(smelts, "item") : `${smelts.toFixed(1)} items`} · close to {nearFuel.name.toLowerCase()} ({nearFuel.ticks})

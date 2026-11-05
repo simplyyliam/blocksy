@@ -11,7 +11,7 @@
 // A new element type shows up here with no change to this file. Click opens a tab,
 // double-click or F2 renames, right-click offers Open, Rename, Duplicate and Delete
 // (Ctrl+Z undoes a delete). "+" opens the New element dialog with the type chosen.
-import { ChevronRight, Copy, History, LayoutDashboard, PencilLine, Plus, Search, SquareArrowOutUpRight, Trash2 } from "lucide-react"
+import { ChevronRight, Copy, LayoutDashboard, PencilLine, Plus, Search, SquareArrowOutUpRight, Trash2 } from "lucide-react"
 import { useState } from "react"
 import type { Element } from "@blocksy/core"
 import {
@@ -20,11 +20,11 @@ import {
 } from "@blocksy/ui"
 import { registries } from "../../app/modules"
 import { deleteElement, duplicateElement, renameElementTo } from "../../shared/element-actions"
-import { HISTORY, OVERVIEW, useEditor } from "../../shared/stores/editor"
+import { OVERVIEW, useEditor } from "../../shared/stores/editor"
 import { useProject } from "../../shared/stores/project"
 import { ElementIcon } from "./element-icon"
 
-const row = "h-7 w-full justify-start gap-2 rounded-lg px-1.5 font-normal"
+const row = "h-6 w-full justify-start gap-1.5 rounded-md px-1.5 font-normal"
 
 export function ProjectTree() {
   const project = useProject((s) => s.current)
@@ -49,14 +49,14 @@ export function ProjectTree() {
   return (
     <div className="flex h-full flex-col">
       {/* Project header: name and what it targets. */}
-      <div className="px-3 pt-2 pb-2">
-        <p className="truncate text-md font-medium text-fg">{doc.name}</p>
-        <p className="mt-0.5 truncate text-xs text-fg-muted">
+      <div className="px-3 pt-1.5 pb-1.5">
+        <p className="truncate text-sm font-medium text-fg">{doc.name}</p>
+        <p className="truncate text-xs text-fg-muted">
           {targetName} · Minecraft {version.minecraft}
         </p>
       </div>
 
-      <div className="relative px-2 pb-2">
+      <div className="relative px-2 pb-1.5">
         <Search className="pointer-events-none absolute top-1/2 left-4 size-3.5 -translate-y-1/2 text-fg-faint" strokeWidth={1.75} />
         <Input
           value={filter}
@@ -65,25 +65,18 @@ export function ProjectTree() {
           spellCheck={false}
           aria-label="Filter elements"
           placeholder="Filter elements"
-          className="h-7 pl-7 text-sm"
+          className="h-6 pl-7 text-xs"
         />
       </div>
 
-      <nav aria-label="Project" className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto border-t border-line-subtle px-2 pt-2 pb-4">
+      <nav aria-label="Project" className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto border-t border-line-subtle px-1.5 pt-1.5 pb-3">
         {!query && (
           <>
             <Button variant="ghost" size="sm" className={cn(row, selected === OVERVIEW && "bg-surface-hover")} onClick={() => select(OVERVIEW)}>
-              <span className="grid size-6 shrink-0 place-items-center rounded-md bg-surface text-fg-muted">
+              <span className="grid size-5 shrink-0 place-items-center rounded-[5px] bg-surface text-fg-muted">
                 <LayoutDashboard className="size-3.5" strokeWidth={1.75} />
               </span>
               Overview
-            </Button>
-            {/* v0.3: saved versions (git), right under Overview. */}
-            <Button variant="ghost" size="sm" className={cn(row, selected === HISTORY && "bg-surface-hover")} onClick={() => select(HISTORY)}>
-              <span className="grid size-6 shrink-0 place-items-center rounded-md bg-surface text-fg-muted">
-                <History className="size-3.5" strokeWidth={1.75} />
-              </span>
-              History
             </Button>
           </>
         )}
@@ -94,13 +87,13 @@ export function ProjectTree() {
           if (query && items.length === 0) return null
           const open = query ? true : !folded.has(type.id)
           return (
-            <section key={type.id} className="mt-1.5 flex flex-col gap-px">
-              <div className="group/header flex h-6 items-center justify-between pr-0.5">
+            <section key={type.id} className="mt-1 flex flex-col gap-px">
+              <div className="group/header flex h-5.5 items-center justify-between pr-0.5">
                 <button
                   type="button"
                   aria-expanded={open}
                   onClick={() => toggle(type.id)}
-                  className="flex h-6 min-w-0 flex-1 items-center gap-1 rounded-md pl-0.5 text-left text-xs font-medium tracking-wide text-fg-muted uppercase outline-none hover:text-fg focus-visible:ring-2 focus-visible:ring-ring/50"
+                  className="flex h-5.5 min-w-0 flex-1 items-center gap-1 rounded-md pl-0.5 text-left text-xs font-medium tracking-wide text-fg-muted uppercase outline-none hover:text-fg focus-visible:ring-2 focus-visible:ring-ring/50"
                 >
                   <ChevronRight className={cn("size-3 shrink-0 transition-transform duration-150", open && "rotate-90")} strokeWidth={2} />
                   <span className="truncate">{type.plural ?? type.name}</span>
@@ -149,7 +142,7 @@ function ElementRow({ element, typeName, active, renaming, onRenaming }: { eleme
               variant="ghost"
               size="sm"
               aria-current={active ? "true" : undefined}
-              className={cn(row, "pl-4", active && "bg-surface-hover")}
+              className={cn(row, "pl-3.5", active && "bg-surface-hover")}
               onClick={() => select(element.id)}
               onDoubleClick={() => onRenaming(element.id)}
               onKeyDown={(e) => e.key === "F2" && onRenaming(element.id)}

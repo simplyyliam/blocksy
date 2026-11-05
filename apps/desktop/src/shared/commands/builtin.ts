@@ -10,7 +10,7 @@ import { revealItemInDir } from "@tauri-apps/plugin-opener"
 import { deleteElement, duplicateElement, selectedElement } from "../element-actions"
 import { buildMod, exportMod, runMod, stopTask } from "../project-actions"
 import { changeCover, closeProject } from "../project-menu-actions"
-import { HISTORY, OVERVIEW, useEditor } from "../stores/editor"
+import { OVERVIEW, useEditor } from "../stores/editor"
 import { useGradle } from "../stores/gradle"
 import { useNavigation } from "../stores/navigation"
 import { useProject } from "../stores/project"
@@ -40,9 +40,10 @@ export function registerBuiltinCommands() {
     run: () => {
       // Inspector fields commit on blur: blur first, so a half-typed edit is saved, not lost.
       if (document.activeElement instanceof HTMLElement && document.activeElement.id !== "history-message") document.activeElement.blur()
-      editor().setView("design") // History lives in Design view
-      editor().select(HISTORY)
-      setTimeout(() => document.getElementById("history-message")?.focus(), 50)
+      // v0.4: saved versions live in the bottom dock (History tab), with the message box focused.
+      editor().setDockTab("history")
+      nav().setBottomPanel(true)
+      setTimeout(() => document.getElementById("history-message")?.focus(), 250)
     },
   })
   defineCommand({ id: "file.reveal", group: "File", title: "Show in folder", icon: FolderOpen, run: () => void revealItemInDir(project()!.dir) })
@@ -77,7 +78,7 @@ export function registerBuiltinCommands() {
 
   // ---- Project ----------------------------------------------------------------------------
   defineCommand({ id: "project.overview", group: "Project", title: "Overview", icon: LayoutDashboard, run: () => { editor().setView("design"); editor().select(OVERVIEW) } })
-  defineCommand({ id: "project.history", group: "Project", title: "History", icon: History, run: () => { editor().setView("design"); editor().select(HISTORY) } })
+  defineCommand({ id: "project.history", group: "Project", title: "History", icon: History, run: () => { editor().setDockTab("history"); nav().setBottomPanel(true) } })
   defineCommand({ id: "project.design", group: "Project", title: "Design view", icon: Shapes, keys: "Mod+1", checked: () => editor().view === "design", run: () => editor().setView("design") })
   defineCommand({ id: "project.code", group: "Project", title: "Code view", icon: Code2, keys: "Mod+2", checked: () => editor().view === "code", run: () => editor().setView("code"), keywords: ["java", "generated"] })
   defineCommand({ id: "project.cover", group: "Project", title: "Change cover…", icon: ImageIcon, run: () => void changeCover(project()!.dir) })

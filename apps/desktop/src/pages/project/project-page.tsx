@@ -11,12 +11,14 @@
 // element types appear here without changes. The status bar sits below (App.tsx).
 import { useEffect } from "react"
 import { renameElement, updateElement, type Element } from "@blocksy/core"
-import { cn, ResizableHandle, ResizablePanel, ResizablePanelGroup, usePanelRef } from "@blocksy/ui"
+import { cn, InspectorTabs, ResizableHandle, ResizablePanel, ResizablePanelGroup, usePanelRef } from "@blocksy/ui"
 import { FirstBuild } from "../../features/first-build/first-build"
 import { CodeTab } from "../../features/project-editor/code-tab"
+import { InspectorCode } from "../../features/project-editor/inspector-code"
 import { History } from "../../features/project-editor/history"
 import { Overview } from "../../features/project-editor/overview"
 import { ProjectTree } from "../../features/project-editor/project-tree"
+import { ModeBar } from "../../features/project-editor/mode-bar"
 import { TabStrip } from "../../features/project-editor/tab-strip"
 import { elementModules, registries } from "../../app/modules"
 import { useLayoutMemory } from "../../shared/layout-memory"
@@ -109,7 +111,9 @@ export function ProjectPage() {
       groupResizeBehavior="preserve-pixel-size"
       onResize={(size) => (size.inPixels === 0 ? useEditor.getState().treeOpen && setLayout({ treeOpen: false }) : setLayout({ treeOpen: true, treeWidth: Math.round(size.inPixels) }))}
     >
-      <ProjectTree />
+      <div className="h-full border-r border-line-subtle bg-surface/60">
+        <ProjectTree />
+      </div>
     </ResizablePanel>
   )
   const inspector = (
@@ -125,11 +129,19 @@ export function ProjectPage() {
       groupResizeBehavior="preserve-pixel-size"
       onResize={(size) => (size.inPixels === 0 ? useEditor.getState().inspectorOpen && useEditor.getState().view === "design" && setLayout({ inspectorOpen: false }) : setLayout({ inspectorOpen: true, inspectorWidth: Math.round(size.inPixels) }))}
     >
-      <aside aria-label="Inspector" className="h-full overflow-x-hidden overflow-y-auto">
+      {/* A tool panel: a slightly tinted background so the canvas stays the focus. */}
+      <aside
+        aria-label="Inspector"
+        className="h-full overflow-x-hidden overflow-y-auto border-l border-line-subtle bg-surface/60 [&_[data-slot=input]]:h-6.5 [&_[data-slot=select-trigger]]:h-6.5 [&_[data-slot=textarea]]:min-h-14 [&_[data-slot=checkbox]]:border-line [&_[data-slot=checkbox]]:bg-bg"
+      >
         {module && props ? (
-          <div key={element.id}>
+          <InspectorTabs
+            key={element.id}
+            tabs={module.inspectorTabs ?? [{ id: "properties", label: "Properties" }]}
+            codePanel={<InspectorCode element={element} />}
+          >
             <module.Inspector {...props} />
-          </div>
+          </InspectorTabs>
         ) : (
           <p className="px-4 py-3 text-sm text-fg-faint">Open an element to edit its properties here.</p>
         )}
@@ -139,9 +151,12 @@ export function ProjectPage() {
   const centre = (
     <ResizablePanel id="centre" key="centre" minSize={320}>
       <div className="flex h-full min-h-0 flex-col">
-        <TabStrip />
+        <div className="flex items-end">
+          <TabStrip />
+          <ModeBar />
+        </div>
         {/* The canvas: the work fills it; element tools float on it. */}
-        <section className="relative min-h-0 flex-1 overflow-hidden rounded-2xl bg-surface" aria-label="Canvas">
+        <section className="relative min-h-0 flex-1 overflow-hidden rounded-lg bg-surface" aria-label="Canvas">
           <div className="absolute inset-0 overflow-y-auto">
             {view === "code" ? (
               <CodeTab />

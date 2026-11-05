@@ -480,6 +480,9 @@ importers:
       '@fontsource/pixelify-sans':
         specifier: ^5.3.0
         version: 5.3.0
+      '@nsmr/pixelart-react':
+        specifier: ^2.0.0
+        version: 2.0.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@number-flow/react':
         specifier: ^0.6.2
         version: 0.6.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -1071,6 +1074,12 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@nsmr/pixelart-react@2.0.0':
+    resolution: {integrity: sha512-hD9CeUZp10jemfnBQdN+mAMiIGnzcNDG8DoGcHUAvO6JgN1k7dbWscmY5HBqmWglnHliwcq4cY9ICQzjsaWeqQ==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
 
   '@number-flow/react@0.6.2':
     resolution: {integrity: sha512-WjZuV4aA+vhRCgCF+adGLgFVVAJ8vdvq6EchRT2FiBIgElTXtDOA3YgkcMr9UHpvpS9v4H70AB5wZv0D9jc3QA==}
@@ -5223,6 +5232,11 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.3
+
+  '@nsmr/pixelart-react@2.0.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
   '@number-flow/react@0.6.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
