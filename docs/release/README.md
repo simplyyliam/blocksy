@@ -42,7 +42,8 @@ Don't read the other releases or unrelated sections. They're here for when they'
 | 0.1 Foundation | `releases/v0.1.md` | Released |
 | 0.2 First block | `releases/v0.2.md` | Released |
 | 0.3 First item | `releases/v0.3.md` | Released (0.3.0) |
-| 0.4 Blueprint canvas | `releases/v0.4.md` | **Next** |
+| Editor refresh (proposed, between 0.3 and 0.4) | `releases/editor-refresh.md` | **Proposed**, Liam decides in PR review |
+| 0.4 Blueprint canvas | `releases/v0.4.md` | Next (after Editor refresh if accepted) |
 | 0.5 Model Studio: blocks and items | `releases/v0.5.md` | |
 | 0.6 Block variety and redstone | `releases/v0.6.md` | |
 | 0.7 Docs, learning and GitHub | `releases/v0.7.md` | |
@@ -50,8 +51,12 @@ Don't read the other releases or unrelated sections. They're here for when they'
 | 0.9 GUI Studio | `releases/v0.9.md` | |
 | 0.10 Content and world | `releases/v0.10.md` | |
 | 0.11 Model Studio: entities | `releases/v0.11.md` | |
+| Effect Studio (proposed, after 0.10) | `releases/effect-studio.md` | Proposed |
+| Combat and bosses (proposed, after 0.11) | `releases/combat-bosses.md` | Proposed |
 | 0.12 Expert and compatibility | `releases/v0.12.md` | |
 | 0.13 Release candidate | `releases/v0.13.md` | |
 
 Ideas for a later release go into that release's file as notes, not code.
+Local research notes (not committed) live in `docs/research/`; a release file's `/goal` names the ones to read.
+A release's `/goal` also keeps the polish checklist and library credit entries (plan 2.4).
 Old checkpoints are kept in `history/`.
