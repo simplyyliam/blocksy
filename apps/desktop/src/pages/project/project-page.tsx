@@ -15,6 +15,7 @@ import { cn, InspectorTabs, ResizableHandle, ResizablePanel, ResizablePanelGroup
 import { FirstBuild } from "../../features/first-build/first-build"
 import { CodeTab } from "../../features/project-editor/code-tab"
 import { InspectorCode } from "../../features/project-editor/inspector-code"
+import { FileDrop } from "../../features/project-editor/file-drop"
 import { History } from "../../features/project-editor/history"
 import { Overview } from "../../features/project-editor/overview"
 import { ProjectTree } from "../../features/project-editor/project-tree"
@@ -189,12 +190,15 @@ export function ProjectPage() {
   // The inspector can swap sides; only then does the group remount.
   const left = inspectorSide === "left"
   return (
-    <ResizablePanelGroup key={`${dir}-${inspectorSide}-${layoutVersion}`} orientation="horizontal" id="project-editor" className="h-full min-h-0 pb-1">
-      {left ? inspector : tree}
-      {handle("h1", left ? showInspector : treeOpen)}
-      {centre}
-      {handle("h2", left ? treeOpen : showInspector)}
-      {left ? tree : inspector}
-    </ResizablePanelGroup>
+    <>
+      <ResizablePanelGroup key={`${dir}-${inspectorSide}-${layoutVersion}`} orientation="horizontal" id="project-editor" className="h-full min-h-0 pb-1">
+        {left ? inspector : tree}
+        {handle("h1", left ? showInspector : treeOpen)}
+        {centre}
+        {handle("h2", left ? treeOpen : showInspector)}
+        {left ? tree : inspector}
+      </ResizablePanelGroup>
+      <FileDrop />
+    </>
   )
 }

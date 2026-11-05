@@ -1,14 +1,17 @@
-// Typed imports (Resources menu): a block texture or an item texture from a PNG on disk.
-//   - the selected element is of that type  -> its texture is replaced (one undo step)
-//   - otherwise                              -> a new block or item is made from the picture
-// The element's own schema checks the picture (16 wide; blocks 16 tall; items 16 tall or a
-// strip of frames), so the rules live in one place and the message is the schema's.
-// GUI and particle textures, sounds and models need their studios first (GUI Studio, effects,
-// Model Studio); until then those menu entries stay greyed out.
-import { updateElement } from "@blocksy/core"
+// Typed imports (Resources menu and drag-and-drop from the desktop).
+//
+//   Block / item texture   the selected element of that type gets the picture (one undo step),
+//                          otherwise a new block or item is made from it. The element's own
+//                          schema checks the picture, so the rules live in one place.
+//   GUI / particle texture, sound, model
+//                          become a resource in the project document (packages/core/resources.ts
+//                          holds the format, size and name checks). The generator writes the file
+//                          into the right mod folder and the project tree lists it. Undo removes it.
+import { addResource, RESOURCE_INFO, uniqueResourceName, updateElement, validateResource, type ResourceKind } from "@blocksy/core"
 import { pngSize } from "@blocksy/pixel"
 import { toast } from "@blocksy/ui"
 import { registries } from "../app/modules"
+import { routeDroppedFile } from "./drop-route"
 import { createElement, newElementData, selectedElement } from "./element-actions"
 import { nameFromFile } from "./name-from-file"
 import { useProject } from "./stores/project"
@@ -17,39 +20,38 @@ export type TextureImport = "block" | "item"
 
 const MAX_BYTES = 512 * 1024
 
-/** Opens the system file picker for PNGs. Resolves null when cancelled. */
-function pickPng(): Promise<File | null> {
+/** Opens the system file picker. Resolves null when cancelled. */
+function pickFile(accept: string): Promise<File | null> {
   return new Promise((resolve) => {
     const input = document.createElement("input")
     input.type = "file"
-    input.accept = "image/png"
+    input.accept = accept
     input.onchange = () => resolve(input.files?.[0] ?? null)
     input.oncancel = () => resolve(null)
     input.click()
   })
 }
 
-function readBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "")
-    reader.onerror = () => reject(reader.error)
-    reader.readAsDataURL(file)
-  })
+export function bytesToBase64(bytes: Uint8Array): string {
+  let binary = ""
+  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
+  return btoa(binary)
 }
 
-export async function importTexture(type: TextureImport) {
+const fail = (err: unknown) => toast.error(err instanceof Error ? err.message : String(err))
+
+export async function importTexture(type: TextureImport, dropped?: File) {
   const project = useProject.getState().current
-  const file = await pickPng()
+  const file = dropped ?? (await pickFile("image/png"))
   if (!project || !file) return
   try {
     if (file.size > MAX_BYTES) throw new Error("That file is too big for a texture")
-    const texture = await readBase64(file)
-    if (!pngSize(texture)) throw new Error("That is not a PNG picture")
+    const texture = bytesToBase64(new Uint8Array(await file.arrayBuffer()))
+    const size = pngSize(texture)
+    if (!size) throw new Error("That is not a PNG picture")
 
     const module = registries.elementTypes.require(type)
     // A strip of frames is an animation: keep the item's own settings, or the defaults.
-    const size = pngSize(texture)!
     const animated = type === "item" && size.height > size.width
     const selected = selectedElement()
     const replacing = selected?.type === type
@@ -75,6 +77,44 @@ export async function importTexture(type: TextureImport) {
       toast(`Made a new ${type} from ${file.name}`)
     }
   } catch (err) {
-    toast.error(err instanceof Error ? err.message : String(err))
+    fail(err)
+  }
+}
+
+const ACCEPT: Record<ResourceKind, string> = {
+  "gui-texture": "image/png",
+  "particle-texture": "image/png",
+  sound: ".ogg,audio/ogg",
+  model: ".json,.bbmodel",
+}
+
+/** Imports one file as a GUI texture, particle texture, sound or model (picker when no file is given). */
+export async function importResource(kind: ResourceKind, dropped?: File) {
+  const project = useProject.getState().current
+  const file = dropped ?? (await pickFile(ACCEPT[kind]))
+  if (!project || !file) return
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer())
+    const checked = validateResource(kind, file.name, bytes)
+    if (!checked.ok) throw new Error(checked.error)
+    const name = uniqueResourceName(project.doc, kind, checked.name)
+    project.documents.execute(addResource({ kind, name, ext: checked.ext, data: bytesToBase64(bytes) }))
+    toast(`${RESOURCE_INFO[kind].label} ${name} imported`)
+  } catch (err) {
+    fail(err)
+  }
+}
+
+/** Handles files dropped on the project window; each one is imported on its own. */
+export async function importDroppedFiles(files: File[]) {
+  for (const file of files) {
+    const route = routeDroppedFile(file.name, selectedElement()?.type)
+    if (!route) {
+      toast.error(`${file.name}: Blocksy imports .png, .ogg, .json and .bbmodel files`)
+    } else if (route.to === "texture") {
+      await importTexture(route.type, file)
+    } else {
+      await importResource(route.kind, file)
+    }
   }
 }

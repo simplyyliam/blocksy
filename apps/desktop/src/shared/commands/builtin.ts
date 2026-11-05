@@ -9,7 +9,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window"
 import { revealItemInDir } from "@tauri-apps/plugin-opener"
 import { deleteElement, duplicateElement, selectedElement } from "../element-actions"
 import { buildMod, exportMod, runMod, stopTask } from "../project-actions"
-import { importTexture } from "../import-resources"
+import { importResource, importTexture } from "../import-resources"
 import { changeCover, closeProject } from "../project-menu-actions"
 import { OVERVIEW, useEditor } from "../stores/editor"
 import { useGradle } from "../stores/gradle"
@@ -87,12 +87,11 @@ export function registerBuiltinCommands() {
   // ---- Resources: typed imports -------------------------------------------------------------
   defineCommand({ id: "resources.block-texture", group: "Resources", title: "Import block texture…", icon: Box, keywords: ["png", "picture"], run: () => importTexture("block") })
   defineCommand({ id: "resources.item-texture", group: "Resources", title: "Import item texture…", icon: Layers, keywords: ["png", "picture", "animation"], run: () => importTexture("item") })
-  // These need their studios first (GUI Studio, effects, sounds, Model Studio): greyed out until then.
-  const soon = () => false
-  defineCommand({ id: "resources.gui-texture", group: "Resources", title: "Import GUI texture… (GUI Studio)", icon: ImageIcon, enabled: soon, run: () => {} })
-  defineCommand({ id: "resources.particle-texture", group: "Resources", title: "Import particle texture… (effects)", icon: Sparkles, enabled: soon, run: () => {} })
-  defineCommand({ id: "resources.sound", group: "Resources", title: "Import sound… (sounds)", icon: FileAudio, enabled: soon, run: () => {} })
-  defineCommand({ id: "resources.model", group: "Resources", title: "Import model… (Model Studio)", icon: Shapes, enabled: soon, run: () => {} })
+  // Files that land in the project's resources (written into the mod on Build); undo removes them.
+  defineCommand({ id: "resources.gui-texture", group: "Resources", title: "Import GUI texture…", icon: ImageIcon, keywords: ["png", "screen", "menu"], run: () => importResource("gui-texture") })
+  defineCommand({ id: "resources.particle-texture", group: "Resources", title: "Import particle texture…", icon: Sparkles, keywords: ["png", "effect"], run: () => importResource("particle-texture") })
+  defineCommand({ id: "resources.sound", group: "Resources", title: "Import sound…", icon: FileAudio, keywords: ["ogg", "audio", "music"], run: () => importResource("sound") })
+  defineCommand({ id: "resources.model", group: "Resources", title: "Import model…", icon: Shapes, keywords: ["blockbench", "bbmodel", "json", "3d"], run: () => importResource("model") })
 
   // ---- Build & run ------------------------------------------------------------------------
   defineCommand({ id: "build.build", group: "Build & run", title: "Build", icon: Hammer, keys: "Mod+B", enabled: idle, run: () => void buildMod(), keywords: ["compile"] })

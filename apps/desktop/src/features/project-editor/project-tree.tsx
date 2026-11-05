@@ -11,9 +11,9 @@
 // A new element type shows up here with no change to this file. Click opens a tab,
 // double-click or F2 renames, right-click offers Open, Rename, Duplicate and Delete
 // (Ctrl+Z undoes a delete). "+" opens the New element dialog with the type chosen.
-import { ChevronRight, Copy, LayoutDashboard, PencilLine, Plus, Search, SquareArrowOutUpRight, Trash2 } from "lucide-react"
+import { ChevronRight, Copy, FileAudio, ImageIcon, LayoutDashboard, PencilLine, Plus, Search, Shapes, SquareArrowOutUpRight, Trash2 } from "lucide-react"
 import { useState } from "react"
-import type { Element } from "@blocksy/core"
+import { removeResource, RESOURCE_INFO, RESOURCE_KINDS, resourcePlace, type Element, type Resource } from "@blocksy/core"
 import {
   Button, cn, ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, Input, Tooltip,
   TooltipContent, TooltipTrigger,
@@ -123,8 +123,55 @@ export function ProjectTree() {
             </section>
           )
         })}
+
+        {/* Imported files (Resources menu or dropped from the desktop), one group per kind. */}
+        {RESOURCE_KINDS.map((kind) => {
+          const all = (doc.resources ?? []).filter((r) => r.kind === kind)
+          const items = query ? all.filter((r) => r.name.includes(query)) : all
+          if (items.length === 0) return null
+          const id = `resource:${kind}`
+          const open = query ? true : !folded.has(id)
+          return (
+            <section key={kind} className="mt-1 flex flex-col gap-px">
+              <button
+                type="button"
+                aria-expanded={open}
+                onClick={() => toggle(id)}
+                className="flex h-5.5 items-center gap-1 rounded-md pl-0.5 text-left text-xs font-medium tracking-wide text-fg-muted uppercase outline-none hover:text-fg focus-visible:ring-2 focus-visible:ring-ring/50"
+              >
+                <ChevronRight className={cn("size-3 shrink-0 transition-transform duration-150", open && "rotate-90")} strokeWidth={2} />
+                <span className="truncate">{RESOURCE_INFO[kind].plural}</span>
+                <span className="font-normal text-fg-faint">{all.length}</span>
+              </button>
+              {open && items.map((resource) => <ResourceRow key={resource.name} resource={resource} />)}
+            </section>
+          )
+        })}
       </nav>
     </div>
+  )
+}
+
+/** An imported file: its name and where it lands in the mod. Right-click removes it (Ctrl+Z brings it back). */
+function ResourceRow({ resource }: { resource: Resource }) {
+  const project = useProject((s) => s.current)!
+  const place = resourcePlace(resource)
+  const Icon = resource.kind === "sound" ? FileAudio : resource.kind === "model" ? Shapes : ImageIcon
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger render={<div title={place.path} className={cn(row, "flex items-center gap-1.5 pl-3.5 text-sm text-fg")} />}>
+        <span className="grid size-5 shrink-0 place-items-center rounded-[5px] bg-surface text-fg-muted">
+          <Icon className="size-3.5" strokeWidth={1.75} />
+        </span>
+        <span className="truncate">{resource.name}</span>
+        <span className="ml-auto shrink-0 text-xs text-fg-faint">.{resource.ext}</span>
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-48">
+        <ContextMenuItem variant="destructive" onClick={() => project.documents.execute(removeResource(resource.kind, resource.name))}>
+          <Trash2 strokeWidth={1.75} /> Remove {RESOURCE_INFO[resource.kind].label.toLowerCase()}
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   )
 }
 
