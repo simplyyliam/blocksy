@@ -65,9 +65,9 @@ export const CREDITS: CreditGroup[] = [
         featured: true,
       },
       {
-        name: "Gerrit Halfmann and contributors (pixelarticons), nsmr (React package)",
-        work: "pixelarticons, @nsmr/pixelart-react",
-        usedFor: "The pixel-art icons in the editor titlebar.",
+        name: "Gerrit Halfmann and contributors",
+        work: "pixelarticons",
+        usedFor: "The pixel-art icons in the editor titlebar (eleven of them, inlined).",
         url: "https://github.com/halfmage/pixelarticons",
         license: "MIT",
       },

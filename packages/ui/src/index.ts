@@ -81,4 +81,9 @@ export {
 export { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./components/ui/resizable.tsx"
 export { usePanelRef } from "react-resizable-panels" // handle to collapse/expand a panel from a command
 export { Checkbox } from "./components/ui/checkbox.tsx"
-export * from "./components/pixel-icons.ts"
+export * from "./components/pixel-icons.tsx"
+// v0.4 Minecraft renderer (ADR 0011): canvas drawing in the game's own look, assets from the app.
+export { McMissing, McScreen, type McGraphics, type McSlotRect } from "./minecraft/screen.tsx"
+export { MinecraftProvider, useMinecraft } from "./minecraft/provider.tsx"
+export { drawCube, drawGuiSprite, drawRegion, drawSprite, drawText, frameIndexAt, isAnimated, measureText, TICK_MS } from "./minecraft/graphics.ts"
+export type { ItemRender, McAssets, McFont, McGlyph, McItem, McNeeds, McSprite, McStatus, NineSliceBorder, SpriteScaling } from "./minecraft/types.ts"
