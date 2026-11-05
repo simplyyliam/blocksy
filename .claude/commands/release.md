@@ -10,7 +10,7 @@ Use them in the changelog (a "known issue: …" goes under Known issues, anythin
 
 Stop and report at the first step that fails. Don't fix code as part of a release.
 
-Paths: the repo is a pnpm-workspaces monorepo. The Tauri app is `apps/desktop/`, its Rust side `apps/desktop/src-tauri/`, and the generated bindings `apps/desktop/src/shared/bindings.ts`. The plan is `docs/release/blocksy-release-plan.md`.
+Paths: the repo is a pnpm-workspaces monorepo. The Tauri app is `apps/desktop/`, its Rust side `apps/desktop/src-tauri/`, and the generated bindings `apps/desktop/src/shared/bindings.ts`. The plan is `docs/release/README.md`.
 
 ## 1. Check main
 
@@ -25,7 +25,7 @@ Paths: the repo is a pnpm-workspaces monorepo. The Tauri app is `apps/desktop/`,
 ## 2. Pick the version
 
 - Last release: `git describe --tags --abbrev=0 --match 'v*'`. Changes: `git log --oneline <last tag>..HEAD` (read the bodies too, and merges' branches). No commits since the tag: stop, there's nothing to release.
-- Versions follow the plan (section 2.6 of `docs/release/blocksy-release-plan.md`):
+- Versions follow the plan (section 2.6, `docs/release/plan/02-architecture-rules.md`):
   - **Minor** (0.4.x → 0.5.0) when these commits complete plan release 0.5: its "Done when" test and its catalog items (section 3). Check the plan and say which items you saw done.
   - **Patch** (0.5.0 → 0.5.1) when they only fix bugs or polish what's already released.
   - Work toward the next plan release that isn't complete yet: ask whether to release it as a patch or wait.

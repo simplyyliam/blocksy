@@ -38,3 +38,7 @@ desktop.ini
 
 # Design inspiration images stay local (not ours to redistribute)
 docs/design
+
+# Private release plan and release files (kept locally, not on GitHub)
+docs/release/plan/
+docs/release/releases/
