@@ -19,6 +19,9 @@ bin/
 # Fabric: the folder runClient plays in
 run/
 
+# Blocksy: paths into this computer's Gradle cache (never commit or share)
+.blocksy/
+
 # Java crash logs
 hs_err_*.log
 replay_*.log
