@@ -153,4 +153,9 @@ export interface ElementEditorProps<Data = unknown> {
    * download. Resolves false when it can't (nothing downloaded yet). Never bundled (rule 10).
    */
   playSound?(event: string): Promise<boolean>
+  /**
+   * v0.4: the element's working mode in the editor ("paint", "look", ...), chosen in the mode bar.
+   * Elements without modes never receive one.
+   */
+  mode?: string
 }

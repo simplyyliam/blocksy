@@ -231,6 +231,9 @@ importers:
       '@blocksy/model-studio':
         specifier: workspace:*
         version: link:../../model-studio
+      '@blocksy/pixel':
+        specifier: workspace:*
+        version: link:../../pixel
       '@blocksy/ui':
         specifier: workspace:*
         version: link:../../ui

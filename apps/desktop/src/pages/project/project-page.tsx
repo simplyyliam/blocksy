@@ -29,8 +29,9 @@ import { useWorkspace } from "../../shared/vanilla/workspace"
 import { useProject, type OpenProject } from "../../shared/stores/project"
 
 /** The props every element canvas and inspector receives (core's ElementEditorProps). */
-function editorProps(project: OpenProject, element: Element, select: (id: string) => void) {
+function editorProps(project: OpenProject, element: Element, select: (id: string) => void, mode: string | undefined) {
   return {
+    mode,
     element,
     project: project.doc,
     change: (data: unknown) => project.documents.execute(updateElement(element.id, data)),
@@ -53,6 +54,7 @@ export function ProjectPage() {
   const { selected, view, treeOpen, inspectorOpen, inspectorSide, treeWidth, inspectorWidth, select } = useEditor()
   const setLayout = useEditor((s) => s.setLayout)
   const layoutVersion = useEditor((s) => s.layoutVersion)
+  const modeByType = useEditor((s) => s.modeByType)
 
   // A freshly opened project starts on its Overview tab, with its remembered panel layout.
   const dir = project?.dir
@@ -98,7 +100,9 @@ export function ProjectPage() {
 
   const element = project.doc.elements.find((e) => e.id === selected)
   const module = element && elementModules.get(element.type)
-  const props = element && editorProps(project, element, select)
+  const modes = module?.modes
+  const mode = element && modes ? (modeByType[element.type] ?? modes[0]!.id) : undefined
+  const props = element && editorProps(project, element, select, mode)
   const showInspector = inspectorOpen && view === "design"
 
   // Panels stay mounted (the 3D canvas must not restart) and collapse to 0 instead.
@@ -137,7 +141,7 @@ export function ProjectPage() {
       {/* A tool panel: a slightly tinted background so the canvas stays the focus. */}
       <aside
         aria-label="Inspector"
-        className="h-full overflow-x-hidden overflow-y-auto border-l border-line-subtle bg-surface/60 [&_[data-slot=input]]:h-6.5 [&_[data-slot=select-trigger]]:h-6.5 [&_[data-slot=textarea]]:min-h-14 [&_[data-slot=checkbox]]:border-line [&_[data-slot=checkbox]]:bg-bg"
+        className="h-full overflow-x-hidden overflow-y-auto border-l border-line-subtle bg-surface/60 [&_[data-slot=input]]:h-6.5 [&_[data-slot=select-trigger]]:h-6.5 [&_[data-slot=textarea]]:min-h-14 [&_[data-slot=checkbox]]:border-fg-faint [&_[data-slot=checkbox]]:bg-bg"
       >
         {module && props ? (
           <InspectorTabs
