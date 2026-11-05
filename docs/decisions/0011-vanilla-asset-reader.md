@@ -5,7 +5,7 @@
 
 ## Context
 
-Every preview (creative tab, recipes, item in slot) is drawn in Blocksy's own web style, so nothing looks like Minecraft. Plan 10.1 reads vanilla GUI art in v0.9 only. Rule 10 forbids shipping Mojang's assets.
+Every preview (creative tab, recipes, item in slot) is drawn in Blocksy's own web style, so nothing looks like Minecraft. Plan 10.1 reads vanilla GUI art in v0.10 only. Rule 10 forbids shipping Mojang's assets.
 
 Details: `docs/research/` (local) libraries.md, effects.md, gui-creation.md.
 

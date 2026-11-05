@@ -7,7 +7,7 @@
 
 v0.3 adds items, a pixel texture editor, recipes, tags, a lang editor and local version history.
 Everything has to plug in without refactoring v0.1/v0.2 modules (plan 2.4), work on both pinned
-Minecraft versions (26.1.2 and 26.3), and the brushes must be reusable by Model Studio in v0.5.
+Minecraft versions (26.1.2 and 26.3), and the brushes must be reusable by Model Studio in v0.6.
 
 Checked offline against the cached jars (`javap`, see CHECKPOINT "Useful facts"):
 
@@ -43,7 +43,7 @@ Checked offline against the cached jars (`javap`, see CHECKPOINT "Useful facts")
    hold translations per locale; the target writes `lang/<locale>.json`. A Language element for
    `en_us` overrides or adds English keys on top of the generated names.
 7. **Pixel brushes**: `@blocksy/pixel` works on a `PaintSurface` (get/set a pixel by x, y). The texture
-   editor gives it a flat image; Model Studio (v0.5) will give it a surface that maps UVs onto a
+   editor gives it a flat image; Model Studio (v0.6) will give it a surface that maps UVs onto a
    model. Brushes (pencil, eraser, fill, picker) and the mirror modifier never know which one they
    paint. The PNG encode helper is a fresh copy there (the block package's copy stays untouched).
 8. **Local history = git** in the project folder. Rust gets four thin commands (available, log, save,

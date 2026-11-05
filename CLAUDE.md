@@ -14,7 +14,7 @@ live docs, while teaching Java along the way. It scales from one block to a full
   calm, borderless, icon rail, good typography and space (13px base type, smooth motion).
   add-project.png is my Figma design for New project. Design editors (project editor, Model
   Studio, GUI Studio) follow `visual-editor(assets).jpg`: floating white cards on a grey canvas. Release-specific references are
-  noted in the plan (project editor v0.2, Model Studio v0.5, sign-in window v0.7).
+  noted in the plan (project editor v0.2, Model Studio v0.6, sign-in window v0.8).
 - Build only what the current release covers; ideas for later releases go into their
   file in `docs/release/releases/` as notes, not code.
 - Decisions live in `docs/decisions/` (ADRs). New architectural choice = new ADR.
