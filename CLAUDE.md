@@ -8,6 +8,8 @@ live docs, while teaching Java along the way. It scales from one block to a full
 - Before any release work: `CHECKPOINT.md`, then `docs/release/README.md` (the source of truth,
   split into small files). Read only the current release file (`docs/release/releases/v0.X.md`)
   and the plan sections its `/goal` prompt names, not the whole plan.
+- Before a release, read the `docs/research/` files its release file points to.
+- Every library used, in Blocksy or in generated mods, gets a credit entry.
 - Before any UI work: `docs/design/`. The look to match now is `home-page(redesign).jpg`:
   calm, borderless, icon rail, good typography and space (13px base type, smooth motion).
   add-project.png is my Figma design for New project. Design editors (project editor, Model
