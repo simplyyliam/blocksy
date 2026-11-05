@@ -2,9 +2,10 @@
 // project. No icon rail; a back button at the top left returns to Home.
 //
 //   ┌───────────────────────────────────────────────┐
-//   │ ← ▣ My mod ···          Build Run Export ─ ▢ ✕ │
-//   │ <Outlet />  (the project editor)               │
-//   │ Build log                                      │
+//   │ File Edit Project Resources …           ─ ▢ ✕ │  menu bar (titlebar)
+//   │ ← ▣ My mod │ ⊕ 💾 │ ↶ ↷ │ Build Run │ 🔍     │  toolbar
+//   │ <Outlet />  (tree │ tabs + canvas │ inspector) │
+//   │ Build log | Problems                           │  bottom dock
 //   │ Status bar                                     │
 //   └───────────────────────────────────────────────┘
 import { useEffect } from "react"
@@ -12,9 +13,11 @@ import { Outlet, useParams } from "react-router-dom"
 import { preloadBlockPreview } from "@blocksy/model-studio"
 import { openProject } from "../../shared/open-project"
 import { useProject } from "../../shared/stores/project"
+import { NewElementDialog } from "../../features/project-editor/new-element-dialog"
 import { BottomPanel } from "../../widgets/bottom-panel/bottom-panel"
 import { Header } from "../../widgets/header/header"
 import { StatusBar } from "../../widgets/status-bar/statusbar"
+import { Toolbar } from "../../widgets/toolbar/toolbar"
 
 export function ProjectLayout() {
   // The router already decodes params, so this is the folder path as written.
@@ -31,13 +34,13 @@ export function ProjectLayout() {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <Header />
+      <Toolbar />
       <main className="page-enter min-h-0 flex-1 overflow-hidden px-2.5">
         <Outlet />
       </main>
-      <div className="px-2.5">
-        <BottomPanel />
-      </div>
+      <BottomPanel />
       <StatusBar />
+      <NewElementDialog />
     </div>
   )
 }
