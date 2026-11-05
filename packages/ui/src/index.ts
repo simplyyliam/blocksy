@@ -70,3 +70,13 @@ export {
 } from "./components/ui/combobox.tsx"
 export { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "./components/ui/popover.tsx"
 export { Textarea } from "./components/ui/textarea.tsx"
+// v0.4 editor shell: menu bar, command palette, resizable panels.
+export {
+  Menubar, MenubarCheckboxItem, MenubarContent, MenubarGroup, MenubarItem, MenubarLabel, MenubarMenu, MenubarSeparator, MenubarShortcut,
+  MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger,
+} from "./components/ui/menubar.tsx"
+export {
+  Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut,
+} from "./components/ui/command.tsx"
+export { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./components/ui/resizable.tsx"
+export { usePanelRef } from "react-resizable-panels" // handle to collapse/expand a panel from a command
