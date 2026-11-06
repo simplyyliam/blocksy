@@ -41,8 +41,8 @@ export function BottomPanel() {
     // Animating grid rows 0fr <-> 1fr gives a smooth open/close without measuring.
     <div
       className={cn(
-        "grid shrink-0 px-2.5 transition-[grid-template-rows,opacity,margin] duration-250 ease-out",
-        open ? "mt-2 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0",
+        "grid shrink-0 transition-[grid-template-rows,opacity] duration-250 ease-out",
+        open ? "grid-rows-[1fr] opacity-100" : "-mt-(--b-panel-gap) grid-rows-[0fr] opacity-0",
       )}
       aria-hidden={!open}
       inert={!open}
@@ -50,7 +50,7 @@ export function BottomPanel() {
       <div className="min-h-0 overflow-hidden">
         <section
           style={{ height }}
-          className="relative flex flex-col overflow-hidden rounded-lg bg-bg shadow-[inset_0_0_0_1px_var(--b-line-subtle)]"
+          className="relative flex flex-col overflow-hidden rounded-lg bg-surface"
           aria-label="Bottom dock"
         >
           <div
