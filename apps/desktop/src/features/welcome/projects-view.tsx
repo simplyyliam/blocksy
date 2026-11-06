@@ -32,9 +32,11 @@ const rowId = (dir: string) => `project-${encodeURIComponent(dir)}`
 function useProblems(): Record<string, ProjectProblem | null> {
   const projects = useRecent((s) => s.projects)
   const [problems, setProblems] = useState<Record<string, ProjectProblem | null>>({})
+  const latest = useRef(0)
   const refresh = useCallback(() => {
-    void Promise.all(projects.map(async (p) => [p.dir, await checkProject(p).catch(() => null)] as const)).then((pairs) =>
-      setProblems(Object.fromEntries(pairs)),
+    const mine = ++latest.current // a slower, older check must not overwrite a newer one
+    void Promise.all(projects.map(async (p) => [p.dir, await checkProject(p).catch(() => null)] as const)).then(
+      (pairs) => mine === latest.current && setProblems(Object.fromEntries(pairs)),
     )
   }, [projects])
   useEffect(refresh, [refresh])

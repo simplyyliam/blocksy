@@ -61,6 +61,8 @@ interface RecentState {
   /** Puts a removed project back (the Undo of "Remove from list"). */
   restore(project: RecentProject): Promise<void>
   forgetMany(dirs: string[]): Promise<void>
+  /** Puts several removed projects back in one write (the Undo of "Remove missing projects"). */
+  restoreMany(projects: RecentProject[]): Promise<void>
   setPinned(dir: string, value: boolean): Promise<void>
   relocate(oldDir: string, newDir: string): Promise<void>
 }
@@ -82,6 +84,7 @@ export const useRecent = create<RecentState>((set, get) => {
     forget: (dir) => commit(forgotten(get().projects, dir)),
     forgetMany: async (dirs) => commit(dirs.reduce(forgotten, get().projects)),
     restore: (project) => commit(trim([project, ...forgotten(get().projects, project.dir)])),
+    restoreMany: (restored) => commit(trim([...restored, ...restored.reduce((list, p) => forgotten(list, p.dir), get().projects)])),
     setPinned: (dir, value) => commit(pinned(get().projects, dir, value)),
     relocate: (oldDir, newDir) => commit(relocated(get().projects, oldDir, newDir)),
   }

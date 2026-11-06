@@ -32,8 +32,13 @@ async function showWhatsNewAfterUpdate() {
 
 const benchMode = () => commands.benchMode().catch(() => null)
 
+let markLoaded: () => void
+/** Resolves once settings and the recent list are loaded (the editor waits for it before opening a project). */
+export const dataLoaded = new Promise<void>((resolve) => (markLoaded = resolve))
+
 export async function boot(kind: WindowKind) {
   await Promise.all([useSettings.getState().load(), useRecent.getState().load()])
+  markLoaded()
   applySettings()
 
   // The other window changed settings or the project list: load them again.

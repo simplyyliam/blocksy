@@ -3,8 +3,6 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { applyTheme, modernTheme } from "@blocksy/ui"
-import { EditorApp } from "./app/editor-app"
-import { WelcomeApp } from "./app/welcome-app"
 import { boot } from "./app/boot"
 import { startBenchIfRequested } from "./app/bench"
 import { hideNativeContextMenu } from "./app/native-menu"
@@ -16,9 +14,16 @@ hideNativeContextMenu()
 
 const kind = windowKind()
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>{kind === "editor" ? <EditorApp /> : <WelcomeApp />}</StrictMode>,
-)
+// Each window loads only its own app, so the other one's start-up code and commands never run here.
+async function render() {
+  const App = kind === "editor" ? (await import("./app/editor-app")).EditorApp : (await import("./app/welcome-app")).WelcomeApp
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  )
+}
+void render()
 
 void boot(kind)
 void startBenchIfRequested()

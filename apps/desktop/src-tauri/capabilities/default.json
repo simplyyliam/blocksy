@@ -17,6 +17,7 @@
     "core:window:allow-close",
     "core:window:allow-is-maximized",
     "core:event:default",
-    "core:webview:allow-set-webview-zoom"
+    "core:webview:allow-set-webview-zoom",
+    "core:window:allow-set-size"
   ]
 }

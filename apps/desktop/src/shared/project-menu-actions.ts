@@ -17,9 +17,11 @@ export async function changeCover(dir: string) {
 
 /** Closes the project and brings the welcome window back (the editor window closes). */
 export async function closeProject(intent?: WelcomeIntent) {
-  // A running build or game belongs to this project: stop it before the window goes.
-  if (useGradle.getState().task !== null) await useGradle.getState().stop()
   try {
+    // A running build or game belongs to this project: stop it before the window goes,
+    // and write the last edit that autosave has not written yet.
+    if (useGradle.getState().task !== null) await useGradle.getState().stop()
+    await useProject.getState().flush()
     await showWelcome({ intent })
     useProject.getState().close()
   } catch (err) {

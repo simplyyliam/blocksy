@@ -20,7 +20,11 @@ export function OpenRecent() {
 
   // A running build or game belongs to the project being left.
   const open = async (dir: string) => {
-    if (useGradle.getState().task !== null) await useGradle.getState().stop()
+    try {
+      if (useGradle.getState().task !== null) await useGradle.getState().stop()
+    } catch {
+      return // couldn't stop it: stay in this project
+    }
     await openProject(dir)
   }
 

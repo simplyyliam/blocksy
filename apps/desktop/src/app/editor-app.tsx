@@ -5,7 +5,7 @@ import { MotionConfig } from "motion/react"
 import { listen } from "@tauri-apps/api/event"
 import { useEffect } from "react"
 import { RouterProvider } from "react-router-dom"
-import { Toaster, TooltipProvider } from "@blocksy/ui"
+import { Toaster, TooltipProvider, toast } from "@blocksy/ui"
 import { Palette, ShortcutSheet } from "../features/palette/palette"
 import { SettingsDialog } from "../features/settings/settings-dialog"
 import { WhatsNewDialog } from "../features/whats-new/whats-new-dialog"
@@ -17,6 +17,7 @@ import { prepareWorkspace } from "../shared/project-actions"
 import { useJava } from "../shared/stores/java"
 import { useProject } from "../shared/stores/project"
 import { showWelcome } from "../shared/windows"
+import { dataLoaded } from "./boot"
 import { router } from "./router"
 
 // The command registry (menus, toolbar, palette, shortcuts all read it) is filled once, at load.
@@ -38,12 +39,16 @@ function javaChecked(): Promise<void> {
 
 /** Opens the project the window was made for. If it can't open, back to the welcome window with the reason. */
 async function openLaunch({ projectDir, prepare }: EditorLaunch) {
+  await dataLoaded // opening saves the recent list: it must have been read first
+  const hadProject = useProject.getState().current !== null
   try {
     await useProject.getState().open(projectDir)
     // A new project: start the workspace setup right away (the first Gradle setup downloads Minecraft).
     // It runs in the background with a progress view (quiet when there is no Java yet).
     if (prepare) void javaChecked().then(prepareWorkspace)
   } catch (err) {
+    // Switching from a project that works: stay in it and say why, instead of closing it.
+    if (hadProject) return void toast.error(`Couldn't open that project: ${errorMessage(err)}`)
     await showWelcome({ notice: `Couldn't open that project: ${errorMessage(err)}` }).catch(() => {})
   }
 }

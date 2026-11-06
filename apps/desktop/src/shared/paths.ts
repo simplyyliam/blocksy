@@ -17,7 +17,8 @@ export const parentPath = (path: string) => path.replace(/[\\/]+[^\\/]+[\\/]*$/,
 export function prettyPath(path: string, home: string | null): string {
   // Slashes may differ (a dropped folder can arrive as C:/Users/...): compare with one kind.
   const flat = (text: string) => text.replaceAll("\\", "/").toLowerCase()
-  if (!home || !flat(path).startsWith(flat(home))) return path
+  const rest = flat(path).slice(flat(home ?? "").length)
+  if (!home || !flat(path).startsWith(flat(home)) || (rest !== "" && !rest.startsWith("/"))) return path
   return `~${path.slice(home.length).replaceAll("\\", "/")}`
 }
 

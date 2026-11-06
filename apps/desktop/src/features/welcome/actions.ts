@@ -64,7 +64,7 @@ export async function removeMissing(projects: RecentProject[]): Promise<void> {
   toast(`Removed ${projects.length} missing ${projects.length === 1 ? "project" : "projects"}`, {
     action: {
       label: "Undo",
-      onClick: () => void Promise.all(projects.map((p) => useRecent.getState().restore(p))),
+      onClick: () => void useRecent.getState().restoreMany(projects),
     },
   })
 }

@@ -12,7 +12,6 @@ import { previewFrameCount, previewReadyCount } from "@blocksy/model-studio"
 import { applyStarter } from "../features/new-project/starters"
 import { useEditor } from "../shared/stores/editor"
 import { useProject } from "../shared/stores/project"
-import { useWelcome } from "../shared/stores/welcome"
 import { openEditor, windowKind } from "../shared/windows"
 import { blockModule } from "@blocksy/element-block"
 
@@ -60,7 +59,8 @@ async function benchWelcome() {
 
   const rec = recordFrames()
   await wait(500)
-  const welcome = useWelcome.getState()
+  // Loaded here, not at the top: the welcome store reads a one-shot intent when it is first imported.
+  const welcome = (await import("../shared/stores/welcome")).useWelcome.getState()
   for (const view of ["learn", "community", "settings", "projects"] as const) {
     welcome.setView(view)
     await wait(350)

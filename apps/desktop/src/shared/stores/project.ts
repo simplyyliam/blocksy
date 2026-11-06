@@ -38,6 +38,8 @@ interface ProjectState {
   current: OpenProject | null
   autosave: AutosaveState
   open(dir: string): Promise<void>
+  /** Writes a change that is still waiting for its 300 ms autosave (before closing or switching). */
+  flush(): Promise<void>
   close(): void
 }
 
@@ -51,7 +53,16 @@ export const useProject = create<ProjectState>((set, get) => ({
   current: null,
   autosave: { state: "saved", at: null },
 
+  async flush() {
+    const { current } = get()
+    if (!current || saveTimer === undefined) return
+    clearTimeout(saveTimer)
+    saveTimer = undefined
+    await save(current.dir, current.doc).catch(() => {})
+  },
+
   async open(dir) {
+    await get().flush() // leaving another project: its last edit must reach the disk first
     const text = await call(commands.readTextFile(joinPath(dir, PROJECT_FILE)))
     const { project, applied } = loadProject(text)
     const target = registries.loaderTargets.require(project.target)
@@ -66,6 +77,7 @@ export const useProject = create<ProjectState>((set, get) => ({
       clearTimeout(saveTimer)
       set({ autosave: { ...get().autosave, state: "saving" } })
       saveTimer = setTimeout(() => {
+        saveTimer = undefined
         // Only report "Saved" if no newer change is waiting: an older write finishing late must not say so.
         const latest = () => get().current?.doc === doc
         void save(dir, doc).then(

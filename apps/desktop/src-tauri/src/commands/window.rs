@@ -61,7 +61,11 @@ pub async fn open_editor(app: AppHandle, pending: State<'_, PendingLaunch>, laun
         let _ = editor.set_focus();
     } else {
         *pending.0.lock().unwrap_or_else(|e| e.into_inner()) = Some(launch);
-        build(&app, EDITOR)?;
+        if let Err(err) = build(&app, EDITOR) {
+            // The welcome window stays open: a stale launch must not wait for some later editor.
+            pending.0.lock().unwrap_or_else(|e| e.into_inner()).take();
+            return Err(err);
+        }
     }
     close(&app, WELCOME);
     Ok(())
