@@ -31,6 +31,7 @@ import { useJava } from "../../shared/stores/java"
 import { useSettings } from "../../shared/stores/settings"
 import { useWelcome } from "../../shared/stores/welcome"
 import { openEditor } from "../../shared/windows"
+import { useTrust } from "../welcome/trust"
 import { previewTree, writeNewProject } from "./create-project"
 import type { StarterId } from "./starters"
 import { javaPackage, modIdFromName, validateNewProject, type FieldProblems } from "./validate"
@@ -173,6 +174,7 @@ export function NewProjectView() {
         // A project without Git is still a project: say so and carry on.
         await call(commands.historySave(dir, "Create project")).catch((err) => toast.error(`Created, but couldn't start Git: ${errorMessage(err)}`))
       }
+      await useTrust.getState().trust(dir) // Blocksy just made it
       // The editor opens the project and starts the workspace setup (the first Gradle setup downloads
       // Minecraft); this window closes. Quiet when there is no JDK yet.
       await openEditor(dir, true)

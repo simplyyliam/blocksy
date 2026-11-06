@@ -27,3 +27,6 @@ export function expandHome(path: string, home: string | null): string {
   if (!home || !/^~([\\/]|$)/.test(path)) return path
   return joinPath(home, ...path.slice(1).split(/[\\/]/).filter(Boolean))
 }
+
+/** Same folder? Ignores which slash is used and the capitals (Windows paths). */
+export const samePath = (a: string, b: string) => a.replaceAll("\\", "/").replace(/\/+$/, "").toLowerCase() === b.replaceAll("\\", "/").replace(/\/+$/, "").toLowerCase()

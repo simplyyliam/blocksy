@@ -4,6 +4,8 @@ import { createContext, useContext } from "react"
 import type { ElementType } from "@blocksy/core"
 
 export interface DocsHost {
+  /** Just the page: no page tree or table of contents (a small window, like the welcome window's Learn view). */
+  compact?: boolean
   /** Current docs path, e.g. "/docs/learn/make-your-first-block". */
   path: string
   navigate(path: string): void

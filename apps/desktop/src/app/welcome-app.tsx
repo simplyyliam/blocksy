@@ -4,6 +4,7 @@ import { MotionConfig } from "motion/react"
 import { useEffect } from "react"
 import { Toaster, TooltipProvider, toast } from "@blocksy/ui"
 import { registerWelcomeCommands } from "../features/welcome/commands"
+import { TrustDialog } from "../features/welcome/trust-dialog"
 import { WhatsNewDialog } from "../features/whats-new/whats-new-dialog"
 import { useShortcuts } from "../shared/commands/use-shortcuts"
 import { takeWelcomeNotice } from "../shared/windows"
@@ -24,6 +25,7 @@ export function WelcomeApp() {
       <TooltipProvider delay={500}>
         <WelcomePage />
         <WhatsNewDialog />
+        <TrustDialog />
         <Toaster position="bottom-right" offset={{ right: 16, bottom: 36 }} />
       </TooltipProvider>
     </MotionConfig>

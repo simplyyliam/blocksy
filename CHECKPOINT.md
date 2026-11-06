@@ -13,8 +13,9 @@ When a release ships, move its notes to `docs/release/history/` and start fresh.
   pages and the old New project dialog are gone. All checks pass; tried in the real app (create, build, run, close, themes).
 - **Next:** Liam runs the bench ("ready for bench": `BENCH_VERSION=0.4.0 pnpm bench`, close the dev app first; the bench now
   covers the welcome window first, then the editor), reviews and merges the PRs. Then v0.5 "Particle wand".
-- **Follow-up Liam asked for (after the goal):** the Settings view in the welcome window looks awkward with its own sidebar; research
-  best practice and either flatten it or move Settings into the project only. See the PR conversation.
+- Follow-ups done: Settings in the welcome window is one flat page; Learn shows just the lesson (Docs `compact` mode); a trust prompt
+  (`features/welcome/trust.ts`, `trust-dialog.tsx`) asks before a folder is opened the first time (projects Blocksy creates and the
+  recent list at first run are trusted; list in `trusted-projects.json`).
 - **Roadmap re-sequenced (2026-11-06, branch `docs/vertical-slices`, docs only):** v0.5 to v0.16 became playable slices, each with a
   showcase Liam builds himself: 0.5 Particle wand, 0.6 Glowing block, 0.7 Charging magic circle, 0.8 Custom shapes (Model Studio),
   0.9 Animated mob (Animator), 0.10 Arcane infuser, 0.11 First screens (GUI Studio), 0.12 Crystal ore and gear, 0.13 Mana network, 0.14 Ship it, then v1.0. Advanced features moved to v1.1 to v1.7.

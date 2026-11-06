@@ -11,6 +11,7 @@ import { checkProject, problemText } from "../../shared/project-check"
 import { useRecent, type RecentProject } from "../../shared/stores/recent"
 import { PROJECT_FILE } from "../../shared/stores/project"
 import { openEditor } from "../../shared/windows"
+import { useTrust } from "./trust"
 
 /** Opens a project in the editor (the welcome window closes). Says why, in a toast, when it can't. */
 export async function openProjectAt(dir: string, known?: RecentProject): Promise<boolean> {
@@ -22,6 +23,8 @@ export async function openProjectAt(dir: string, known?: RecentProject): Promise
     )
     return false
   }
+  // First time here: ask before anything of the project can run (building it runs its Gradle files).
+  if (!(await useTrust.getState().ensure(dir))) return false
   try {
     await openEditor(dir)
     return true

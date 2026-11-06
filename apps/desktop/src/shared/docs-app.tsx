@@ -30,14 +30,14 @@ function Loading() {
   )
 }
 
-export function DocsContent({ path, navigate }: { path: string; navigate(path: string): void }) {
+export function DocsContent({ path, navigate, compact }: { path: string; navigate(path: string): void; compact?: boolean }) {
   const [version, setVersion] = useState("0.2")
   useEffect(() => {
     void getVersion().then(setVersion).catch(() => {})
   }, [])
   return (
     <Suspense fallback={<Loading />}>
-      <DocsApp path={path} navigate={navigate} openExternal={(url) => void openUrl(url)} elementTypes={elementTypes} version={version} platform={platform} />
+      <DocsApp compact={compact} path={path} navigate={navigate} openExternal={(url) => void openUrl(url)} elementTypes={elementTypes} version={version} platform={platform} />
     </Suspense>
   )
 }

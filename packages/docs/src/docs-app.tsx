@@ -85,10 +85,11 @@ interface MdxEntry {
 
 /** An MDX page: its content loads lazily, so it suspends until ready. */
 function MdxPage({ entry, title, description }: { entry: MdxEntry; title: string; description?: string }) {
+  const { compact } = useDocsHost()
   const { toc } = use(entry.load())
   const Body = entry.body
   return (
-    <DocsPage toc={toc} tableOfContent={{ style: "clerk" }}>
+    <DocsPage toc={toc} tableOfContent={{ style: "clerk", enabled: !compact }} tableOfContentPopover={{ enabled: !compact }}>
       <PageHeader title={title} description={description} />
       <DocsBody>
         <Body components={mdxComponents} />
@@ -123,7 +124,7 @@ function PageLoading() {
 // --- The shell ---
 
 export function DocsApp(host: DocsHost) {
-  const { elementTypes, path } = host
+  const { elementTypes, path, compact } = host
   const source = useMemo(
     () =>
       loader({
@@ -141,7 +142,7 @@ export function DocsApp(host: DocsHost) {
     if (data.type === "reference") {
       const type = elementTypes.find((t) => t.id === data.elementType)!
       content = (
-        <DocsPage toc={[{ title: "Fields", url: "#fields", depth: 2 }, { title: "In Blocksy", url: "#in-blocksy", depth: 2 }]} tableOfContent={{ style: "clerk" }}>
+        <DocsPage toc={[{ title: "Fields", url: "#fields", depth: 2 }, { title: "In Blocksy", url: "#in-blocksy", depth: 2 }]} tableOfContent={{ style: "clerk", enabled: !compact }} tableOfContentPopover={{ enabled: !compact }}>
           <PageHeader title={data.title ?? type.name} description={data.description} />
           <DocsBody>
             <ElementReference type={type} />
@@ -168,7 +169,7 @@ export function DocsApp(host: DocsHost) {
             nav={{ enabled: false }}
             themeSwitch={{ enabled: false }}
             searchToggle={{ enabled: false }}
-            sidebar={{ collapsible: false }}
+            sidebar={{ collapsible: false, enabled: !compact }}
           >
             {content}
           </DocsLayout>

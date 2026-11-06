@@ -32,7 +32,7 @@ export function LearnView() {
         </div>
         <div ref={top} className="min-h-0 flex-1 overflow-y-auto">
           {/* Links inside a lesson move around the Docs; the Docs start page is the lesson list. */}
-          <DocsContent path={path} navigate={(to) => openLearn(to === "/docs" ? null : to)} />
+          <DocsContent compact path={path} navigate={(to) => openLearn(to === "/docs" ? null : to)} />
         </div>
       </div>
     )
