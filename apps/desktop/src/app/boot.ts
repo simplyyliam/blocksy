@@ -1,6 +1,7 @@
-// Start-up: everything that happens once after the first paint.
-// The shell renders immediately; settings, projects and Java fill in as they load.
+// Start-up: everything that happens once after the first paint, in either window (ADR 0020).
+// The window renders immediately; settings, projects and Java fill in as they load.
 import { getVersion } from "@tauri-apps/api/app"
+import { getCurrentWebview } from "@tauri-apps/api/webview"
 import { applyTheme } from "@blocksy/ui"
 import { useNavigation } from "../shared/stores/navigation"
 import { listenToGradle } from "../shared/stores/gradle"
@@ -8,13 +9,22 @@ import { useJava } from "../shared/stores/java"
 import { useRecent } from "../shared/stores/recent"
 import { useSettings } from "../shared/stores/settings"
 import { commands } from "../shared/bindings"
+import { onChanged } from "../shared/sync"
 import { listenToUpdates } from "../shared/stores/updates"
+import type { WindowKind } from "../shared/windows"
 import { registries } from "./modules"
-import { preloadBlockPreview } from "@blocksy/model-studio"
 
 /** The newest Java any supported Minecraft version needs (25 today). */
 export const requiredJava = () =>
   Math.max(...registries.loaderTargets.list().flatMap((t) => t.versions.map((v) => v.java)))
+
+/** Applies the saved theme and UI scale to this window. */
+export function applySettings() {
+  const { theme, uiScale } = useSettings.getState()
+  const found = registries.themes.get(theme)
+  if (found) applyTheme(found)
+  void getCurrentWebview().setZoom(uiScale).catch(() => {}) // not inside Tauri (browser preview)
+}
 
 /**
  * After an update, show "What's new" once. A fresh install only remembers the version
@@ -31,18 +41,17 @@ async function showWhatsNewAfterUpdate() {
 
 const benchMode = () => commands.benchMode().catch(() => null)
 
-export async function boot() {
+export async function boot(kind: WindowKind) {
   await Promise.all([useSettings.getState().load(), useRecent.getState().load()])
-  const settings = useSettings.getState()
-  const theme = registries.themes.get(settings.theme)
-  if (theme) applyTheme(theme)
+  applySettings()
 
-  void showWhatsNewAfterUpdate()
-  void useJava.getState().detect(settings.javaHome, requiredJava())
-  await Promise.all([listenToGradle(), listenToUpdates()])
+  // The other window changed settings or the project list: load them again.
+  onChanged("settings-changed", () => void useSettings.getState().load().then(applySettings))
+  onChanged("recent-changed", () => void useRecent.getState().load())
 
-  // Once Home is up and the app is idle, fetch the 3D preview code in the background,
-  // so the first block you open shows quickly (it never delays start-up).
-  const idle = window.requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 1500))
-  idle(() => preloadBlockPreview())
+  void useJava.getState().detect(useSettings.getState().javaHome, requiredJava())
+  await listenToUpdates()
+  // "What's new" shows in the window the app starts in; Gradle belongs to the editor.
+  if (kind === "welcome") void showWhatsNewAfterUpdate()
+  else await listenToGradle()
 }

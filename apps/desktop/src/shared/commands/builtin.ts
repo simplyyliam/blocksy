@@ -56,7 +56,7 @@ export function registerBuiltinCommands() {
     },
   })
   defineCommand({ id: "file.reveal", group: "File", title: "Show in folder", icon: FolderOpen, run: () => void revealItemInDir(project()!.dir) })
-  defineCommand({ id: "file.close", group: "File", title: "Close project", icon: X, keys: "Mod+Shift+W", run: closeProject })
+  defineCommand({ id: "file.close", group: "File", title: "Close project", icon: X, keys: "Mod+Shift+W", run: () => void closeProject() })
   defineCommand({ id: "file.settings", group: "File", title: "Settings…", icon: Settings, keys: "Mod+,", needsProject: false, run: () => nav().setSettings(true) })
   defineCommand({ id: "file.exit", group: "File", title: "Exit", needsProject: false, run: () => void getCurrentWindow().close() })
 
@@ -128,8 +128,8 @@ export function registerBuiltinCommands() {
   defineCommand({ id: "tab.previous", group: "Window", title: "Previous tab", keys: "Mod+PageUp", run: () => editor().cycleTab(-1) })
 
   // ---- Help -------------------------------------------------------------------------------
-  // Inside a project the docs open as a tab (the project stays put); elsewhere they are a page.
-  defineCommand({ id: "help.docs", group: "Help", title: "Documentation", icon: BookOpen, keys: "F1", needsProject: false, checked: () => project() !== null && editor().selected === DOCS, run: () => (project() ? openView(DOCS) : nav().openDocs("/docs")) })
+  // The docs open as a tab (the project stays put).
+  defineCommand({ id: "help.docs", group: "Help", title: "Documentation", icon: BookOpen, keys: "F1", checked: () => editor().selected === DOCS, run: () => openView(DOCS) })
   defineCommand({ id: "help.shortcuts", group: "Help", title: "Keyboard shortcuts", icon: Keyboard, keys: "?", needsProject: false, run: () => nav().setShortcuts(true) })
   defineCommand({ id: "help.whats-new", group: "Help", title: "What's new", icon: Sparkles, needsProject: false, run: () => nav().setWhatsNew(true) })
 }

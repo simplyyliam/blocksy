@@ -1,18 +1,16 @@
-// Which page is showing, plus app-wide UI toggles (bottom panel, dialogs).
-// Pages are react-router routes (app/router.tsx). This store mirrors the current route
-// as a simple `page` and offers go("docs") / openDocs(path), so features don't need to
-// know URLs. The router connects itself here at start-up (connectRouter).
+// Which page the editor window shows, plus editor-wide UI toggles (bottom panel, dialogs).
+// The editor's only route is the open project (app/router.tsx). This store mirrors the current
+// route as a simple `page` and offers go("project"), so features don't need to know URLs.
+// The router connects itself here at start-up (connectRouter).
 import { create } from "zustand"
 
-export type Page = "home" | "project" | "docs" | "jdk"
+/** "none" is the moment before a project is open (the editor window is only ever created for one). */
+export type Page = "none" | "project"
 
 interface NavigationState {
   page: Page
-  /** The open Docs page, e.g. "/docs/learn/make-your-first-block". */
-  docsPath: string
   bottomPanelOpen: boolean
-  newProjectOpen: boolean
-  /** Settings is a dialog over the app (like Claude's settings), not a page. */
+  /** Settings is a dialog over the editor (like Claude's settings), not a page. */
   settingsOpen: boolean
   /** The section Settings opens on when asked (for example "java"), else the last one. */
   settingsSection: string | null
@@ -22,10 +20,7 @@ interface NavigationState {
   paletteOpen: boolean
   shortcutsOpen: boolean
   go(page: Page): void
-  /** Opens the Docs at a page. */
-  openDocs(path: string): void
   setBottomPanel(open: boolean): void
-  setNewProject(open: boolean): void
   setSettings(open: boolean, section?: string): void
   setWhatsNew(open: boolean): void
   setPalette(open: boolean): void
@@ -39,19 +34,14 @@ export function connectRouter(r: NonNullable<typeof router>) {
   router = r
 }
 
-/** Which page a URL shows: "/project/..." -> "project", "/docs/..." -> "docs". */
+/** Which page a URL shows: "/project/..." -> "project". */
 export function pageOf(pathname: string): Page {
-  if (pathname.startsWith("/project")) return "project"
-  if (pathname.startsWith("/docs")) return "docs"
-  if (pathname.startsWith("/jdk")) return "jdk"
-  return "home"
+  return pathname.startsWith("/project") ? "project" : "none"
 }
 
 export const useNavigation = create<NavigationState>((set) => ({
-  page: "home",
-  docsPath: "/docs",
+  page: "none",
   bottomPanelOpen: false,
-  newProjectOpen: false,
   settingsOpen: false,
   settingsSection: null,
   whatsNewOpen: false,
@@ -59,9 +49,7 @@ export const useNavigation = create<NavigationState>((set) => ({
   shortcutsOpen: false,
   // Without a router (tests), just remember the page.
   go: (page) => (router ? router.navigate(router.pathFor(page)) : set({ page })),
-  openDocs: (docsPath) => (router ? router.navigate(docsPath) : set({ page: "docs", docsPath })),
   setBottomPanel: (bottomPanelOpen) => set({ bottomPanelOpen }),
-  setNewProject: (newProjectOpen) => set({ newProjectOpen }),
   setSettings: (settingsOpen, section) => set({ settingsOpen, settingsSection: settingsOpen ? (section ?? null) : null }),
   setWhatsNew: (whatsNewOpen) => set({ whatsNewOpen }),
   setPalette: (paletteOpen) => set({ paletteOpen }),

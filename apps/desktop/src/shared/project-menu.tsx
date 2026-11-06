@@ -67,7 +67,7 @@ export function ProjectMenuItems({ dir, kind, open = true, end = "remove" }: { d
           <Trash2 strokeWidth={1.75} /> Remove from list
         </Item>
       ) : (
-        <Item onClick={closeProject}>
+        <Item onClick={() => void closeProject()}>
           <X strokeWidth={1.75} /> Close project
         </Item>
       )}

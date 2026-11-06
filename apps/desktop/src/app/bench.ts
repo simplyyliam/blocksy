@@ -3,7 +3,7 @@
 // workout of the shell while timing every frame, and hands the report back to Rust.
 import { commands } from "../shared/bindings"
 import { logLines, useGradle } from "../shared/stores/gradle"
-import { useNavigation, type Page } from "../shared/stores/navigation"
+import { useNavigation } from "../shared/stores/navigation"
 import { addElement, createDocumentStore, createProject } from "@blocksy/core"
 import { previewFrameCount, previewReadyCount } from "@blocksy/model-studio"
 import { applyStarter } from "../features/new-project/starters"
@@ -48,14 +48,6 @@ export async function startBenchIfRequested() {
     await frame()
   }
   await wait(300)
-  nav.setNewProject(true)
-  await wait(600)
-  nav.setNewProject(false)
-  await wait(400)
-  for (const page of ["docs", "home"] satisfies Page[]) {
-    nav.go(page)
-    await wait(350)
-  }
   nav.setSettings(true)
   await wait(500)
   nav.setSettings(false)
@@ -108,7 +100,6 @@ async function benchBlockPreview() {
   const idleStart = previewFrameCount()
   await wait(2000)
   const idleFrames = previewFrameCount() - idleStart
-  useNavigation.getState().go("home")
   useProject.setState({ current: null })
   return { readyMs, idleFrames }
 }
