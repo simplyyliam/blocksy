@@ -11,7 +11,8 @@ import { cn } from "@blocksy/ui"
 // stop it from filling the corner. 16px icons per the spec.
 const control = "grid h-full w-11.5 place-items-center text-fg-muted outline-none transition-colors hover:bg-surface-hover hover:text-fg focus-visible:bg-surface-hover [&_svg]:size-4"
 
-export function WindowControls() {
+/** `maximize={false}` for the fixed-size welcome window: only minimise and close. */
+export function WindowControls({ maximize = true }: { maximize?: boolean }) {
   const [maximized, setMaximized] = useState(false)
 
   // Keep the maximise icon right when the window is resized by other means (Win+Up, snapping).
@@ -32,9 +33,11 @@ export function WindowControls() {
       <button type="button" aria-label="Minimise" className={control} onClick={() => void getCurrentWindow().minimize()}>
         <Minus strokeWidth={1.25} />
       </button>
-      <button type="button" aria-label={maximized ? "Restore" : "Maximise"} className={control} onClick={() => void getCurrentWindow().toggleMaximize()}>
-        {maximized ? <Copy className="size-3.5! -scale-x-100" strokeWidth={1.25} /> : <Square className="size-3.5!" strokeWidth={1.25} />}
-      </button>
+      {maximize && (
+        <button type="button" aria-label={maximized ? "Restore" : "Maximise"} className={control} onClick={() => void getCurrentWindow().toggleMaximize()}>
+          {maximized ? <Copy className="size-3.5! -scale-x-100" strokeWidth={1.25} /> : <Square className="size-3.5!" strokeWidth={1.25} />}
+        </button>
+      )}
       <button
         type="button"
         aria-label="Close"
