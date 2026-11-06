@@ -76,7 +76,7 @@ export const useProject = create<ProjectState>((set, get) => ({
     })
 
     set({ current: { dir, doc: project, documents, version, targetName: target.name }, autosave: { state: "saved", at: null } })
-    await useRecent.getState().remember({ dir, name: project.name, minecraftVersion: project.minecraftVersion })
+    await useRecent.getState().remember({ dir, name: project.name, minecraftVersion: project.minecraftVersion, target: project.target })
     useNavigation.getState().go("project")
   },
 
@@ -84,6 +84,5 @@ export const useProject = create<ProjectState>((set, get) => ({
     unsubscribe?.()
     unsubscribe = null
     set({ current: null })
-    useNavigation.getState().go("home")
   },
 }))
