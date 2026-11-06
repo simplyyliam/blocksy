@@ -115,7 +115,7 @@ export function TabStrip() {
                       closeTab(id)
                     }}
                     onMouseDown={(e) => e.button === 1 && e.preventDefault() /* no autoscroll cursor */}
-                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && select(id)}
+                    onKeyDown={(e) => e.target === e.currentTarget && (e.key === "Enter" || e.key === " ") && select(id)}
                     className={cn(
                       // 96-200px wide, 13px text, padding 0 10, gap 6 (docs/design/shell-spec.md).
                       "group relative flex h-full w-50 max-w-50 min-w-24 shrink cursor-default items-center gap-1.5 px-2.5 text-sm outline-none transition-colors",

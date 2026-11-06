@@ -117,6 +117,7 @@ export const useEditor = create<EditorState>((set, get) => ({
     }),
   closeOthers: (id) =>
     set((s) => {
+      if (!s.tabs.includes(id)) return s
       const tabs = s.tabs.filter((t) => t === id || s.pinned.includes(t))
       return { tabs, pinned: s.pinned.filter((t) => tabs.includes(t)), selected: id }
     }),

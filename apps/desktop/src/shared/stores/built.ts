@@ -32,15 +32,18 @@ export function changedSinceBuild(snapshot: BuiltState["snapshot"], element: Ele
 
 /** Starts watching Gradle tasks; returns the stop function. Called once by the project layout. */
 export function watchBuilds(): () => void {
-  let pending: Map<string, Element> | null = null
+  let pending: { dir: string; elements: Map<string, Element> } | null = null
   return useGradle.subscribe((state, prev) => {
     if (prev.task === null && (state.task === "build" || state.task === "run_client")) {
-      const doc = useProject.getState().current?.doc
-      pending = doc ? new Map(doc.elements.map((e) => [e.id, e])) : null
+      const current = useProject.getState().current
+      pending = current ? { dir: current.dir, elements: new Map(current.doc.elements.map((e) => [e.id, e])) } : null
     }
     const result = state.lastResult
-    if (result && result !== prev.lastResult && result.success && pending && (result.task === "build" || result.task === "run_client")) {
-      useBuilt.setState({ snapshot: pending })
+    if (result && result !== prev.lastResult) {
+      // Only a successful build of the project that is still open counts; anything else drops the snapshot.
+      if (result.success && pending && pending.dir === useProject.getState().current?.dir && (result.task === "build" || result.task === "run_client")) {
+        useBuilt.setState({ snapshot: pending.elements })
+      }
       pending = null
     }
   })

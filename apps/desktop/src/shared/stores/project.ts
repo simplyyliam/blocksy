@@ -66,9 +66,11 @@ export const useProject = create<ProjectState>((set, get) => ({
       clearTimeout(saveTimer)
       set({ autosave: { ...get().autosave, state: "saving" } })
       saveTimer = setTimeout(() => {
+        // Only report "Saved" if no newer change is waiting: an older write finishing late must not say so.
+        const latest = () => get().current?.doc === doc
         void save(dir, doc).then(
-          () => set({ autosave: { state: "saved", at: Date.now() } }),
-          () => set({ autosave: { ...get().autosave, state: "error" } }),
+          () => latest() && set({ autosave: { state: "saved", at: Date.now() } }),
+          () => latest() && set({ autosave: { ...get().autosave, state: "error" } }),
         )
       }, 300)
     })
