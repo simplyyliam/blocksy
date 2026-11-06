@@ -7,7 +7,7 @@
 //
 // Nothing here touches the disk or the DOM, so it is tested with small fake files.
 
-import type { ItemRender, SpriteScaling } from "@blocksy/ui"
+import type { ItemRender, ModelFace, SpriteScaling, Vec3 } from "@blocksy/ui"
 
 export type { ItemRender, SpriteScaling }
 
@@ -110,10 +110,18 @@ export function spriteLayout(imageWidth: number, imageHeight: number, mcmeta: Mc
 
 // ---- Item and block models -----------------------------------------------------------------
 
+interface RawElement {
+  from?: number[]
+  to?: number[]
+  rotation?: { origin?: number[]; axis?: string; angle?: number }
+  faces?: Record<string, { texture?: string; uv?: number[]; rotation?: number; tintindex?: number }>
+}
+
 interface Model {
   parent?: string
   textures?: Record<string, string>
-  elements?: { faces?: Record<string, { texture?: string }> }[]
+  elements?: RawElement[]
+  display?: { gui?: { rotation?: number[] } }
 }
 
 const MAX_PARENT_DEPTH = 10
@@ -134,16 +142,24 @@ export function modelIdOf(definition: any, depth = 0): string | null {
   return null
 }
 
-function resolveTexture(ref: string | undefined, textures: Record<string, string>): string | null {
-  let current = ref
-  for (let i = 0; i < 8 && current?.startsWith("#"); i++) current = textures[current.slice(1)]
+/** A texture reference as written in a model: a string, or (newer games) an object with the texture as `sprite`. */
+function textureName(value: unknown): string | undefined {
+  if (typeof value === "string") return value
+  const sprite = (value as { sprite?: unknown } | null | undefined)?.sprite
+  return typeof sprite === "string" ? sprite : undefined
+}
+
+function resolveTexture(ref: unknown, textures: Record<string, string>): string | null {
+  let current = textureName(ref)
+  for (let i = 0; i < 8 && current?.startsWith("#"); i++) current = textureName(textures[current.slice(1)])
   return current && !current.startsWith("#") ? current : null
 }
 
-/** Follows a model's `parent` chain: merged textures, the first `elements`, and the root parent id. */
+/** Follows a model's `parent` chain: merged textures, the first `elements`, the inventory pose and the root parent id. */
 async function loadModelChain(readJson: JsonReader, modelId: string) {
   const textures: Record<string, string> = {}
   let elements: Model["elements"]
+  let pose: number[] | undefined
   let root = modelId
   let id: string | undefined = modelId
   for (let depth = 0; id && depth < MAX_PARENT_DEPTH; depth++) {
@@ -151,11 +167,75 @@ async function loadModelChain(readJson: JsonReader, modelId: string) {
     const entry = modelEntry(id)
     const model = (entry ? await readJson(entry) : null) as Model | null
     if (!model) break
-    for (const [key, value] of Object.entries(model.textures ?? {})) textures[key] ??= value // the child wins
+    for (const [key, value] of Object.entries(model.textures ?? {})) {
+      const name = textureName(value)
+      if (name) textures[key] ??= name // the child wins
+    }
     elements ??= model.elements
+    pose ??= model.display?.gui?.rotation
     id = model.parent
   }
-  return { textures, elements, root }
+  return { textures, elements, pose, root }
+}
+
+const vec = (v: number[] | undefined, fallback: Vec3): Vec3 => (v && v.length >= 3 && v.every((n) => typeof n === "number" && Number.isFinite(n)) ? [v[0]!, v[1]!, v[2]!] : fallback)
+
+/** The texture rectangle a face shows when the model gives no `uv` (the game's own rule per direction). */
+function defaultUv(dir: ModelFace["dir"], from: Vec3, to: Vec3): ModelFace["uv"] {
+  const [x0, y0, z0] = from
+  const [x1, y1, z1] = to
+  switch (dir) {
+    case "up":
+      return [x0, z0, x1, z1]
+    case "south":
+      return [x0, 16 - y1, x1, 16 - y0]
+    case "north":
+      return [16 - x1, 16 - y1, 16 - x0, 16 - y0]
+    case "east":
+      return [16 - z1, 16 - y1, 16 - z0, 16 - y0]
+    case "west":
+      return [z0, 16 - y1, z1, 16 - y0]
+  }
+}
+
+const FACE_DIRS = ["up", "north", "south", "east", "west"] as const
+
+/** Every drawable face of a block model (stairs, slabs, fences, ...) with its texture resolved. */
+export function buildFaces(elements: RawElement[], textures: Record<string, string>): ModelFace[] {
+  const faces: ModelFace[] = []
+  for (const element of elements) {
+    const from = vec(element.from, [0, 0, 0])
+    const to = vec(element.to, [16, 16, 16])
+    const r = element.rotation
+    const rotation = r && (r.axis === "x" || r.axis === "y" || r.axis === "z") && typeof r.angle === "number" && r.angle !== 0 ? { origin: vec(r.origin, [8, 8, 8]), axis: r.axis as "x" | "y" | "z", angle: r.angle } : undefined
+    for (const dir of FACE_DIRS) {
+      const face = element.faces?.[dir]
+      const texture = face && resolveTexture(face.texture, textures)
+      if (!face || !texture) continue
+      const uv = face.uv && face.uv.length >= 4 && face.uv.every((n) => typeof n === "number") ? ([face.uv[0]!, face.uv[1]!, face.uv[2]!, face.uv[3]!] as ModelFace["uv"]) : defaultUv(dir, from, to)
+      const uvRotation = (((Math.round((face.rotation ?? 0) / 90) % 4) + 4) % 4) * 90
+      faces.push({ dir, from, to, rotation, uv, uvRotation, texture, tinted: typeof face.tintindex === "number" })
+    }
+  }
+  return faces
+}
+
+/** The first item of a vanilla item tag, following nested tags ("#minecraft:logs" -> "minecraft:oak_log"). */
+export async function resolveTagItem(readJson: JsonReader, tagId: string, depth = 0): Promise<string | null> {
+  const parts = splitId(tagId.replace(/^#/, ""))
+  if (!parts || depth > 5) return null
+  const file = (await readJson(`data/${parts[0]}/tags/item/${parts[1]}.json`)) as { values?: unknown[] } | null
+  for (const value of file?.values ?? []) {
+    const id = typeof value === "string" ? value : (value as { id?: unknown } | null)?.id
+    if (typeof id !== "string") continue
+    if (id.startsWith("#")) {
+      const nested = await resolveTagItem(readJson, id.slice(1), depth + 1)
+      if (nested) return nested
+    } else {
+      return id.includes(":") ? id : `minecraft:${id}`
+    }
+  }
+  return null
 }
 
 /** How to draw an item (or a block's item) in a slot, from the game's own files. */
@@ -164,7 +244,7 @@ export async function resolveItemRender(readJson: JsonReader, itemId: string): P
   const definition = defEntry ? await readJson(defEntry) : null
   const modelId = modelIdOf(definition) ?? (splitId(itemId) ? `item/${splitId(itemId)![1]}` : null)
   if (!modelId) return { kind: "unsupported" }
-  const { textures, elements, root } = await loadModelChain(readJson, modelId)
+  const { textures, elements, pose, root } = await loadModelChain(readJson, modelId)
 
   // "minecraft:item/generated" is the flat-sprite parent: layer0, layer1, ...
   if (/(^|:)(item\/generated|builtin\/generated)$/.test(root) || (!elements && textures.layer0)) {
@@ -177,16 +257,23 @@ export async function resolveItemRender(readJson: JsonReader, itemId: string): P
   }
   if (/builtin\/entity$/.test(root)) return { kind: "unsupported" }
 
-  // A block model: draw the first element's top, south and east faces as a cube.
-  const faces = elements?.find((e) => e.faces?.up && (e.faces.south || e.faces.north) && (e.faces.east || e.faces.west))?.faces
-  if (faces) {
-    const pick = (...names: string[]) => resolveTexture(names.map((n) => faces[n]?.texture).find(Boolean), textures)
+  if (!elements?.length) return { kind: "unsupported" }
+
+  // A plain full block (one element, no rotation): the fast cube.
+  const only = elements.length === 1 ? elements[0]! : null
+  const full = only && !only.rotation && vec(only.from, [0, 0, 0]).every((n) => n === 0) && vec(only.to, [16, 16, 16]).every((n) => n === 16)
+  if (full) {
+    const faces = only.faces
+    const pick = (...names: string[]) => resolveTexture(names.map((n) => faces?.[n]?.texture).find(Boolean), textures)
     const top = pick("up")
     const left = pick("south", "north")
     const right = pick("east", "west")
     if (top && left && right) return { kind: "cube", top, left, right }
   }
-  return { kind: "unsupported" }
+
+  // Anything else (stairs, slabs, fences, panes, ...): its real shape, element by element.
+  const faces = buildFaces(elements, textures)
+  return faces.length ? { kind: "model", faces, pose: vec(pose, [30, 225, 0]) } : { kind: "unsupported" }
 }
 
 // ---- Font ----------------------------------------------------------------------------------

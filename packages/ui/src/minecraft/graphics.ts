@@ -1,7 +1,7 @@
 // Drawing primitives for the Minecraft look, on a plain 2D canvas context whose units are
 // the game's GUI pixels (the caller scales the context by an integer, with smoothing off).
 // Pure functions: no DOM beyond the canvas they are given.
-import type { McFont, McSprite } from "./types.ts"
+import type { McFont, McSprite, ModelFace, Vec3 } from "./types.ts"
 
 export const TICK_MS = 50
 
@@ -98,6 +98,165 @@ export function drawCube(ctx: CanvasRenderingContext2D, faces: { top: McSprite; 
   face(faces.top, [s / 2, 0], [s / 2, q], [-s / 2, q], 1, [[s / 2, 0], [s, q], [s / 2, 2 * q], [0, q]])
   face(faces.left, [0, q], [s / 2, q], [0, s / 2], 0.8, [[0, q], [s / 2, 2 * q], [s / 2, s], [0, 3 * q]])
   face(faces.right, [s / 2, 2 * q], [s / 2, -q], [0, s / 2], 0.6, [[s / 2, 2 * q], [s, q], [s, 3 * q], [s / 2, s]])
+}
+
+// ---- Block models (stairs, slabs, fences, ...) ------------------------------------------------
+
+const rad = (deg: number) => (deg * Math.PI) / 180
+
+/** Turns a point around an axis (degrees), keeping `origin` fixed. */
+function turn(p: Vec3, axis: "x" | "y" | "z", angle: number, origin: Vec3): Vec3 {
+  const [x, y, z] = [p[0] - origin[0], p[1] - origin[1], p[2] - origin[2]]
+  const c = Math.cos(rad(angle))
+  const s = Math.sin(rad(angle))
+  const r: Vec3 = axis === "y" ? [x * c + z * s, y, -x * s + z * c] : axis === "x" ? [x, y * c - z * s, y * s + z * c] : [x * c - y * s, x * s + y * c, z]
+  return [r[0] + origin[0], r[1] + origin[1], r[2] + origin[2]]
+}
+
+/**
+ * The inventory view: the model is centred, turned by the pose (the game's gui display
+ * rotation, [30, 225, 0] for blocks) and looked at from the front. Returns screen x, screen y
+ * (down) and depth (bigger = nearer the viewer).
+ */
+export function poseProject(p: Vec3, pose: Vec3): Vec3 {
+  const [x, y, z] = [p[0] - 8, p[1] - 8, p[2] - 8]
+  const turnY = rad(pose[1] - 180) // 225 in the game's files = a quarter turn plus half a turn in this view
+  const tilt = rad(pose[0])
+  const x1 = x * Math.cos(turnY) - z * Math.sin(turnY)
+  const z1 = x * Math.sin(turnY) + z * Math.cos(turnY)
+  const y2 = y * Math.cos(tilt) - z1 * Math.sin(tilt)
+  const z2 = y * Math.sin(tilt) + z1 * Math.cos(tilt)
+  return [x1, -y2, z2]
+}
+
+const NORMALS: Record<ModelFace["dir"], Vec3> = { up: [0, 1, 0], north: [0, 0, -1], south: [0, 0, 1], east: [1, 0, 0], west: [-1, 0, 0] }
+const SHADE: Record<ModelFace["dir"], number> = { up: 1, south: 0.8, north: 0.8, east: 0.6, west: 0.6 }
+
+/** A face's four corners in the order top-left, top-right, bottom-right, bottom-left (as seen from outside). */
+function faceCorners(face: ModelFace): [Vec3, Vec3, Vec3, Vec3] {
+  const [x0, y0, z0] = face.from
+  const [x1, y1, z1] = face.to
+  switch (face.dir) {
+    case "up":
+      return [[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]]
+    case "south":
+      return [[x0, y1, z1], [x1, y1, z1], [x1, y0, z1], [x0, y0, z1]]
+    case "north":
+      return [[x1, y1, z0], [x0, y1, z0], [x0, y0, z0], [x1, y0, z0]]
+    case "east":
+      return [[x1, y1, z1], [x1, y1, z0], [x1, y0, z0], [x1, y0, z1]]
+    case "west":
+      return [[x0, y1, z0], [x0, y1, z1], [x0, y0, z1], [x0, y0, z0]]
+  }
+}
+
+export interface ProjectedFace {
+  face: ModelFace
+  /** Screen points of the top-left, top-right, bottom-right and bottom-left corners (model units). */
+  points: [Vec3, Vec3, Vec3, Vec3]
+  depth: number
+  facing: boolean
+}
+
+/** Every face of a model in screen space, far to near. `facing` is false for faces turned away. */
+export function projectModel(faces: ModelFace[], pose: Vec3): ProjectedFace[] {
+  return faces
+    .map((face) => {
+      const turned = (p: Vec3) => (face.rotation ? turn(p, face.rotation.axis, face.rotation.angle, face.rotation.origin) : p)
+      const points = faceCorners(face).map((c) => poseProject(turned(c), pose)) as ProjectedFace["points"]
+      const n = NORMALS[face.dir]
+      const rotated = face.rotation ? turn(n, face.rotation.axis, face.rotation.angle, [0, 0, 0]) : n
+      const facing = poseProject([rotated[0] + 8, rotated[1] + 8, rotated[2] + 8], pose)[2] - poseProject([8, 8, 8], pose)[2] > 0.001
+      return { face, points, depth: points.reduce((s, p) => s + p[2], 0) / 4, facing }
+    })
+    .sort((a, b) => a.depth - b.depth)
+}
+
+/** The screen box of a whole 16x16x16 block in this pose: every model is fitted using it, so a stair sits where a block would. */
+function blockBox(pose: Vec3) {
+  const xs: number[] = []
+  const ys: number[] = []
+  for (const x of [0, 16]) for (const y of [0, 16]) for (const z of [0, 16]) {
+    const p = poseProject([x, y, z], pose)
+    xs.push(p[0])
+    ys.push(p[1])
+  }
+  return { minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) }
+}
+
+/**
+ * A block model in the inventory pose, drawn face by face with the game's own face shading.
+ * `size` is the width of a whole block in GUI pixels (16 in a slot); the picture is centred in the box.
+ */
+export function drawModel(ctx: CanvasRenderingContext2D, faces: ModelFace[], pose: Vec3, sprite: (id: string) => McSprite | null, x: number, y: number, size: number, tick = 0, note?: (s: McSprite) => void) {
+  const box = blockBox(pose)
+  const scale = size / Math.max(box.maxX - box.minX, box.maxY - box.minY)
+  const ox = x + size / 2 - ((box.minX + box.maxX) / 2) * scale
+  const oy = y + size / 2 - ((box.minY + box.maxY) / 2) * scale
+  const toScreen = (p: Vec3): [number, number] => [ox + p[0] * scale, oy + p[1] * scale]
+
+  for (const { face, points, facing } of projectModel(faces, pose)) {
+    if (!facing) continue
+    const tex = sprite(face.texture)
+    if (!tex) continue
+    note?.(tex)
+    const { sx, sy, sw, sh } = frameRect(tex, frameIndexAt(tex, tick))
+    const [tl, tr, br, bl] = points.map(toScreen) as [[number, number], [number, number], [number, number], [number, number]]
+    const [u1, v1, u2, v2] = face.uv
+    // The texture rectangle's corners, turned by the face's uv rotation.
+    const corners: [number, number][] = [[u1, v1], [u2, v1], [u2, v2], [u1, v2]]
+    const steps = face.uvRotation / 90
+    const at = (k: number) => {
+      const c = corners[(k + steps) % 4]!
+      return [(c[0] / 16) * sw, (c[1] / 16) * sh] as [number, number]
+    }
+    const [aTL, aTR, aBL] = [at(0), at(1), at(3)]
+    // Where the texture's axes point on screen: solve the map that sends the texture corners to the
+    // face corners (the face is a parallelogram, so an affine map is exact).
+    const ax = aTR[0] - aTL[0]
+    const ay = aTR[1] - aTL[1]
+    const bx = aBL[0] - aTL[0]
+    const by = aBL[1] - aTL[1]
+    const sx1 = tr[0] - tl[0]
+    const sy1 = tr[1] - tl[1]
+    const tx1 = bl[0] - tl[0]
+    const ty1 = bl[1] - tl[1]
+    const det = ax * by - bx * ay
+    if (Math.abs(det) < 1e-6) continue
+    const m11 = (sx1 * by - tx1 * ay) / det
+    const m12 = (tx1 * ax - sx1 * bx) / det
+    const m21 = (sy1 * by - ty1 * ay) / det
+    const m22 = (ty1 * ax - sy1 * bx) / det
+    const path = () => {
+      ctx.beginPath()
+      ctx.moveTo(tl[0], tl[1])
+      ctx.lineTo(tr[0], tr[1])
+      ctx.lineTo(br[0], br[1])
+      ctx.lineTo(bl[0], bl[1])
+      ctx.closePath()
+    }
+    ctx.save()
+    path()
+    ctx.clip()
+    ctx.save()
+    ctx.transform(m11, m21, m12, m22, tl[0] - m11 * aTL[0] - m12 * aTL[1], tl[1] - m21 * aTL[0] - m22 * aTL[1])
+    ctx.drawImage(tex.image, sx, sy, sw, sh, 0, 0, sw, sh)
+    ctx.restore()
+    if (face.tinted) {
+      ctx.globalCompositeOperation = "multiply"
+      ctx.fillStyle = "#79c05a" // plains grass green: the game tints by biome, a fixed colour keeps the picture steady
+      path()
+      ctx.fill()
+      ctx.globalCompositeOperation = "source-over"
+    }
+    const shade = SHADE[face.dir]
+    if (shade < 1) {
+      ctx.fillStyle = `rgba(0,0,0,${1 - shade})`
+      path()
+      ctx.fill()
+    }
+    ctx.restore()
+  }
 }
 
 // ---- Text -----------------------------------------------------------------------------------

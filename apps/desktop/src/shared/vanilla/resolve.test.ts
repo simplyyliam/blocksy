@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { bitmapProviders, cellsOf, modelIdOf, parseMcmeta, resolveItemRender, spriteLayout, splitId, textureEntry, type JsonReader } from "./resolve"
+import { bitmapProviders, cellsOf, modelIdOf, parseMcmeta, resolveItemRender, resolveTagItem, spriteLayout, splitId, textureEntry, type JsonReader } from "./resolve"
 
 /** A tiny fake "jar": entry path -> parsed JSON. */
 const jar = (files: Record<string, unknown>): JsonReader => async (entry) => files[entry] ?? null
@@ -85,6 +85,57 @@ describe("item models", () => {
       "assets/minecraft/models/item/b.json": { parent: "minecraft:item/a" },
     })
     expect(await resolveItemRender(read, "minecraft:a")).toEqual({ kind: "unsupported" })
+  })
+})
+
+describe("block models with a real shape", () => {
+  const stairs = jar({
+    "assets/minecraft/items/oak_stairs.json": { model: { type: "minecraft:model", model: "minecraft:block/oak_stairs" } },
+    "assets/minecraft/models/block/oak_stairs.json": { parent: "minecraft:block/stairs", textures: { bottom: "minecraft:block/oak_planks", side: "minecraft:block/oak_planks", top: "minecraft:block/oak_planks" } },
+    "assets/minecraft/models/block/block.json": { display: { gui: { rotation: [30, 225, 0] } } },
+    "assets/minecraft/models/block/stairs.json": {
+      parent: "minecraft:block/block",
+      textures: { particle: "#side" },
+      elements: [
+        { from: [0, 0, 0], to: [16, 8, 16], faces: { down: { texture: "#bottom" }, up: { texture: "#top" }, north: { texture: "#side" }, south: { texture: "#side" }, west: { texture: "#side" }, east: { texture: "#side" } } },
+        { from: [8, 8, 0], to: [16, 16, 16], faces: { up: { texture: "#top", uv: [8, 0, 16, 16] }, north: { texture: "#side" }, south: { texture: "#side" }, east: { texture: "#side" } } },
+      ],
+    },
+  })
+
+  it("keeps every element of stairs instead of drawing a full cube", async () => {
+    const render = await resolveItemRender(stairs, "minecraft:oak_stairs")
+    expect(render.kind).toBe("model")
+    if (render.kind !== "model") return
+    expect(render.pose).toEqual([30, 225, 0])
+    // two elements, five drawable directions on the first, four on the second
+    expect(render.faces).toHaveLength(9)
+    expect(render.faces.every((f) => f.texture === "minecraft:block/oak_planks")).toBe(true)
+    expect(render.faces.find((f) => f.dir === "up" && f.to[1] === 16)?.uv).toEqual([8, 0, 16, 16])
+  })
+
+  it("gives faces the game's default texture rectangle when the model has no uv", async () => {
+    const render = await resolveItemRender(stairs, "minecraft:oak_stairs")
+    if (render.kind !== "model") throw new Error("expected a model")
+    const south = render.faces.find((f) => f.dir === "south" && f.to[1] === 8)!
+    expect(south.uv).toEqual([0, 8, 16, 16])
+  })
+})
+
+describe("tags", () => {
+  const read = jar({
+    "data/minecraft/tags/item/planks.json": { values: ["minecraft:oak_planks", "minecraft:spruce_planks"] },
+    "data/minecraft/tags/item/logs.json": { values: ["#minecraft:oak_logs", "minecraft:birch_log"] },
+    "data/minecraft/tags/item/oak_logs.json": { values: [{ id: "minecraft:oak_log", required: false }] },
+  })
+
+  it("draws a tag as its first item, following nested tags", async () => {
+    expect(await resolveTagItem(read, "minecraft:planks")).toBe("minecraft:oak_planks")
+    expect(await resolveTagItem(read, "#minecraft:logs")).toBe("minecraft:oak_log")
+  })
+
+  it("has nothing to show for an unknown tag", async () => {
+    expect(await resolveTagItem(read, "minecraft:nothing")).toBeNull()
   })
 })
 
