@@ -4,9 +4,9 @@
 //   Library                                  [ search ]
 //   ▣ Wheat          wheat                        (click: copy minecraft:wheat)
 import { Copy } from "lucide-react"
-import { useDeferredValue, useMemo, useState } from "react"
+import { useDeferredValue, useEffect, useMemo, useState } from "react"
 import { prettyId, RefTile, VANILLA_ITEMS } from "@blocksy/game-data"
-import { Input, toast } from "@blocksy/ui"
+import { Input, toast, useMinecraft } from "@blocksy/ui"
 import { useProject } from "../../shared/stores/project"
 
 /** Rows drawn at once; the search narrows the rest (about 1,500 ids exist). */
@@ -20,6 +20,22 @@ export function Library() {
     const q = deferred.trim().toLowerCase().replace(/^minecraft:/, "").replaceAll(" ", "_")
     return q ? VANILLA_ITEMS.filter((id) => id.includes(q)) : VANILLA_ITEMS
   }, [deferred])
+  // The id list covers several Minecraft versions: hide the ones the installed game has no model for.
+  const { assets, status } = useMinecraft()
+  const [missing, setMissing] = useState<ReadonlySet<string>>(new Set())
+  const shown = useMemo(() => matches.filter((id) => !missing.has(id)), [matches, missing])
+  useEffect(() => {
+    if (status !== "ready" || !assets) return
+    let alive = true
+    const ids = matches.slice(0, SHOWN * 2).filter((id) => !missing.has(id))
+    void Promise.all(ids.map(async (id) => ((await assets.hasItem(`minecraft:${id}`)) ? null : id))).then((gone) => {
+      const found = gone.filter((id): id is string => id !== null)
+      if (alive && found.length > 0) setMissing((prev) => new Set([...prev, ...found]))
+    })
+    return () => {
+      alive = false
+    }
+  }, [assets, status, matches, missing])
   if (!project) return null
 
   const copy = (id: string) => {
@@ -47,7 +63,7 @@ export function Library() {
         />
       </header>
       <ul aria-label="Vanilla ids" className="grid grid-cols-2 gap-x-3 gap-y-px max-md:grid-cols-1">
-        {matches.slice(0, SHOWN).map((id) => (
+        {shown.slice(0, SHOWN).map((id) => (
           <li key={id}>
             <button
               type="button"
@@ -62,10 +78,10 @@ export function Library() {
           </li>
         ))}
       </ul>
-      {matches.length === 0 && <p className="py-8 text-center text-sm text-fg-muted">Nothing matches “{query}”.</p>}
-      {matches.length > SHOWN && (
+      {shown.length === 0 && <p className="py-8 text-center text-sm text-fg-muted">Nothing matches “{query}”.</p>}
+      {shown.length > SHOWN && (
         <p className="py-2 text-center text-xs text-fg-faint">
-          Showing {SHOWN} of {matches.length}. Type to narrow it down.
+          Showing {SHOWN} of {shown.length}. Type to narrow it down.
         </p>
       )}
     </div>

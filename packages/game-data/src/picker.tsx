@@ -12,7 +12,7 @@
 import { Hash } from "lucide-react"
 import { useId, useMemo, useState, type ReactElement } from "react"
 import type { Element, Project } from "@blocksy/core"
-import { Button, cn, Input, Popover, PopoverContent, PopoverTrigger } from "@blocksy/ui"
+import { Button, cn, Input, McItemIcon, Popover, PopoverContent, PopoverTrigger } from "@blocksy/ui"
 import { ITEM_ELEMENT_TYPES, isValidRef, parseRef, prettyId, refElement, refLabel, TAG_ELEMENT_TYPE, tagIdOf } from "./refs.ts"
 import { VANILLA_BLOCK_TAGS, VANILLA_ITEM_TAGS, VANILLA_ITEMS } from "./vanilla.generated.ts"
 
@@ -34,17 +34,20 @@ export function RefTile({ refValue, project, className }: { refValue: string; pr
   const { kind, id } = parseRef(refValue)
   const texture = elementTexture(refElement(refValue, project))
   if (texture) return <img src={texture} alt="" className={cn("size-6 object-cover object-top [image-rendering:pixelated]", className)} />
-  if (kind === "tag" || kind === "elementTag") return <Hash className={cn("size-4 text-fg-muted", className)} strokeWidth={2} />
+  // What shows until Minecraft's files are loaded (no build yet): a # for tags, the initials otherwise.
   const label = prettyId(id)
-  return (
-    <span
-      aria-hidden
-      className={cn("grid size-6 place-items-center rounded-xs text-[10px] font-medium text-black/70", className)}
-      style={{ background: tint(id) }}
-    >
-      {label.slice(0, 2)}
-    </span>
-  )
+  const placeholder =
+    kind === "tag" || kind === "elementTag" ? (
+      <Hash className={cn("size-4 text-fg-muted", className)} strokeWidth={2} />
+    ) : (
+      <span aria-hidden className={cn("grid size-6 place-items-center rounded-xs text-[10px] font-medium text-black/70", className)} style={{ background: tint(id) }}>
+        {label.slice(0, 2)}
+      </span>
+    )
+  // Vanilla items and tags: the game's own picture, read from the user's copy of Minecraft.
+  if (kind === "item") return <McItemIcon item={{ vanilla: id }} className={className} fallback={placeholder} />
+  if (kind === "tag") return <McItemIcon item={{ tag: id }} className={className} fallback={placeholder} />
+  return placeholder
 }
 
 interface Option {

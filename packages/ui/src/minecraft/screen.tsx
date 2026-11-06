@@ -10,10 +10,11 @@
 import { useEffect, useReducer, useRef, useState, type ReactElement } from "react"
 import { cn } from "../lib/utils.ts"
 import { Button } from "./../components/ui/button.tsx"
-import { drawCube, drawGuiSprite, drawRegion, drawSprite, drawText, isAnimated, measureText, TICK_MS } from "./graphics.ts"
+import { drawGuiSprite, drawRegion, drawText, isAnimated, measureText, TICK_MS } from "./graphics.ts"
+import { drawMcItem } from "./item.ts"
 import { useMinecraft } from "./provider.tsx"
 import type { McAssets, McFont, McItem, McNeeds, McSprite } from "./types.ts"
-import { onUserImage, userSprite } from "./user-images.ts"
+import { onUserImage } from "./user-images.ts"
 
 export interface McGraphics {
   ctx: CanvasRenderingContext2D
@@ -121,7 +122,7 @@ export function McScreen({ width, height, scale = 2, needs = {}, draw, slots = [
         const s = assets?.peekGui(path)
         if (s) drawRegion(ctx, s, sx, sy, sw, sh, dx, dy, dw, dh)
       },
-      item: (item, x, y, size = 16) => drawItem(g, item, x, y, size, note),
+      item: (item, x, y, size = 16) => drawMcItem(ctx, assets ?? NO_ASSETS, item, x, y, size, tick, note),
       text: (text, x, y, color, shadow) => font && drawText(ctx, font, text, x, y, color, shadow),
       measure: (text) => (font ? measureText(font, text) : text.length * 6),
     }
@@ -177,40 +178,9 @@ const NO_ASSETS: McAssets = {
   peekSprite: () => null,
   peekGui: () => null,
   peekItem: () => null,
+  peekTag: () => null,
+  hasItem: async () => false,
   peekFont: () => null,
-}
-
-/** An item or block in the game's look: vanilla by id (from the assets) or the user's own pixels. */
-function drawItem(g: McGraphics, item: McItem, x: number, y: number, size: number, note: (s: McSprite | null) => McSprite | null) {
-  const { ctx, tick, assets } = g
-  if ("texture" in item) {
-    const s = note(userSprite(item.texture, item.animated?.frametime))
-    if (s) drawSprite(ctx, s, x, y, size, size, tick)
-    return
-  }
-  if ("blockTexture" in item) {
-    const s = note(userSprite(item.blockTexture))
-    if (s) drawCube(ctx, { top: s, left: s, right: s }, x, y, size, tick)
-    return
-  }
-  const render = assets.peekItem(item.vanilla)
-  if (!render || render.kind === "unsupported") {
-    // Something the renderer cannot draw yet: a quiet placeholder, never a wrong picture.
-    ctx.fillStyle = "rgba(139,139,139,0.55)"
-    ctx.fillRect(x + 2, y + 2, size - 4, size - 4)
-    return
-  }
-  if (render.kind === "flat") {
-    for (const layer of render.layers) {
-      const s = note(assets.peekTexture(layer))
-      if (s) drawSprite(ctx, s, x, y, size, size, tick)
-    }
-    return
-  }
-  const top = note(assets.peekTexture(render.top))
-  const left = note(assets.peekTexture(render.left))
-  const right = note(assets.peekTexture(render.right))
-  if (top && left && right) drawCube(ctx, { top, left, right }, x, y, size, tick)
 }
 
 /** "Build once to load Minecraft's look": shown instead of a vanilla screen until the files exist. */

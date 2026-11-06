@@ -7,7 +7,7 @@
 // Everything stays IN MEMORY: decoded images and parsed JSON live in these maps until the app
 // closes. Nothing is written to the project, bundled, committed or uploaded.
 import type { ItemRender, McAssets, McFont, McGlyph, McNeeds, McSprite } from "@blocksy/ui"
-import { bitmapProviders, cellsOf, itemDefinitionEntry, parseMcmeta, referencedFonts, resolveItemRender, spriteEntry, spriteLayout, textureEntry, type JsonReader } from "./resolve"
+import { bitmapProviders, cellsOf, itemDefinitionEntry, parseMcmeta, referencedFonts, resolveItemRender, resolveTagItem, spriteEntry, spriteLayout, textureEntry, type JsonReader } from "./resolve"
 
 /** Where the bytes come from: a jar in production, a fake in tests. */
 export interface AssetSource {
@@ -21,6 +21,8 @@ export class VanillaAssets implements McAssets {
   private spriteDone = new Map<string, McSprite | null>()
   private json = new Map<string, Promise<unknown | null>>()
   private items = new Map<string, ItemRender>()
+  /** Vanilla tag -> its first item ("minecraft:planks" -> "minecraft:oak_planks"). */
+  private tags = new Map<string, string | null>()
   private font: McFont | null = null
   private fontPromise: Promise<McFont | null> | null = null
 
@@ -84,6 +86,7 @@ export class VanillaAssets implements McAssets {
   peekSprite = (id: string) => this.peek(spriteEntry(id))
   peekGui = (path: string) => this.peek(textureEntry(`minecraft:gui/${path}`))
   peekItem = (id: string) => this.items.get(id) ?? null
+  peekTag = (id: string) => this.tags.get(id) ?? null
   peekFont = () => this.font
 
   async preload(needs: McNeeds): Promise<void> {
@@ -91,9 +94,17 @@ export class VanillaAssets implements McAssets {
     for (const id of needs.textures ?? []) jobs.push(this.loadSprite(textureEntry(id) ?? ""))
     for (const id of needs.sprites ?? []) jobs.push(this.loadSprite(spriteEntry(id) ?? ""))
     for (const path of needs.gui ?? []) jobs.push(this.loadSprite(textureEntry(`minecraft:gui/${path}`) ?? ""))
-    for (const id of needs.items ?? []) jobs.push(this.loadItem(id))
+    for (const id of needs.items ?? []) jobs.push(id.startsWith("#") ? this.loadTag(id.slice(1)) : this.loadItem(id))
     if (needs.font) jobs.push(this.loadFont())
     await Promise.all(jobs)
+  }
+
+  /** A tag is drawn as its first item: find it, then load that item like any other. */
+  private async loadTag(id: string) {
+    if (this.tags.has(id)) return
+    const member = await resolveTagItem(this.readJson, id)
+    this.tags.set(id, member)
+    if (member) await this.loadItem(member)
   }
 
   /** Resolves an item (or a block's item) to what to draw and loads the textures it names. */
@@ -101,7 +112,8 @@ export class VanillaAssets implements McAssets {
     if (this.items.has(id)) return
     const render = await resolveItemRender(this.readJson, id)
     this.items.set(id, render)
-    const textures = render.kind === "flat" ? render.layers : render.kind === "cube" ? [render.top, render.left, render.right] : []
+    const textures =
+      render.kind === "flat" ? render.layers : render.kind === "cube" ? [render.top, render.left, render.right] : render.kind === "model" ? [...new Set(render.faces.map((f) => f.texture))] : []
     await Promise.all(textures.map((t) => this.loadSprite(textureEntry(t) ?? "")))
   }
 

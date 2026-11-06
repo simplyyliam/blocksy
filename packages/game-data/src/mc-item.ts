@@ -21,7 +21,9 @@ export type SlotPicture = { kind: "item"; item: McItem } | { kind: "tag"; label:
 export function slotPicture(ref: string | null, project: Project): SlotPicture {
   if (!ref) return { kind: "empty" }
   const { kind, id } = parseRef(ref)
-  if (kind === "tag" || kind === "elementTag") return { kind: "tag", label: `#${id}` }
+  // A vanilla tag is drawn as one of its items; the user's own tags have no picture to borrow.
+  if (kind === "tag") return { kind: "item", item: { tag: id } }
+  if (kind === "elementTag") return { kind: "tag", label: `#${id}` }
   if (kind === "item") return { kind: "item", item: { vanilla: id } }
   const element = refElement(ref, project)
   return element ? { kind: "item", item: elementToMcItem(element) } : { kind: "item", item: { vanilla: "minecraft:air" } }
@@ -29,4 +31,4 @@ export function slotPicture(ref: string | null, project: Project): SlotPicture {
 
 /** The vanilla item ids a list of pictures needs loaded. */
 export const vanillaIds = (pictures: SlotPicture[]): string[] =>
-  pictures.flatMap((p) => (p.kind === "item" && "vanilla" in p.item ? [p.item.vanilla] : []))
+  pictures.flatMap((p) => (p.kind === "item" ? ("vanilla" in p.item ? [p.item.vanilla] : "tag" in p.item ? [`#${p.item.tag}`] : []) : []))

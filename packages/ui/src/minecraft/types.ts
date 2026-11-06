@@ -26,10 +26,30 @@ export interface McSprite {
   scaling: SpriteScaling
 }
 
+export type Vec3 = [number, number, number]
+
+/** One face of a block model element, in the model's own 0..16 space (stairs, slabs, fences...). */
+export interface ModelFace {
+  dir: "up" | "north" | "south" | "east" | "west"
+  from: Vec3
+  to: Vec3
+  /** The element's rotation (in 22.5 degree steps), around `origin`. */
+  rotation?: { origin: Vec3; axis: "x" | "y" | "z"; angle: number }
+  /** Texture rectangle in 0..16 units: u1, v1, u2, v2. */
+  uv: [number, number, number, number]
+  /** Turns the texture on the face by 0, 90, 180 or 270 degrees. */
+  uvRotation: number
+  texture: string
+  /** The face is tinted by biome colour in the game (grass, leaves): drawn with a plain green. */
+  tinted: boolean
+}
+
 /** What to draw for an item or block inside a slot. */
 export type ItemRender =
   | { kind: "flat"; layers: string[] }
   | { kind: "cube"; top: string; left: string; right: string }
+  /** A block model with its real shape: every element's visible faces, in the inventory pose. */
+  | { kind: "model"; faces: ModelFace[]; pose: Vec3 }
   | { kind: "unsupported" }
 
 /** One glyph of the game's bitmap font, cut out of a sheet. */
@@ -61,6 +81,10 @@ export interface McAssets {
   peekGui(path: string): McSprite | null
   /** How an item or block draws (cache only). */
   peekItem(id: string): ItemRender | null
+  /** The first item of a vanilla tag ("minecraft:planks" -> "minecraft:oak_planks"), once loaded. */
+  peekTag(id: string): string | null
+  /** Does this item exist in the installed game? (The id list covers several versions.) */
+  hasItem(id: string): Promise<boolean>
   peekFont(): McFont | null
 }
 
@@ -77,6 +101,8 @@ export type McStatus = "loading" | "ready" | "missing"
 /** An item shown in the game's own look: vanilla (by id) or the user's (their own pixels). */
 export type McItem =
   | { vanilla: string }
+  /** A vanilla item tag, drawn as one of its items (the first). */
+  | { tag: string }
   /** The user's own item or block: base64 PNG (16 wide; animated ones are tall strips). */
   | { texture: string; animated?: { frametime: number } }
   /** The user's block: one texture on all faces, drawn as a cube. */
