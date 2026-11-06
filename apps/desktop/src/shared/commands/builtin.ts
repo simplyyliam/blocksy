@@ -114,7 +114,7 @@ export function registerBuiltinCommands() {
   // ---- Tools ------------------------------------------------------------------------------
   defineCommand({ id: "tools.palette", group: "Tools", title: "Search…", icon: Search, keys: "Mod+K", altKeys: ["Mod+Shift+F"], needsProject: false, run: () => nav().setPalette(true) })
   defineCommand({ id: "tools.problems", group: "Tools", title: "Show problems", icon: Layers, keys: "Mod+Shift+M", checked: () => dockShows("problems"), run: () => toggleDock("problems") })
-  defineCommand({ id: "tools.jdk", group: "Tools", title: "Java setup", icon: Coffee, needsProject: false, run: () => nav().go("jdk") })
+  defineCommand({ id: "tools.jdk", group: "Tools", title: "Java setup", icon: Coffee, needsProject: false, run: () => nav().setSettings(true, "java") })
 
   // ---- Window -----------------------------------------------------------------------------
   defineCommand({ id: "window.tree", group: "Window", title: "Explorer", icon: PanelLeft, keys: "Mod+\\", checked: () => editor().treeOpen, run: () => editor().toggleTree() })

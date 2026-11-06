@@ -14,6 +14,8 @@ interface NavigationState {
   newProjectOpen: boolean
   /** Settings is a dialog over the app (like Claude's settings), not a page. */
   settingsOpen: boolean
+  /** The section Settings opens on when asked (for example "java"), else the last one. */
+  settingsSection: string | null
   /** The "What's new" dialog after an update (or opened from Settings). */
   whatsNewOpen: boolean
   /** v0.4: the Ctrl+K command palette and the "?" shortcut sheet. */
@@ -24,7 +26,7 @@ interface NavigationState {
   openDocs(path: string): void
   setBottomPanel(open: boolean): void
   setNewProject(open: boolean): void
-  setSettings(open: boolean): void
+  setSettings(open: boolean, section?: string): void
   setWhatsNew(open: boolean): void
   setPalette(open: boolean): void
   setShortcuts(open: boolean): void
@@ -51,6 +53,7 @@ export const useNavigation = create<NavigationState>((set) => ({
   bottomPanelOpen: false,
   newProjectOpen: false,
   settingsOpen: false,
+  settingsSection: null,
   whatsNewOpen: false,
   paletteOpen: false,
   shortcutsOpen: false,
@@ -59,7 +62,7 @@ export const useNavigation = create<NavigationState>((set) => ({
   openDocs: (docsPath) => (router ? router.navigate(docsPath) : set({ page: "docs", docsPath })),
   setBottomPanel: (bottomPanelOpen) => set({ bottomPanelOpen }),
   setNewProject: (newProjectOpen) => set({ newProjectOpen }),
-  setSettings: (settingsOpen) => set({ settingsOpen }),
+  setSettings: (settingsOpen, section) => set({ settingsOpen, settingsSection: settingsOpen ? (section ?? null) : null }),
   setWhatsNew: (whatsNewOpen) => set({ whatsNewOpen }),
   setPalette: (paletteOpen) => set({ paletteOpen }),
   setShortcuts: (shortcutsOpen) => set({ shortcutsOpen }),
