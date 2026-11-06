@@ -40,7 +40,7 @@ const AUTO = "__auto__"
 
 const templates: { id: StarterId; label: string; about: string }[] = [
   { id: "empty", label: "Empty mod", about: "Just the mod, ready for your first element." },
-  { id: "block", label: "Example block", about: "A creative tab with one block, so Run shows something in game straight away." },
+  { id: "block", label: "Example block", about: "A creative tab with one block, so Run shows it in game." },
   { id: "item", label: "Example item", about: "Berry Dough and a Berry Bun with recipes: craft it, cook it, eat it." },
 ]
 
@@ -204,9 +204,9 @@ export function NewProjectView() {
         </nav>
 
         {/* Right: the form. */}
-        <div className="min-w-0 flex-1 overflow-y-auto px-6 pt-4 pb-3">
-          <h1 className="mb-4 text-lg leading-normal text-fg">New {target.name} mod</h1>
-          <div className="flex flex-col gap-3">
+        <div className="min-w-0 flex-1 overflow-y-auto px-6 pt-3 pb-3">
+          <h1 className="sr-only">New {target.name} mod</h1>
+          <div className="flex flex-col gap-2.5">
             <Row label="Name" htmlFor={ids.name}>
               <CheckedInput
                 id={ids.name}
@@ -218,7 +218,7 @@ export function NewProjectView() {
                 onChange={(e) => setName(e.target.value)}
                 onBlur={() => setNameTouched(true)}
               />
-              {nameError ? <FieldError>{nameError}</FieldError> : <FieldDescription>Shown in game and in the mod list</FieldDescription>}
+              {nameError && <FieldError>{nameError}</FieldError>}
             </Row>
 
             <Row label="Mod ID" htmlFor={ids.modId}>
@@ -237,7 +237,7 @@ export function NewProjectView() {
                   )
                 }
               />
-              {problems.modId && modId ? <FieldError>{problems.modId}</FieldError> : <FieldDescription>Names your files and ids in game, like {modId || "berry_mod"}:ruby_block</FieldDescription>}
+              {problems.modId && modId && <FieldError>{problems.modId}</FieldError>}
             </Row>
 
             <Row label="Java package" htmlFor={ids.group}>
@@ -344,9 +344,9 @@ export function NewProjectView() {
             <Row label="Version control">
               <label className="flex h-8 items-center gap-2 text-sm text-fg">
                 <Checkbox checked={git && gitAvailable} disabled={!gitAvailable} onCheckedChange={(on) => setGit(on === true)} />
-                Create a Git repository
+                <span className="whitespace-nowrap">Create a Git repository</span>
+                <span className="truncate text-xs text-fg-muted">{gitAvailable ? "Saves versions (History)" : "Git isn't installed (git-scm.com)"}</span>
               </label>
-              <FieldDescription>{gitAvailable ? "Saves versions of your mod (History) from the start." : "Git isn't installed. Install it from git-scm.com to turn this on."}</FieldDescription>
             </Row>
 
             {/* "> Advanced": the chevron turns and the panel slides open. */}

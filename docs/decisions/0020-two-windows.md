@@ -16,7 +16,7 @@ pinning, clone, learn and settings.
 ## Decision
 
 - Two Tauri windows in one bundle and one `index.html`:
-  - `welcome`: fixed size (820 x 600, not resizable), custom title bar, folder drops enabled.
+  - `welcome`: fixed size (820 x 640, not resizable), custom title bar, folder drops enabled.
   - `editor`: resizable (1280 x 820, min 960 x 640), created on demand (`create: false` in the config).
 - `main.tsx` picks `WelcomeApp` or `EditorApp` from the window label.
 - The app starts in `welcome`. Opening or creating a project builds `editor`, then closes `welcome` (the new window first, so

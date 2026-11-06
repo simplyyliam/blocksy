@@ -14,12 +14,15 @@ import { openUrl } from "@tauri-apps/plugin-opener"
 import { Badge, Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemTitle, toast } from "@blocksy/ui"
 import { errorMessage } from "../../shared/api"
 
+/** Loader ids in community.json, as people write them. */
+const LOADER_NAMES: Record<string, string> = { fabric: "Fabric", neoforge: "NeoForge", forge: "Forge", quilt: "Quilt" }
+
 const open = (url: string) => void openUrl(url).catch((err) => toast.error(errorMessage(err)))
 
 function LinkRow({ title, line, url, tag }: { title: string; line: string; url: string; tag?: string }) {
   return (
     <Item
-      size="sm"
+      size="xs"
       className="cursor-pointer hover:bg-surface-hover/60"
       render={<button type="button" onClick={() => open(url)} className="w-full text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/30" />}
     >
@@ -69,7 +72,7 @@ export function CommunityView() {
             <Heading>{title}</Heading>
             <ItemGroup className="gap-0.5">
               {entries.map((e) => (
-                <LinkRow key={e.url} title={e.title} line={`by ${e.creator}`} url={e.url} tag={e.loaders.map((l) => l[0]!.toUpperCase() + l.slice(1)).join(", ")} />
+                <LinkRow key={e.url} title={e.title} line={`by ${e.creator}`} url={e.url} tag={e.loaders.map((l) => LOADER_NAMES[l] ?? l).join(", ")} />
               ))}
             </ItemGroup>
           </section>
