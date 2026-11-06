@@ -2,6 +2,52 @@
 
 All notable changes to Blocksy are documented here. Versions follow docs/release/README.md.
 
+## [0.4.1] - 2026-11-06
+
+A new welcome window for starting, opening and learning, and a safer way to open projects.
+
+### Added
+
+- **A welcome window.** Blocksy now opens a small window with your Projects, Learn, Community and Settings. Opening or creating a project brings up the editor, and File > Close Project, New project or Open bring the welcome window back.
+- **A new Project view.** Pick a project type, then name your mod and see its ID and Java package fill in as you type. Choose the Minecraft version, Java, a starter template and Git, and read clear messages when a name or folder won't work.
+- **Learn and Community.** Read the Docs lessons without leaving the welcome window, and find creator spotlights, helpful links and the full credits.
+- **Open Recent in the editor.** The File menu can start a new project, open one, switch to a recent project or close the current one. The same actions are in the command palette.
+- **"Trust this project?"** The first time you open a folder, Blocksy asks before going on. Projects Blocksy creates for you are trusted from the start.
+
+### Changed
+
+- Settings in the welcome window is one scrolling page with the same sections as the editor's Settings.
+- The home page and its icon rail are gone; the welcome window replaces them.
+
+### Fixed
+
+- Closing a project or switching to another one saves your latest changes first.
+- If switching to another project fails, your open project stays and you see a message.
+- Long folder paths are shortened correctly, even when they mix slash styles.
+- The welcome window follows your UI scale.
+
+### Known issues
+
+- Windows may warn "Windows protected your PC" when you install, because the installer isn't code-signed yet. Click **More info**, then **Run anyway**.
+- Minecraft's look appears after the first setup or build. Until then you see Blocksy's simple preview with a "Build once to load Minecraft's look" note.
+- Blocks are still full cubes with one texture on all six faces; custom shapes and per-face painting come with Model Studio.
+- Panels can be resized and folded but not yet dragged out as free-floating windows.
+- A picture you drop in is placed by its name (for example particle or gui) or by the item you have selected; there is no chooser yet.
+- NeoForge, Forge and Quilt are shown in New project as "Later"; only Fabric works for now.
+- Saving versions needs git installed; you need Java 25 (a JDK); the first build needs an internet connection and takes a few minutes.
+
+### Privacy
+
+- Blocksy checks GitHub for updates when it starts and every few hours. No account or personal data is sent.
+- While setting up and building, Gradle downloads Minecraft, Fabric and code libraries from Mojang, Fabric and Maven repositories.
+- Minecraft's pictures, sounds and font are read from the files already downloaded on your computer, only to draw previews. They are kept in memory, never copied into your project, bundled or uploaded.
+- Files you import are stored in your project folder and never leave your computer.
+- Saved versions stay in your project folder on your computer; nothing is uploaded.
+- Docs lesson pages show video thumbnails from YouTube; a video loads from YouTube only when you press play.
+- Links you open from the Docs, Learn, Community or elsewhere in Blocksy open in your browser.
+- The list of folders you trust is kept on your computer only.
+- There is no GitHub sign-in or sync in this version, and Blocksy collects no usage data.
+
 ## [0.4.0] - 2026-11-05
 
 A new editor that looks and feels like a full creation tool, with previews drawn the way Minecraft draws them.
