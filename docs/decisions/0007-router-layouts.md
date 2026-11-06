@@ -1,6 +1,6 @@
 # 0007: react-router with layout routes
 
-- Status: accepted
+- Status: accepted (the Home layout is replaced by [ADR 0020](0020-two-windows.md); `ProjectLayout` stays)
 - Date: 2026-10-30
 
 ## Context
