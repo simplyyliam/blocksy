@@ -1,7 +1,7 @@
 // Every built-in command, registered once. The menu bar (menus.ts), toolbar, palette and
 // shortcuts only point at these ids. A new action = one `defineCommand` here.
 import {
-  BookOpen, Box, Code2, Coffee, Copy, Download, FileAudio, FolderOpen, History, Hammer, ImageIcon, Keyboard, LayoutDashboard,
+  BookOpen, Box, Code2, Coffee, Copy, Download, FileAudio, FilePlus2, FolderOpen, History, Hammer, ImageIcon, Keyboard, LayoutDashboard,
   Layers, Library, PanelBottom, Pin, PanelLeft, PanelRight, Plus, Play, Redo2, RotateCcw, Save, Search, Settings, Shapes, Sparkles, Square,
   SquareTerminal, Trash2, Undo2, X, ArrowLeftRight,
 } from "lucide-react"
@@ -39,6 +39,9 @@ export function registerBuiltinCommands() {
   registered = true
 
   // ---- File -------------------------------------------------------------------------------
+  // New project and Open bring the welcome window back (ADR 0020), which then starts that flow.
+  defineCommand({ id: "file.new-project", group: "File", title: "New project…", icon: FilePlus2, keys: "Mod+Shift+N", keywords: ["create"], run: () => closeProject("new") })
+  defineCommand({ id: "file.open", group: "File", title: "Open…", icon: FolderOpen, keys: "Mod+O", keywords: ["folder", "project"], run: () => closeProject("open") })
   defineCommand({ id: "file.new-element", group: "File", title: "New element…", icon: Plus, keys: "N", run: () => editor().openNewElement(), keywords: ["add", "create", "block", "item"] })
   defineCommand({
     id: "file.save",
