@@ -86,6 +86,17 @@ export const minecraftTheme: Theme = {
     "code-constant": "#ffcf6b",
     "code-type": "#c9a6ff",
 
+    // Shell sizes (docs/design/shell-spec.md): same numbers as Modern, so the layout never shifts.
+    "titlebar-h": "36px",
+    "activitybar-w": "44px",
+    "tab-h": "32px",
+    "toolbar-h": "32px",
+    "statusbar-h": "26px",
+    "panel-header-h": "32px",
+    "row-h": "24px",
+    "panel-gap": "6px",
+    "window-close": "#e81123", // native Windows close hover
+
     // Theme art (original pixel textures) and the raised-button bevel
     "texture-app": png(STONE_PNG),
     "texture-panel": png(PLANKS_PNG),
