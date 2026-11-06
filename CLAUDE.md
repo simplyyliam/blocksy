@@ -97,6 +97,9 @@ docs/                    plan, ADRs (decisions/), design inspiration, perf resul
 - The status bar is dynamic: each file in `features/status-bar/` is a *view* with a
   `when(state)` check and a priority; the widget shows the best match (idle, building,
   game running, update ready, ...). New view = new file + one line in the list.
+- The status bar only shows status. An item may open a popover or a panel in the current view, never a new route.
+- The project shell (ADR 0019, `docs/design/shell-spec.md`): title bar, activity bar (views that open as centre tabs),
+  explorer (lists only), tabs + editor toolbar + canvas, inspector, status bar. Shell sizes are `--b-*` tokens in both themes.
 
 ## Git workflow (feature merges)
 
