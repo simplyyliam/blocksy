@@ -4,10 +4,11 @@
 import { getVersion } from "@tauri-apps/api/app"
 import { openUrl } from "@tauri-apps/plugin-opener"
 import { lazy, Suspense, useEffect, useState } from "react"
+import { loadDocsApp } from "@blocksy/docs"
 import { PixelLoader } from "@blocksy/ui"
 import { registries } from "../app/modules"
 
-const DocsApp = lazy(() => import("@blocksy/docs").then((m) => ({ default: m.DocsApp })))
+const DocsApp = lazy(() => loadDocsApp().then((m) => ({ default: m.DocsApp })))
 
 // Stable for the docs' memoised page list (element types don't change while running).
 const elementTypes = registries.elementTypes.list()

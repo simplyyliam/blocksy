@@ -11,12 +11,16 @@ interface WelcomeState {
   /** The New project view replaces the whole body (like JetBrains' New Project dialog). */
   creating: boolean
   cloning: boolean
+  /** The Docs page open in Learn (e.g. "/docs/learn/make-your-first-block"), or null for the lesson list. */
+  learnPath: string | null
   /** The Settings view's open section (so "Set up Java" can jump to Java). */
   settingsSection: SettingsSectionId
   /** Asked for by File > Open... in the editor: the Projects view opens the folder picker once. */
   pendingOpen: boolean
   setView(view: WelcomeView): void
   openSettings(section: SettingsSectionId): void
+  /** Opens Learn on a Docs page (null = the lesson list). */
+  openLearn(path: string | null): void
   setSettingsSection(section: SettingsSectionId): void
   setCreating(creating: boolean): void
   setCloning(cloning: boolean): void
@@ -30,10 +34,12 @@ export const useWelcome = create<WelcomeState>((set) => ({
   view: "projects",
   creating: intent === "new",
   cloning: false,
+  learnPath: null,
   settingsSection: "general",
   pendingOpen: intent === "open",
   // Leaving New project by picking another view cancels it.
   setView: (view) => set({ view, creating: false }),
+  openLearn: (learnPath) => set({ view: "learn", creating: false, learnPath }),
   openSettings: (settingsSection) => set({ view: "settings", creating: false, settingsSection }),
   setSettingsSection: (settingsSection) => set({ settingsSection }),
   setCreating: (creating) => set(creating ? { creating, view: "projects" } : { creating }),

@@ -8,6 +8,7 @@
 //   [ + New project ] [ 📂 Open folder ] [ ⑂ Clone ]
 //   New here? Start "Make your first block" →
 import { FolderOpen, GitBranch, Plus, type LucideIcon } from "lucide-react"
+import { lessonPath, LESSONS } from "@blocksy/docs"
 import { DotPattern, Kbd } from "@blocksy/ui"
 import { useJava } from "../../shared/stores/java"
 import { useWelcome } from "../../shared/stores/welcome"
@@ -33,7 +34,8 @@ export function EmptyState() {
   const setCreating = useWelcome((s) => s.setCreating)
   const setCloning = useWelcome((s) => s.setCloning)
   const openSettings = useWelcome((s) => s.openSettings)
-  const setView = useWelcome((s) => s.setView)
+  const openLearn = useWelcome((s) => s.openLearn)
+  const first = LESSONS[0]
   const javaMissing = useJava((s) => s.status === "missing")
   const javaRequired = useJava((s) => s.required)
   return (
@@ -48,12 +50,14 @@ export function EmptyState() {
           <Tile Icon={FolderOpen} label="Open folder" keys="Ctrl+O" onClick={() => void openFolder()} />
           <Tile Icon={GitBranch} label="Clone" keys="Ctrl+Shift+O" onClick={() => setCloning(true)} />
         </div>
-        <p className="mt-6 text-sm text-fg-muted">
-          New here?{" "}
-          <button type="button" onClick={() => setView("learn")} className="text-brand underline-offset-4 outline-none hover:underline focus-visible:underline">
-            Start “Make your first block”
-          </button>
-        </p>
+        {first && (
+          <p className="mt-6 text-sm text-fg-muted">
+            New here?{" "}
+            <button type="button" onClick={() => openLearn(lessonPath(first.slug))} className="text-brand underline-offset-4 outline-none hover:underline focus-visible:underline">
+              Start “{first.title}”
+            </button>
+          </p>
+        )}
         {/* The one thing to say about Java at first launch: only when it is missing. */}
         {javaMissing && (
           <p className="mt-2 text-sm text-fg-muted">
