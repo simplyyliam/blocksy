@@ -21,7 +21,7 @@ export const isView = (id: Selection) => (VIEWS as readonly string[]).includes(i
 export type Selection = string
 
 /** The bottom dock's tabs. */
-export type DockTab = "log" | "problems" | "history"
+export type DockTab = "log" | "problems"
 
 /** The panel sizes and visibility that are remembered per project (see shared/layout-memory.ts). */
 export interface PanelLayout {
@@ -56,6 +56,9 @@ interface EditorState extends PanelLayout {
   layoutVersion: number
   /** The working mode per element type (item: paint or look), kept while the app runs. */
   modeByType: Record<string, string>
+  /** The page showing in the Docs tab (kept here so links inside it never touch the router). */
+  docsPath: string
+  setDocsPath(path: string): void
   /** The "New element" dialog (N): open, and the type chosen in it if any. */
   newElementOpen: boolean
   newElementType: string | null
@@ -98,6 +101,8 @@ export const useEditor = create<EditorState>((set, get) => ({
   modeByType: {},
   newElementOpen: false,
   newElementType: null,
+  docsPath: "/docs",
+  setDocsPath: (docsPath) => set({ docsPath }),
   select: (selected) => set((s) => ({ selected, tabs: s.tabs.includes(selected) ? s.tabs : [...s.tabs, selected] })),
   closeTab: (id) =>
     set((s) => {

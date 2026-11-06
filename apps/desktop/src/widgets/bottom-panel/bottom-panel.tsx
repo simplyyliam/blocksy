@@ -1,12 +1,11 @@
 // Bottom dock widget: slides open under the editor; drag its top edge to resize.
-// Two tabs: Build log and Problems. Their content lives in features/bottom-panel/.
+// Two tabs: Build log and Problems (History is a view on the activity bar now). Their content lives in features/bottom-panel/.
 // Height and open state are remembered per project (shared/layout-memory.ts).
 import { X } from "lucide-react"
 import { useRef } from "react"
 import { Button, cn } from "@blocksy/ui"
 import { BuildLog } from "../../features/bottom-panel/build-log"
 import { Problems } from "../../features/bottom-panel/problems"
-import { History } from "../../features/project-editor/history"
 import { useProblems } from "../../features/bottom-panel/use-problems"
 import { useEditor, type DockTab } from "../../shared/stores/editor"
 import { useNavigation } from "../../shared/stores/navigation"
@@ -36,7 +35,6 @@ export function BottomPanel() {
   const tabs: { id: DockTab; label: string; count?: number }[] = [
     { id: "log", label: "Build log" },
     { id: "problems", label: "Problems", count: problems },
-    { id: "history", label: "History" },
   ]
 
   return (
@@ -87,7 +85,7 @@ export function BottomPanel() {
               <X strokeWidth={1.75} />
             </Button>
           </div>
-          <div className="flex min-h-0 flex-1 flex-col border-t border-line-subtle">{tab === "log" ? <BuildLog /> : tab === "problems" ? <Problems /> : <div className="min-h-0 flex-1 overflow-y-auto"><History /></div>}</div>
+          <div className="flex min-h-0 flex-1 flex-col border-t border-line-subtle">{tab === "log" ? <BuildLog /> : <Problems />}</div>
         </section>
       </div>
     </div>

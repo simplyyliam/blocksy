@@ -16,14 +16,16 @@ import { FirstBuild } from "../../features/first-build/first-build"
 import { CodeTab } from "../../features/project-editor/code-tab"
 import { InspectorCode } from "../../features/project-editor/inspector-code"
 import { FileDrop } from "../../features/project-editor/file-drop"
+import { DocsView } from "../../features/project-editor/docs-view"
 import { History } from "../../features/project-editor/history"
+import { Library } from "../../features/project-editor/library"
 import { Overview } from "../../features/project-editor/overview"
 import { ProjectTree } from "../../features/project-editor/project-tree"
 import { EditorToolbar } from "../../features/project-editor/editor-toolbar"
 import { TabStrip } from "../../features/project-editor/tab-strip"
 import { elementModules, registries } from "../../app/modules"
 import { useLayoutMemory } from "../../shared/layout-memory"
-import { HISTORY, useEditor } from "../../shared/stores/editor"
+import { DOCS, HISTORY, LIBRARY, useEditor } from "../../shared/stores/editor"
 import { playMinecraftSound } from "../../shared/minecraft-sounds"
 import { useGradle } from "../../shared/stores/gradle"
 import { useWorkspace } from "../../shared/vanilla/workspace"
@@ -179,6 +181,10 @@ export function ProjectPage() {
               <CodeTab />
             ) : selected === HISTORY ? (
               <History />
+            ) : selected === LIBRARY ? (
+              <Library />
+            ) : selected === DOCS ? (
+              <DocsView />
             ) : module && props ? (
               // No key: switching between two blocks keeps the same 3D canvas (no new WebGL context).
               <module.Canvas {...props} />

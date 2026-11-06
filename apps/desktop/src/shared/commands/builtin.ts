@@ -50,9 +50,8 @@ export function registerBuiltinCommands() {
     run: () => {
       // Inspector fields commit on blur: blur first, so a half-typed edit is saved, not lost.
       if (document.activeElement instanceof HTMLElement && document.activeElement.id !== "history-message") document.activeElement.blur()
-      // v0.4: saved versions live in the bottom dock (History tab), with the message box focused.
-      editor().setDockTab("history")
-      nav().setBottomPanel(true)
+      // Saved versions live in the History view (a tab); open it with the message box focused.
+      openView(HISTORY)
       setTimeout(() => document.getElementById("history-message")?.focus(), 250)
     },
   })
