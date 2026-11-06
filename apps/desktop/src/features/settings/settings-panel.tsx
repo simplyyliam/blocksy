@@ -277,3 +277,29 @@ export function SettingsPanel({ section, onSection, title, navWidth = 200, paneR
     </SidebarProvider>
   )
 }
+
+/**
+ * The flat version for the welcome window: one scrolling page, each section under its own heading, no
+ * inner sidebar (JetBrains' Customize page and Unity Hub's Settings are flat too; a second column of
+ * navigation for six settings is more chrome than content). `scrollTo` jumps to a section on open.
+ */
+export function SettingsPage({ scrollTo }: { scrollTo?: SettingsSectionId }) {
+  useEffect(() => {
+    // The first section is already at the top (under the title): only jump for the others.
+    if (scrollTo && scrollTo !== settingsSections[0].id) document.getElementById(`settings-${scrollTo}`)?.scrollIntoView({ block: "start" })
+  }, [scrollTo])
+  return (
+    <div className="h-full overflow-y-auto px-6 pt-3 pb-8">
+      <h1 className="text-lg text-fg">Settings</h1>
+      {settingsSections.map((s) => {
+        const Body = bodies[s.id]
+        return (
+          <section key={s.id} id={`settings-${s.id}`} className="mt-6 scroll-mt-3">
+            <h2 className="mb-2 text-sm text-fg">{s.label}</h2>
+            <Body />
+          </section>
+        )
+      })}
+    </div>
+  )
+}

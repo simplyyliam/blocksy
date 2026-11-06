@@ -1,17 +1,9 @@
-// Settings in the welcome window: the same panel as the editor's Settings dialog
-// (theme, UI scale, Java, projects folder, updates).
+// Settings in the welcome window: one flat page with the same sections as the editor's Settings
+// dialog (theme, UI scale, Java, projects folder, updates), no sidebar of its own.
+import { SettingsPage } from "../settings/settings-panel"
 import { useWelcome } from "../../shared/stores/welcome"
-import { SettingsPanel } from "../settings/settings-panel"
 
 export function SettingsView() {
   const section = useWelcome((s) => s.settingsSection)
-  const setSection = useWelcome((s) => s.setSettingsSection)
-  return (
-    <SettingsPanel
-      section={section}
-      onSection={setSection}
-      navWidth={168}
-      title={<h1 className="mb-3 px-2.5 text-lg leading-normal text-fg">Settings</h1>}
-    />
-  )
+  return <SettingsPage scrollTo={section} />
 }

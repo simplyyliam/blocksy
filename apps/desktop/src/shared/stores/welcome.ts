@@ -13,7 +13,7 @@ interface WelcomeState {
   cloning: boolean
   /** The Docs page open in Learn (e.g. "/docs/learn/make-your-first-block"), or null for the lesson list. */
   learnPath: string | null
-  /** The Settings view's open section (so "Set up Java" can jump to Java). */
+  /** The Settings section to scroll to on open (so "Set up Java" lands on Java). */
   settingsSection: SettingsSectionId
   /** Asked for by File > Open... in the editor: the Projects view opens the folder picker once. */
   pendingOpen: boolean
@@ -21,7 +21,6 @@ interface WelcomeState {
   openSettings(section: SettingsSectionId): void
   /** Opens Learn on a Docs page (null = the lesson list). */
   openLearn(path: string | null): void
-  setSettingsSection(section: SettingsSectionId): void
   setCreating(creating: boolean): void
   setCloning(cloning: boolean): void
   clearPendingOpen(): void
@@ -38,10 +37,9 @@ export const useWelcome = create<WelcomeState>((set) => ({
   settingsSection: "general",
   pendingOpen: intent === "open",
   // Leaving New project by picking another view cancels it.
-  setView: (view) => set({ view, creating: false }),
+  setView: (view) => set({ view, creating: false, ...(view === "settings" ? { settingsSection: "general" as const } : {}) }),
   openLearn: (learnPath) => set({ view: "learn", creating: false, learnPath }),
   openSettings: (settingsSection) => set({ view: "settings", creating: false, settingsSection }),
-  setSettingsSection: (settingsSection) => set({ settingsSection }),
   setCreating: (creating) => set(creating ? { creating, view: "projects" } : { creating }),
   setCloning: (cloning) => set({ cloning }),
   clearPendingOpen: () => set({ pendingOpen: false }),
