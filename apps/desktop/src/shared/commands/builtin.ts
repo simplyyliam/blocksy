@@ -2,7 +2,7 @@
 // shortcuts only point at these ids. A new action = one `defineCommand` here.
 import {
   BookOpen, Box, Code2, Coffee, Copy, Download, FileAudio, FolderOpen, History, Hammer, ImageIcon, Keyboard, LayoutDashboard,
-  Layers, Library, PanelBottom, PanelLeft, PanelRight, Plus, Play, Redo2, RotateCcw, Save, Search, Settings, Shapes, Sparkles, Square,
+  Layers, Library, PanelBottom, Pin, PanelLeft, PanelRight, Plus, Play, Redo2, RotateCcw, Save, Search, Settings, Shapes, Sparkles, Square,
   SquareTerminal, Trash2, Undo2, X, ArrowLeftRight,
 } from "lucide-react"
 import { getCurrentWindow } from "@tauri-apps/api/window"
@@ -124,6 +124,7 @@ export function registerBuiltinCommands() {
   defineCommand({ id: "window.swap", group: "Window", title: "Swap inspector side", icon: ArrowLeftRight, run: () => editor().swapInspectorSide() })
   defineCommand({ id: "window.reset", group: "Window", title: "Reset layout", icon: RotateCcw, run: () => { editor().resetLayout(); nav().setBottomPanel(false) } })
   defineCommand({ id: "tab.close", group: "Window", title: "Close tab", icon: X, keys: "Mod+W", run: () => editor().closeTab(editor().selected) })
+  defineCommand({ id: "tab.pin", group: "Window", title: "Pin tab", icon: Pin, checked: () => editor().pinned.includes(editor().selected), run: () => { const id = editor().selected; if (editor().pinned.includes(id)) editor().unpin(id); else editor().pin(id) } })
   defineCommand({ id: "tab.next", group: "Window", title: "Next tab", keys: "Mod+PageDown", run: () => editor().cycleTab(1) })
   defineCommand({ id: "tab.previous", group: "Window", title: "Previous tab", keys: "Mod+PageUp", run: () => editor().cycleTab(-1) })
 

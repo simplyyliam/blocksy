@@ -13,6 +13,7 @@ import { preloadBlockPreview } from "@blocksy/model-studio"
 import { MinecraftProvider } from "@blocksy/ui"
 import { openProject } from "../../shared/open-project"
 import { buildMod } from "../../shared/project-actions"
+import { useBuilt, watchBuilds } from "../../shared/stores/built"
 import { useGradle } from "../../shared/stores/gradle"
 import { useProject } from "../../shared/stores/project"
 import { useWorkspace } from "../../shared/vanilla/workspace"
@@ -50,6 +51,10 @@ export function ProjectLayout() {
     if (lastResult?.success && projectDir && minecraft && loader) void useWorkspace.getState().refresh(projectDir, minecraft, loader, true)
   }, [lastResult, projectDir, minecraft, loader])
   useEffect(() => () => useWorkspace.getState().reset(), [projectDir])
+
+  // "Changed since the last build" dots on the tabs: snapshot at each Build/Run, forget on a new project.
+  useEffect(() => watchBuilds(), [])
+  useEffect(() => useBuilt.getState().reset(), [projectDir])
 
   return (
     <MinecraftProvider assets={assets} status={status} onBuild={() => void buildMod()}>
