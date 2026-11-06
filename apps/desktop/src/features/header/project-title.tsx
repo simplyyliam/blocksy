@@ -1,6 +1,7 @@
-// The open project's name in the titlebar row, with its picture and a ··· menu
-// (Show in folder, Change cover…, Close project). Right-click does the same.
-import { MoreHorizontal } from "lucide-react"
+// The open project's name in the titlebar, with its picture and a ▾ menu
+// (Show in folder, Change cover…, Close project). The whole name is the trigger, like
+// JetBrains' project switcher. Right-click does the same.
+import { ChevronDown } from "lucide-react"
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@blocksy/ui"
 import { ProjectImage } from "../../shared/project-image"
 import { ProjectContextMenu, ProjectMenuItems } from "../../shared/project-menu"
@@ -10,21 +11,19 @@ export function ProjectTitle() {
   const project = useProject((s) => s.current)
   if (!project) return null
   return (
-    <div className="flex min-w-0 items-center gap-1">
-      <ProjectContextMenu dir={project.dir} open={false} end="close">
-        <div className="flex min-w-0 items-center gap-2 px-1">
-          <ProjectImage dir={project.dir} grid={[4, 4]} className="size-4 shrink-0 overflow-hidden rounded-[4px]" />
-          <span className="truncate text-sm text-fg">{project.doc.name}</span>
-        </div>
-      </ProjectContextMenu>
+    <ProjectContextMenu dir={project.dir} open={false} end="close">
       <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="ghost" size="icon-xs" aria-label="Project actions" className="text-fg-muted" />}>
-          <MoreHorizontal strokeWidth={1.75} />
+        <DropdownMenuTrigger
+          render={<Button variant="ghost" aria-label="Project actions" className="h-6 min-w-0 gap-1.5 rounded-sm px-2 font-normal text-fg hover:bg-surface-hover" />}
+        >
+          <ProjectImage dir={project.dir} grid={[4, 4]} className="size-4 shrink-0 overflow-hidden rounded-[4px]" />
+          <span className="max-w-40 truncate">{project.doc.name}</span>
+          <ChevronDown className="size-3.5 shrink-0 text-fg-faint" strokeWidth={1.75} />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-52">
           <ProjectMenuItems dir={project.dir} kind="dropdown" open={false} end="close" />
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
+    </ProjectContextMenu>
   )
 }
