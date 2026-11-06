@@ -56,5 +56,9 @@ registerElement(recipeModule)
 registerElement(tagModule)
 registerElement(languageModule)
 
-/** Loaders shown greyed out in New project until their target module exists. */
-export const upcomingLoaders = [{ id: "neoforge", name: "NeoForge", note: "NeoForge support arrives after 1.0" }]
+/** Loaders shown as "Later" in New project until their target module exists. */
+export const upcomingLoaders = [
+  { id: "neoforge", name: "NeoForge", note: "NeoForge support arrives after 1.0" },
+  { id: "forge", name: "Forge", note: "Not scheduled yet" },
+  { id: "quilt", name: "Quilt", note: "Not scheduled yet" },
+]

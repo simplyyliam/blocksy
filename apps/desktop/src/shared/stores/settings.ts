@@ -1,8 +1,9 @@
-// User settings (Settings page): Java path, default project folder, theme.
+// User settings (the Settings panel, in both windows): Java path, default project folder, theme, UI scale.
 import { create } from "zustand"
 import { commands } from "../bindings"
 import { call } from "../api"
 import { parentPath } from "../paths"
+import { announce } from "../sync"
 import { loadJson, saveJson } from "./persist"
 
 export interface Settings {
@@ -11,13 +12,13 @@ export interface Settings {
   /** Where new projects go; null = ~/Blocksy. */
   projectsDir: string | null
   theme: string
-  /** How Home lists projects. */
-  homeView: "grid" | "list"
+  /** Whole-window zoom: 0.9, 1, 1.1, 1.25 ... (applied with the webview zoom). */
+  uiScale: number
   /** The app version whose "What's new" was last shown; null on a fresh install. */
   lastSeenVersion: string | null
 }
 
-const defaults: Settings = { javaHome: null, projectsDir: null, theme: "modern", homeView: "grid", lastSeenVersion: null }
+const defaults: Settings = { javaHome: null, projectsDir: null, theme: "modern", uiScale: 1, lastSeenVersion: null }
 
 interface SettingsState extends Settings {
   loaded: boolean
@@ -43,7 +44,8 @@ export const useSettings = create<SettingsState>((set, get) => ({
   },
   async update(patch) {
     set(patch)
-    const { javaHome, projectsDir, theme, homeView, lastSeenVersion } = get()
-    await saveJson("settings", { javaHome, projectsDir, theme, homeView, lastSeenVersion })
+    const { javaHome, projectsDir, theme, uiScale, lastSeenVersion } = get()
+    await saveJson("settings", { javaHome, projectsDir, theme, uiScale, lastSeenVersion })
+    announce("settings-changed") // the other window loads it again
   },
 }))

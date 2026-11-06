@@ -1,14 +1,18 @@
-// Bench mode (pnpm bench, packages/bench). Only runs when the bench runner starts the
-// app with BLOCKSY_BENCH set. It records when Home is on screen, then runs a scripted
-// workout of the shell while timing every frame, and hands the report back to Rust.
+// Bench mode (pnpm bench, packages/bench). Only runs when the bench runner starts the app with
+// BLOCKSY_BENCH set. The app now has two windows (ADR 0020), so the workout has two parts:
+//   1. welcome window: records when it is on screen (the cold start), then switches its views and
+//      opens New project while timing every frame, saves that, and opens the editor.
+//   2. editor window: a scripted workout of the shell (log streaming, Settings), then the 3D preview,
+//      merges the welcome window's frames and hands the one report back to Rust.
 import { commands } from "../shared/bindings"
 import { logLines, useGradle } from "../shared/stores/gradle"
-import { useNavigation, type Page } from "../shared/stores/navigation"
+import { useNavigation } from "../shared/stores/navigation"
 import { addElement, createDocumentStore, createProject } from "@blocksy/core"
 import { previewFrameCount, previewReadyCount } from "@blocksy/model-studio"
 import { applyStarter } from "../features/new-project/starters"
 import { useEditor } from "../shared/stores/editor"
 import { useProject } from "../shared/stores/project"
+import { openEditor, windowKind } from "../shared/windows"
 import { blockModule } from "@blocksy/element-block"
 
 const frame = () => new Promise<number>((resolve) => requestAnimationFrame(resolve))
@@ -16,16 +20,16 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const percentile = (sorted: number[], p: number) => sorted[Math.min(sorted.length - 1, Math.floor((p / 100) * sorted.length))] ?? 0
 
-export async function startBenchIfRequested() {
-  if (!(await commands.benchMode())) return
+/** What the welcome window hands the editor window (windows of one app share localStorage). */
+const PARTIAL_KEY = "blocksy.bench-welcome"
+interface Partial_ {
+  homeAtRustMs: number | null
+  homeAtWebviewMs: number
+  deltas: number[]
+}
 
-  // 1. Start-up: two frames after the first render means Home is painted.
-  await frame()
-  await frame()
-  const homeAtRustMs = await commands.appUptimeMs()
-  const homeAtWebviewMs = performance.now()
-
-  // 2. Record every frame while the script runs.
+/** Records the time between every frame until stopped. */
+function recordFrames() {
   const deltas: number[] = []
   let recording = true
   void (async () => {
@@ -36,7 +40,55 @@ export async function startBenchIfRequested() {
       last = now
     }
   })()
+  return { deltas, stop: () => (recording = false) }
+}
 
+export async function startBenchIfRequested() {
+  if (!(await commands.benchMode())) return
+  if (windowKind() === "welcome") await benchWelcome()
+  else await benchEditor()
+}
+
+/** Part 1: the welcome window. Its paint time is the cold start. */
+async function benchWelcome() {
+  // Start-up: two frames after the first render means the welcome window is painted.
+  await frame()
+  await frame()
+  const homeAtRustMs = await commands.appUptimeMs()
+  const homeAtWebviewMs = performance.now()
+
+  const rec = recordFrames()
+  await wait(500)
+  // Loaded here, not at the top: the welcome store reads a one-shot intent when it is first imported.
+  const welcome = (await import("../shared/stores/welcome")).useWelcome.getState()
+  for (const view of ["learn", "community", "settings", "projects"] as const) {
+    welcome.setView(view)
+    await wait(350)
+  }
+  welcome.setCreating(true)
+  await wait(600)
+  welcome.setCreating(false)
+  await wait(400)
+  rec.stop()
+
+  const partial: Partial_ = { homeAtRustMs, homeAtWebviewMs, deltas: rec.deltas }
+  localStorage.setItem(PARTIAL_KEY, JSON.stringify(partial))
+  // The editor window skips opening a real project in bench mode (the editor part sets up its own).
+  await openEditor("bench://project")
+}
+
+/** Part 2: the editor window, then the report for both. */
+async function benchEditor() {
+  const partial = JSON.parse(localStorage.getItem(PARTIAL_KEY) ?? "null") as Partial_ | null
+  localStorage.removeItem(PARTIAL_KEY)
+  const homeAtRustMs = partial?.homeAtRustMs ?? null
+  const homeAtWebviewMs = partial?.homeAtWebviewMs ?? 0
+
+  // Record every frame while the script runs.
+  const rec = recordFrames()
+  const deltas = rec.deltas
+
+  // The editor needs a project to show: an in-memory one (nothing on disk), set up in benchBlockPreview.
   const nav = useNavigation.getState()
   await wait(500)
   nav.setBottomPanel(true)
@@ -48,21 +100,13 @@ export async function startBenchIfRequested() {
     await frame()
   }
   await wait(300)
-  nav.setNewProject(true)
-  await wait(600)
-  nav.setNewProject(false)
-  await wait(400)
-  for (const page of ["docs", "home"] satisfies Page[]) {
-    nav.go(page)
-    await wait(350)
-  }
   nav.setSettings(true)
   await wait(500)
   nav.setSettings(false)
   await wait(300)
   nav.setBottomPanel(false)
   await wait(500)
-  recording = false
+  rec.stop()
   logLines.length = 0
 
   // 3. 3D (v0.2): open a block in the project editor (an in-memory project, nothing on disk),
@@ -71,7 +115,7 @@ export async function startBenchIfRequested() {
   const preview = await benchBlockPreview()
 
   // 3. Report. Memory of the whole process tree is measured by the runner.
-  const sorted = [...deltas].sort((a, b) => a - b)
+  const sorted = [...(partial?.deltas ?? []), ...deltas].sort((a, b) => a - b)
   const heap = (performance as unknown as { memory?: { usedJSHeapSize: number } }).memory
   const report = {
     homeAtRustMs,
@@ -108,7 +152,6 @@ async function benchBlockPreview() {
   const idleStart = previewFrameCount()
   await wait(2000)
   const idleFrames = previewFrameCount() - idleStart
-  useNavigation.getState().go("home")
   useProject.setState({ current: null })
   return { readyMs, idleFrames }
 }

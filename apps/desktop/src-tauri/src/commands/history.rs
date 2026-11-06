@@ -181,9 +181,51 @@ fn file_at(dir: &str, id: &str, path: &str) -> AppResult<String> {
     ok(git(dir, &["show", &spec])?)
 }
 
+/// Is this a plain https URL git may clone? (No `ext::`, `file:`, `ssh:` or option-like values.)
+fn clone_url_ok(url: &str) -> bool {
+    url.starts_with("https://") && url.len() < 2048 && !url.chars().any(|c| c.is_whitespace() || c.is_control())
+}
+
+/// Clones a public repository by URL (welcome window "Clone"). Private repos arrive with GitHub sign-in.
+/// `dest` must not exist or be an empty folder. Never prompts for a password.
+#[tauri::command]
+#[specta::specta]
+pub async fn git_clone(url: String, dest: String) -> AppResult<()> {
+    blocking(move || {
+        if !clone_url_ok(&url) {
+            return Err(AppError::new(ErrorCode::InvalidInput, "Use a web address that starts with https://"));
+        }
+        let dest = Path::new(&dest);
+        if dest.exists() && std::fs::read_dir(dest).map(|mut d| d.next().is_some()).unwrap_or(true) {
+            return Err(AppError::new(ErrorCode::AlreadyExists, "That folder already exists and isn't empty"));
+        }
+        let out = quiet_command("git")
+            .args(["-c", "protocol.allow=never", "-c", "protocol.https.allow=always"])
+            .args(["-c", "core.fsmonitor=false", "-c", "core.hooksPath=.blocksy-no-hooks", "-c", "color.ui=false"])
+            .env("GIT_TERMINAL_PROMPT", "0")
+            .args(["clone", "--quiet", "--no-recurse-submodules", "--"])
+            .arg(&url)
+            .arg(dest)
+            .output()
+            .map_err(|_| AppError::new(ErrorCode::Unsupported, "Git isn't installed. Install it from git-scm.com to clone."))?;
+        ok(out).map(|_| ())
+    })
+    .await
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn only_plain_https_urls_can_be_cloned() {
+        assert!(clone_url_ok("https://github.com/you/berry-mod.git"));
+        assert!(!clone_url_ok("http://github.com/you/berry-mod.git"));
+        assert!(!clone_url_ok("ext::sh -c touch% /tmp/pwned"));
+        assert!(!clone_url_ok("file:///C:/secret"));
+        assert!(!clone_url_ok("--upload-pack=calc https://x"));
+        assert!(!clone_url_ok("https://github.com/a b"));
+    }
 
     #[test]
     fn parses_log_with_and_without_stats() {

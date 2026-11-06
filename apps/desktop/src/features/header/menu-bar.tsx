@@ -8,6 +8,7 @@ import {
 import { commandRegistry, isEnabled, runCommand, type AppCommand } from "../../shared/commands/registry"
 import { menus } from "../../shared/commands/menus"
 import { shortcutParts } from "../../shared/commands/shortcuts"
+import { OpenRecent } from "./open-recent"
 
 // Compact rows (28px) with small corners: dense but organised.
 const item = "gap-2 rounded-lg px-2 py-1.5 font-normal"
@@ -49,7 +50,7 @@ export function MenuBar() {
           </MenubarTrigger>
           <MenubarContent className="min-w-60 rounded-xl p-1">
             {menu.items.map((id, i) =>
-              id === "-" ? <MenubarSeparator key={`sep-${i}`} /> : <Fragment key={id}><MenuItem id={id} /></Fragment>,
+              id === "-" ? <MenubarSeparator key={`sep-${i}`} /> : id === "@recent" ? <OpenRecent key={id} /> : <Fragment key={id}><MenuItem id={id} /></Fragment>,
             )}
           </MenubarContent>
         </MenubarMenu>

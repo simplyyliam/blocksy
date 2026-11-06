@@ -1,7 +1,7 @@
 // Every built-in command, registered once. The menu bar (menus.ts), toolbar, palette and
 // shortcuts only point at these ids. A new action = one `defineCommand` here.
 import {
-  BookOpen, Box, Code2, Coffee, Copy, Download, FileAudio, FolderOpen, History, Hammer, ImageIcon, Keyboard, LayoutDashboard,
+  BookOpen, Box, Code2, Coffee, Copy, Download, FileAudio, FilePlus2, FolderOpen, History, Hammer, ImageIcon, Keyboard, LayoutDashboard,
   Layers, Library, PanelBottom, Pin, PanelLeft, PanelRight, Plus, Play, Redo2, RotateCcw, Save, Search, Settings, Shapes, Sparkles, Square,
   SquareTerminal, Trash2, Undo2, X, ArrowLeftRight,
 } from "lucide-react"
@@ -39,6 +39,9 @@ export function registerBuiltinCommands() {
   registered = true
 
   // ---- File -------------------------------------------------------------------------------
+  // New project and Open bring the welcome window back (ADR 0020), which then starts that flow.
+  defineCommand({ id: "file.new-project", group: "File", title: "New project…", icon: FilePlus2, keys: "Mod+Shift+N", keywords: ["create"], run: () => closeProject("new") })
+  defineCommand({ id: "file.open", group: "File", title: "Open…", icon: FolderOpen, keys: "Mod+O", keywords: ["folder", "project"], run: () => closeProject("open") })
   defineCommand({ id: "file.new-element", group: "File", title: "New element…", icon: Plus, keys: "N", run: () => editor().openNewElement(), keywords: ["add", "create", "block", "item"] })
   defineCommand({
     id: "file.save",
@@ -56,7 +59,7 @@ export function registerBuiltinCommands() {
     },
   })
   defineCommand({ id: "file.reveal", group: "File", title: "Show in folder", icon: FolderOpen, run: () => void revealItemInDir(project()!.dir) })
-  defineCommand({ id: "file.close", group: "File", title: "Close project", icon: X, keys: "Mod+Shift+W", run: closeProject })
+  defineCommand({ id: "file.close", group: "File", title: "Close project", icon: X, keys: "Mod+Shift+W", run: () => void closeProject() })
   defineCommand({ id: "file.settings", group: "File", title: "Settings…", icon: Settings, keys: "Mod+,", needsProject: false, run: () => nav().setSettings(true) })
   defineCommand({ id: "file.exit", group: "File", title: "Exit", needsProject: false, run: () => void getCurrentWindow().close() })
 
@@ -128,8 +131,8 @@ export function registerBuiltinCommands() {
   defineCommand({ id: "tab.previous", group: "Window", title: "Previous tab", keys: "Mod+PageUp", run: () => editor().cycleTab(-1) })
 
   // ---- Help -------------------------------------------------------------------------------
-  // Inside a project the docs open as a tab (the project stays put); elsewhere they are a page.
-  defineCommand({ id: "help.docs", group: "Help", title: "Documentation", icon: BookOpen, keys: "F1", needsProject: false, checked: () => project() !== null && editor().selected === DOCS, run: () => (project() ? openView(DOCS) : nav().openDocs("/docs")) })
+  // The docs open as a tab (the project stays put).
+  defineCommand({ id: "help.docs", group: "Help", title: "Documentation", icon: BookOpen, keys: "F1", checked: () => editor().selected === DOCS, run: () => openView(DOCS) })
   defineCommand({ id: "help.shortcuts", group: "Help", title: "Keyboard shortcuts", icon: Keyboard, keys: "?", needsProject: false, run: () => nav().setShortcuts(true) })
   defineCommand({ id: "help.whats-new", group: "Help", title: "What's new", icon: Sparkles, needsProject: false, run: () => nav().setWhatsNew(true) })
 }

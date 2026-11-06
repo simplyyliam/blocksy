@@ -11,7 +11,7 @@ export function ProjectTitle() {
   const project = useProject((s) => s.current)
   if (!project) return null
   return (
-    <ProjectContextMenu dir={project.dir} open={false} end="close">
+    <ProjectContextMenu dir={project.dir}>
       <DropdownMenu>
         <DropdownMenuTrigger
           render={<Button variant="ghost" aria-label="Project actions" className="h-6 min-w-0 gap-1.5 rounded-sm px-2 font-normal text-fg hover:bg-surface-hover" />}
@@ -21,7 +21,7 @@ export function ProjectTitle() {
           <ChevronDown className="size-3.5 shrink-0 text-fg-faint" strokeWidth={1.75} />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-52">
-          <ProjectMenuItems dir={project.dir} kind="dropdown" open={false} end="close" />
+          <ProjectMenuItems dir={project.dir} kind="dropdown" />
         </DropdownMenuContent>
       </DropdownMenu>
     </ProjectContextMenu>

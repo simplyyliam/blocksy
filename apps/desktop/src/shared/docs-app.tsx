@@ -4,10 +4,11 @@
 import { getVersion } from "@tauri-apps/api/app"
 import { openUrl } from "@tauri-apps/plugin-opener"
 import { lazy, Suspense, useEffect, useState } from "react"
+import { loadDocsApp } from "@blocksy/docs"
 import { PixelLoader } from "@blocksy/ui"
 import { registries } from "../app/modules"
 
-const DocsApp = lazy(() => import("@blocksy/docs").then((m) => ({ default: m.DocsApp })))
+const DocsApp = lazy(() => loadDocsApp().then((m) => ({ default: m.DocsApp })))
 
 // Stable for the docs' memoised page list (element types don't change while running).
 const elementTypes = registries.elementTypes.list()
@@ -29,14 +30,14 @@ function Loading() {
   )
 }
 
-export function DocsContent({ path, navigate }: { path: string; navigate(path: string): void }) {
+export function DocsContent({ path, navigate, compact }: { path: string; navigate(path: string): void; compact?: boolean }) {
   const [version, setVersion] = useState("0.2")
   useEffect(() => {
     void getVersion().then(setVersion).catch(() => {})
   }, [])
   return (
     <Suspense fallback={<Loading />}>
-      <DocsApp path={path} navigate={navigate} openExternal={(url) => void openUrl(url)} elementTypes={elementTypes} version={version} platform={platform} />
+      <DocsApp compact={compact} path={path} navigate={navigate} openExternal={(url) => void openUrl(url)} elementTypes={elementTypes} version={version} platform={platform} />
     </Suspense>
   )
 }

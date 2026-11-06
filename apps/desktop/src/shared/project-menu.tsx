@@ -1,14 +1,14 @@
-// The actions for a project, defined once and shown in two places: the ··· dropdown and
-// the right-click context menu. Same items in the same order, so both always match
-// (context menus are a shortcut, never the only way to do something).
+// The actions for the open project, defined once and shown in two places: the project name's
+// dropdown and its right-click context menu. Same items in the same order, so both always match
+// (context menus are a shortcut, never the only way to do something). The welcome window's list
+// has its own menu (features/welcome/row-menu.tsx): pin, locate, remove from list.
 //
-//   Open                  (where you are not already in the project)
 //   Show in folder
 //   Change cover…
 //   Use generated cover   (only when a custom cover is set)
 //   ─────────
-//   Remove from list  /  Close project
-import { FolderOpen, ImageIcon, Shapes, SquareArrowOutUpRight, Trash2, X } from "lucide-react"
+//   Close project
+import { FolderOpen, ImageIcon, Shapes, X } from "lucide-react"
 import type { ReactElement } from "react"
 import { revealItemInDir } from "@tauri-apps/plugin-opener"
 import {
@@ -16,17 +16,8 @@ import {
   DropdownMenuSeparator, toast,
 } from "@blocksy/ui"
 import { errorMessage } from "./api"
-import { openProject } from "./open-project"
 import { changeCover, closeProject } from "./project-menu-actions"
 import { useCovers } from "./stores/covers"
-import { useRecent } from "./stores/recent"
-
-export interface ProjectMenuOptions {
-  /** Show "Open" (off when you are already inside the project). */
-  open?: boolean
-  /** The last, separated item: forget it from the recent list, or close it. */
-  end?: "remove" | "close"
-}
 
 async function resetCover(dir: string) {
   try {
@@ -37,18 +28,13 @@ async function resetCover(dir: string) {
 }
 
 /** The items. `kind` picks dropdown or context-menu parts; the actions are the same. */
-export function ProjectMenuItems({ dir, kind, open = true, end = "remove" }: { dir: string; kind: "dropdown" | "context" } & ProjectMenuOptions) {
+export function ProjectMenuItems({ dir, kind }: { dir: string; kind: "dropdown" | "context" }) {
   const hasCustomCover = useCovers((s) => Boolean(s.byDir[dir]))
   const Item = kind === "dropdown" ? DropdownMenuItem : ContextMenuItem
   const Separator = kind === "dropdown" ? DropdownMenuSeparator : ContextMenuSeparator
 
   return (
     <>
-      {open && (
-        <Item onClick={() => void openProject(dir)}>
-          <SquareArrowOutUpRight strokeWidth={1.75} /> Open
-        </Item>
-      )}
       <Item onClick={() => void revealItemInDir(dir)}>
         <FolderOpen strokeWidth={1.75} /> Show in folder
       </Item>
@@ -61,27 +47,20 @@ export function ProjectMenuItems({ dir, kind, open = true, end = "remove" }: { d
         </Item>
       )}
       <Separator />
-      {end === "remove" ? (
-        // Only forgets it in Blocksy; the files on disk stay untouched.
-        <Item onClick={() => void useRecent.getState().forget(dir)}>
-          <Trash2 strokeWidth={1.75} /> Remove from list
-        </Item>
-      ) : (
-        <Item onClick={closeProject}>
-          <X strokeWidth={1.75} /> Close project
-        </Item>
-      )}
+      <Item onClick={() => void closeProject()}>
+        <X strokeWidth={1.75} /> Close project
+      </Item>
     </>
   )
 }
 
-/** Wraps one element (a card, a row) so right-clicking it opens the project menu. */
-export function ProjectContextMenu({ dir, children, ...options }: { dir: string; children: ReactElement } & ProjectMenuOptions) {
+/** Wraps one element so right-clicking it opens the project menu. */
+export function ProjectContextMenu({ dir, children }: { dir: string; children: ReactElement }) {
   return (
     <ContextMenu>
       <ContextMenuTrigger render={children} />
       <ContextMenuContent className="w-52">
-        <ProjectMenuItems dir={dir} kind="context" {...options} />
+        <ProjectMenuItems dir={dir} kind="context" />
       </ContextMenuContent>
     </ContextMenu>
   )
