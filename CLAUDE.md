@@ -38,6 +38,7 @@ Never push to main or merge PRs yourself.
 10. Never ship Minecraft's code or assets.
 11. Never copy GPL code (e.g. Blockbench); study behaviour, write original code.
 12. Architectural decisions get a short ADR in `docs/decisions/`.
+13. Building blocks, not features (plan rule 14): build general blocks that combine, never single-purpose features.
 
 ## Layout
 
