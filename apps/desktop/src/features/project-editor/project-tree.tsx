@@ -1,9 +1,10 @@
-// The project tree: the left panel of the project editor.
+// The explorer: the left panel of the project editor. Only the project's lists live here
+// (creative tabs, blocks, items, recipes, tags, languages, imported files). Overview, History,
+// Library and Docs are views on the activity bar, not rows in this list (ADR 0019).
 //
 //   ┌──────────────────────┐
+//   │ EXPLORER           + │  <- 32px header: new element
 //   │ 🔍 Filter elements   │
-//   │ ▦ Overview           │
-//   │ ⟲ History            │
 //   │ ▾ Blocks (2)       + │  <- groups come from the element registry (`plural`)
 //   │   ▣ Ruby Block       │  <- real texture icons (the element's own pixels)
 //   │ ▾ Items (1)        + │
@@ -11,7 +12,7 @@
 // A new element type shows up here with no change to this file. Click opens a tab,
 // double-click or F2 renames, right-click offers Open, Rename, Duplicate and Delete
 // (Ctrl+Z undoes a delete). "+" opens the New element dialog with the type chosen.
-import { ChevronRight, Copy, FileAudio, ImageIcon, LayoutDashboard, PencilLine, Plus, Search, Shapes, SquareArrowOutUpRight, Trash2 } from "lucide-react"
+import { ChevronRight, Copy, FileAudio, ImageIcon, PencilLine, Plus, Search, Shapes, SquareArrowOutUpRight, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { removeResource, RESOURCE_INFO, RESOURCE_KINDS, resourcePlace, type Element, type Resource } from "@blocksy/core"
 import {
@@ -20,7 +21,7 @@ import {
 } from "@blocksy/ui"
 import { registries } from "../../app/modules"
 import { deleteElement, duplicateElement, renameElementTo } from "../../shared/element-actions"
-import { OVERVIEW, useEditor } from "../../shared/stores/editor"
+import { useEditor } from "../../shared/stores/editor"
 import { useProject } from "../../shared/stores/project"
 import { ElementIcon } from "./element-icon"
 
@@ -29,14 +30,13 @@ const row = "h-6 w-full justify-start gap-1.5 rounded-md px-1.5 font-normal"
 export function ProjectTree() {
   const project = useProject((s) => s.current)
   const selected = useEditor((s) => s.selected)
-  const select = useEditor((s) => s.select)
   const openNewElement = useEditor((s) => s.openNewElement)
   const [filter, setFilter] = useState("")
   /** Group ids the user folded away (open by default). */
   const [folded, setFolded] = useState<Set<string>>(new Set())
   const [renaming, setRenaming] = useState<string | null>(null)
   if (!project) return null
-  const { doc, version, targetName } = project
+  const { doc } = project
   const query = filter.trim().toLowerCase()
 
   const toggle = (id: string) =>
@@ -48,12 +48,15 @@ export function ProjectTree() {
 
   return (
     <div className="flex h-full flex-col">
-      {/* Project header: name and what it targets. */}
-      <div className="px-3 pt-1.5 pb-1.5">
-        <p className="truncate text-sm font-medium text-fg">{doc.name}</p>
-        <p className="truncate text-xs text-fg-muted">
-          {targetName} · Minecraft {version.minecraft}
-        </p>
+      {/* Panel header (32px, --b-panel-header-h): the panel's name and the global quick-create. */}
+      <div className="flex h-(--b-panel-header-h) shrink-0 items-center justify-between pr-1.5 pl-3">
+        <h2 className="text-xs font-medium tracking-wide text-fg-muted uppercase">Explorer</h2>
+        <Tooltip>
+          <TooltipTrigger render={<Button variant="ghost" size="icon-xs" aria-label="New element" className="text-fg-muted" onClick={() => openNewElement()} />}>
+            <Plus strokeWidth={2} />
+          </TooltipTrigger>
+          <TooltipContent>New element</TooltipContent>
+        </Tooltip>
       </div>
 
       <div className="relative px-2 pb-1.5">
@@ -70,17 +73,6 @@ export function ProjectTree() {
       </div>
 
       <nav aria-label="Project" className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto border-t border-line-subtle px-1.5 pt-1.5 pb-3">
-        {!query && (
-          <>
-            <Button variant="ghost" size="sm" className={cn(row, selected === OVERVIEW && "bg-surface-hover")} onClick={() => select(OVERVIEW)}>
-              <span className="grid size-5 shrink-0 place-items-center rounded-[5px] bg-surface text-fg-muted">
-                <LayoutDashboard className="size-3.5" strokeWidth={1.75} />
-              </span>
-              Overview
-            </Button>
-          </>
-        )}
-
         {registries.elementTypes.list().map((type) => {
           const all = doc.elements.filter((e) => e.type === type.id)
           const items = query ? all.filter((e) => e.name.toLowerCase().includes(query)) : all

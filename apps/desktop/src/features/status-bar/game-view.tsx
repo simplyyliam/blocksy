@@ -1,6 +1,7 @@
 // Game running: Minecraft is open from Run. Shows when our mod made it into the mod list,
-// with a small pixel burst the moment it does.
-import { CircleCheck, Square } from "lucide-react"
+// with a small pixel burst the moment it does. Click opens the build log (the game's output);
+// Stop is a title bar action.
+import { CircleCheck } from "lucide-react"
 import { motion } from "motion/react"
 import { useEffect, useState } from "react"
 import { Button, DotMatrix, PixelBurst } from "@blocksy/ui"
@@ -8,7 +9,7 @@ import { Celebration } from "./celebration"
 import { firstSuccess } from "../../shared/first-success"
 import { useProject } from "../../shared/stores/project"
 import { statusButton, statusItem } from "./chip"
-import { stopTask } from "../../shared/project-actions"
+import { openDock } from "./open-dock"
 import { useGradle } from "../../shared/stores/gradle"
 import type { StatusView } from "./types"
 
@@ -22,10 +23,10 @@ function GameView() {
   }, [modLoaded, dir])
   return (
     <>
-      <span className={statusItem}>
-        {gameLoaded ? <span className="size-2 rounded-full bg-success" /> : <DotMatrix state="loading" className="size-3.5 text-brand" />}
+      <Button variant="ghost" size="xs" className={statusButton} onClick={() => openDock("log")}>
+        {gameLoaded ? <span aria-hidden className="size-2 rounded-full bg-success" /> : <DotMatrix state="loading" className="size-3.5 text-brand" />}
         {gameLoaded ? "Minecraft is running" : "Starting Minecraft"}
-      </span>
+      </Button>
       {modLoaded && (
         <motion.span
           className="relative"
@@ -41,10 +42,6 @@ function GameView() {
           {celebrate && <Celebration />}
         </motion.span>
       )}
-      <Button variant="ghost" size="xs" className={statusButton} onClick={() => void stopTask()}>
-        <Square className="fill-current" strokeWidth={0} />
-        Stop
-      </Button>
     </>
   )
 }

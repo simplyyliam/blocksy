@@ -1,12 +1,11 @@
 // Bottom dock widget: slides open under the editor; drag its top edge to resize.
-// Two tabs: Build log and Problems. Their content lives in features/bottom-panel/.
+// Two tabs: Build log and Problems (History is a view on the activity bar now). Their content lives in features/bottom-panel/.
 // Height and open state are remembered per project (shared/layout-memory.ts).
 import { X } from "lucide-react"
 import { useRef } from "react"
 import { Button, cn } from "@blocksy/ui"
 import { BuildLog } from "../../features/bottom-panel/build-log"
 import { Problems } from "../../features/bottom-panel/problems"
-import { History } from "../../features/project-editor/history"
 import { useProblems } from "../../features/bottom-panel/use-problems"
 import { useEditor, type DockTab } from "../../shared/stores/editor"
 import { useNavigation } from "../../shared/stores/navigation"
@@ -36,15 +35,14 @@ export function BottomPanel() {
   const tabs: { id: DockTab; label: string; count?: number }[] = [
     { id: "log", label: "Build log" },
     { id: "problems", label: "Problems", count: problems },
-    { id: "history", label: "History" },
   ]
 
   return (
     // Animating grid rows 0fr <-> 1fr gives a smooth open/close without measuring.
     <div
       className={cn(
-        "grid shrink-0 px-2.5 transition-[grid-template-rows,opacity,margin] duration-250 ease-out",
-        open ? "mt-2 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0",
+        "grid shrink-0 transition-[grid-template-rows,opacity] duration-250 ease-out",
+        open ? "grid-rows-[1fr] opacity-100" : "-mt-(--b-panel-gap) grid-rows-[0fr] opacity-0",
       )}
       aria-hidden={!open}
       inert={!open}
@@ -52,7 +50,7 @@ export function BottomPanel() {
       <div className="min-h-0 overflow-hidden">
         <section
           style={{ height }}
-          className="relative flex flex-col overflow-hidden rounded-lg bg-bg shadow-[inset_0_0_0_1px_var(--b-line-subtle)]"
+          className="relative flex flex-col overflow-hidden rounded-lg bg-surface"
           aria-label="Bottom dock"
         >
           <div
@@ -87,7 +85,7 @@ export function BottomPanel() {
               <X strokeWidth={1.75} />
             </Button>
           </div>
-          <div className="flex min-h-0 flex-1 flex-col border-t border-line-subtle">{tab === "log" ? <BuildLog /> : tab === "problems" ? <Problems /> : <div className="min-h-0 flex-1 overflow-y-auto"><History /></div>}</div>
+          <div className="flex min-h-0 flex-1 flex-col border-t border-line-subtle">{tab === "log" ? <BuildLog /> : <Problems />}</div>
         </section>
       </div>
     </div>

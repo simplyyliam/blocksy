@@ -1,14 +1,19 @@
 // Remembers each project's panel layout (which panels are open, how wide) in the app-data
 // folder, one small JSON file keyed by project folder. Applied when a project opens.
 import { useEffect, useState } from "react"
-import { DEFAULT_LAYOUT, useEditor, type PanelLayout } from "./stores/editor"
+import { DEFAULT_LAYOUT, isView, useEditor, type PanelLayout } from "./stores/editor"
 import { useNavigation } from "./stores/navigation"
 import { loadJson, saveJson } from "./stores/persist"
+import { useProject } from "./stores/project"
 
 const FILE = "editor-layouts" // a plain name; the Rust side adds .json
 
 interface Saved extends PanelLayout {
   dockOpen: boolean
+  /** The open tabs, the pinned ones and the showing one (ADR 0019: tabs are remembered per project). */
+  tabs: string[]
+  pinned: string[]
+  selected: string
 }
 
 type Store = { byDir: Record<string, Partial<Saved>> }
@@ -23,8 +28,16 @@ const pick = (): Saved => {
     dockHeight: s.dockHeight,
     inspectorSide: s.inspectorSide,
     dockOpen: useNavigation.getState().bottomPanelOpen,
+    tabs: s.tabs,
+    pinned: s.pinned,
+    selected: s.selected,
   }
 }
+
+const strings = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [])
+
+/** How long tab changes wait before they are written (panel changes use 600 ms). */
+const TAB_SAVE_MS = 3000
 
 /** Clamps stored sizes so a hand-edited or old file can't produce an unusable layout. */
 function sane(saved: Partial<Saved>): Partial<Saved> {
@@ -38,6 +51,9 @@ function sane(saved: Partial<Saved>): Partial<Saved> {
     dockHeight: n(saved.dockHeight, 120, 800, DEFAULT_LAYOUT.dockHeight),
     inspectorSide: saved.inspectorSide === "left" ? "left" : "right",
     dockOpen: saved.dockOpen === true,
+    tabs: strings(saved.tabs),
+    pinned: strings(saved.pinned),
+    selected: typeof saved.selected === "string" ? saved.selected : "",
   }
 }
 
@@ -50,6 +66,12 @@ export function useLayoutMemory(dir: string | undefined): boolean {
   const [loadedDir, setLoadedDir] = useState<string | undefined>()
   useEffect(() => {
     if (!dir) return
+    // The bench opens a made-up project ("bench://project"). It must start the same way every run, so it neither
+    // reads nor writes a remembered layout (restoring its tabs from the last run changed what the bench measured).
+    if (dir.startsWith("bench://")) {
+      setLoadedDir(dir)
+      return
+    }
     let alive = true
     let ready = false
     let timer: ReturnType<typeof setTimeout> | undefined
@@ -59,28 +81,39 @@ export function useLayoutMemory(dir: string | undefined): boolean {
       const store = await loadJson<Store>(FILE, { byDir: {} })
       await saveJson(FILE, { byDir: { ...store.byDir, [dir]: pick() } })
     }
-    const queue = () => {
+    // Panel changes save after 600 ms. Tab changes (opening, closing, switching) save after 3 s: they come
+    // in bursts, and a write to disk right when an editor opens slowed the first 3D preview by half a
+    // second in the bench. The last moments are still saved when the project closes (see the cleanup).
+    const queue = (delay = 600) => {
       if (!ready) return
       clearTimeout(timer)
       dirty = true
       timer = setTimeout(() => {
         dirty = false
         void save().catch(() => {})
-      }, 600)
+      }, delay)
     }
 
     void loadJson<Store>(FILE, { byDir: {} }).then((store) => {
       if (!alive) return
-      const { dockOpen, ...layout } = sane(store.byDir[dir] ?? {})
+      const { dockOpen, tabs, pinned, selected, ...layout } = sane(store.byDir[dir] ?? {})
       useEditor.getState().setLayout(layout)
+      // Element tabs only come back if the element still exists (it may have been deleted since).
+      const ids = new Set(useProject.getState().current?.doc.elements.map((e) => e.id))
+      const exists = (t: string) => isView(t) || ids.has(t)
+      if (tabs?.length) useEditor.getState().restoreTabs(tabs.filter(exists), (pinned ?? []).filter(exists), selected ?? "")
       useNavigation.getState().setBottomPanel(dockOpen === true)
       ready = true
       setLoadedDir(dir)
     })
 
-    // Only layout changes count; switching tabs or selecting an element must not trigger a save.
-    const sig = (s: PanelLayout) => `${s.treeOpen}|${s.inspectorOpen}|${s.treeWidth}|${s.inspectorWidth}|${s.dockHeight}|${s.inspectorSide}`
-    const stopEditor = useEditor.subscribe((s, prev) => sig(s) !== sig(prev) && queue())
+    // Layout and tab changes count (saves are debounced); typing in an element does not.
+    const panels = (s: PanelLayout) => `${s.treeOpen}|${s.inspectorOpen}|${s.treeWidth}|${s.inspectorWidth}|${s.dockHeight}|${s.inspectorSide}`
+    const tabs = (s: { tabs: string[]; pinned: string[]; selected: string }) => `${s.tabs.join(",")}|${s.pinned.join(",")}|${s.selected}`
+    const stopEditor = useEditor.subscribe((s, prev) => {
+      if (panels(s) !== panels(prev)) queue()
+      else if (tabs(s) !== tabs(prev)) queue(TAB_SAVE_MS)
+    })
     const stopNav = useNavigation.subscribe((s, prev) => s.bottomPanelOpen !== prev.bottomPanelOpen && queue())
     return () => {
       alive = false

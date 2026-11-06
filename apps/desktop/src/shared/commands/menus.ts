@@ -17,7 +17,7 @@ export const menus: MenuDef[] = [
   { title: "Tools", items: ["tools.palette", "tools.problems", "-", "tools.jdk"] },
   {
     title: "Window",
-    items: ["window.tree", "window.inspector", "window.dock", "-", "window.swap", "window.reset", "-", "tab.close", "tab.next", "tab.previous"],
+    items: ["window.tree", "window.inspector", "window.dock", "-", "window.swap", "window.reset", "-", "tab.close", "tab.pin", "tab.next", "tab.previous"],
   },
   { title: "Help", items: ["help.docs", "help.shortcuts", "help.whats-new"] },
 ]

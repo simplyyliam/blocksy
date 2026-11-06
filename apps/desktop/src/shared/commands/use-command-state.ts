@@ -15,6 +15,6 @@ export function useCommandState() {
   )
   // Selecting these values is enough: a change in any of them re-renders the caller.
   useGradle((s) => s.task)
-  useEditor((s) => `${s.selected}|${s.view}|${s.treeOpen}|${s.inspectorOpen}|${s.tabs.length}`)
+  useEditor((s) => `${s.selected}|${s.view}|${s.treeOpen}|${s.inspectorOpen}|${s.tabs.length}|${s.dockTab}`)
   useNavigation((s) => s.bottomPanelOpen)
 }

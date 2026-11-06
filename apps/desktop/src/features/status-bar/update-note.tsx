@@ -1,9 +1,9 @@
-// The quiet "Blocksy X.Y.Z is ready, restart to update" note (plan 2.6).
-// Restarting waits while a build runs or Minecraft is open, so work is never interrupted.
+// The quiet "Blocksy X.Y.Z is ready" item (plan 2.6). It opens a popover with the Restart
+// button. Restarting waits while a build runs or Minecraft is open, so work is never interrupted.
 import { ArrowUpCircle } from "lucide-react"
 import { motion } from "motion/react"
-import { Button, toast, Tooltip, TooltipContent, TooltipTrigger } from "@blocksy/ui"
-import { statusButton } from "./chip"
+import { Button, Popover, PopoverContent, PopoverTrigger, toast } from "@blocksy/ui"
+import { statusButton, statusPopover } from "./chip"
 import { errorMessage } from "../../shared/api"
 import { useGradle } from "../../shared/stores/gradle"
 import { useUpdates } from "../../shared/stores/updates"
@@ -23,13 +23,19 @@ export function UpdateNote() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-      <Tooltip>
-        <TooltipTrigger render={<Button variant="ghost" size="xs" className={statusButton} onClick={() => void restart()} disabled={busy} />}>
+      <Popover>
+        <PopoverTrigger render={<Button variant="ghost" size="xs" className={statusButton} />}>
           <ArrowUpCircle className="text-brand" strokeWidth={1.75} />
-          Blocksy {version} is ready · Restart to update
-        </TooltipTrigger>
-        <TooltipContent>{busy ? "Waits until the build or game has finished" : "Restarts Blocksy with the new version"}</TooltipContent>
-      </Tooltip>
+          Update ready
+        </PopoverTrigger>
+        <PopoverContent side="top" align="end" className={statusPopover}>
+          <p className="font-medium text-fg">Blocksy {version} is ready</p>
+          <p className="text-fg-muted">{busy ? "Restart is possible once the build or game has finished." : "Restart Blocksy to use the new version. Your project is already saved."}</p>
+          <Button size="sm" className="mt-1 self-start" disabled={busy} onClick={() => void restart()}>
+            Restart to update
+          </Button>
+        </PopoverContent>
+      </Popover>
     </motion.div>
   )
 }

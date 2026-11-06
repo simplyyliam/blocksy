@@ -81,6 +81,17 @@ export const modernTheme: Theme = {
     "code-constant": "#b5680b",
     "code-type": "#7a4cc2",
 
+    // Shell sizes (docs/design/shell-spec.md): measured from VS Code, Zed and Blender.
+    "titlebar-h": "36px",
+    "activitybar-w": "44px",
+    "tab-h": "32px",
+    "toolbar-h": "32px",
+    "statusbar-h": "26px",
+    "panel-header-h": "32px",
+    "row-h": "24px",
+    "panel-gap": "6px",
+    "window-close": "#e81123", // native Windows close hover
+
     // Theme art and bevels: Modern has none (the Minecraft theme sets them).
     "texture-app": "none",
     "texture-panel": "none",

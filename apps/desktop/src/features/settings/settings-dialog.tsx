@@ -18,6 +18,7 @@ import {
   Separator, Sidebar, SidebarContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, Spinner,
 } from "@blocksy/ui"
 import { registries } from "../../app/modules"
+import { JdkSetup } from "../jdk-setup/jdk-setup"
 import { errorMessage } from "../../shared/api"
 import { prettyPath } from "../../shared/paths"
 import { useJava } from "../../shared/stores/java"
@@ -120,6 +121,7 @@ function JavaSection() {
     await java.detect(javaHome, java.required)
   }
   return (
+    <div className="flex flex-col gap-6">
     <Rows>
       {[
         <Row key="jdk" label="JDK" description={java.active ? java.active.home : `Needs Java ${java.required} or newer`}>
@@ -135,6 +137,9 @@ function JavaSection() {
         </Row>,
       ]}
     </Rows>
+    {/* The installs Blocksy found and how to get a JDK: it lives here now, not in the status bar. */}
+    <JdkSetup />
+    </div>
   )
 }
 
@@ -227,13 +232,22 @@ export function SettingsDialog() {
   const open = useNavigation((s) => s.settingsOpen)
   const setOpen = useNavigation((s) => s.setSettings)
   const [section, setSection] = useState<SectionId>("general")
+  // Opened with a section (the Java setup command): jump to it while the dialog opens.
+  const wanted = useNavigation((s) => s.settingsSection)
+  const [seen, setSeen] = useState<string | null>(null)
+  if (!open && seen !== null) setSeen(null) // closed: forget, so the same section can be asked for again
+  if (open && wanted !== seen) {
+    setSeen(wanted)
+    const target = sections.find((s) => s.id === wanted)
+    if (target) setSection(target.id)
+  }
   const Body = bodies[section]
   const title = sections.find((s) => s.id === section)!.label
   // Focus the content pane on open, so no focus ring flashes on the first nav row.
   const paneRef = useRef<HTMLElement>(null)
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(next) => setOpen(next)}>
       <DialogContent initialFocus={paneRef} className="h-[520px] max-h-[calc(100vh-48px)] w-[760px] max-w-[calc(100vw-48px)] gap-0 overflow-hidden rounded-dialog p-0 sm:max-w-[calc(100vw-48px)]">
         <SidebarProvider className="h-full min-h-0 items-stretch">
           {/* Left: the sections. collapsible="none" keeps it a plain column inside the dialog. */}

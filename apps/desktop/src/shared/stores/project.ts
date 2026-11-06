@@ -27,8 +27,16 @@ export interface OpenProject {
   targetName: string
 }
 
+/** Where the project file stands: every change is written 300 ms later (status bar: Autosave). */
+export interface AutosaveState {
+  state: "saved" | "saving" | "error"
+  /** When the last write finished (ms since epoch), or null before the first one. */
+  at: number | null
+}
+
 interface ProjectState {
   current: OpenProject | null
+  autosave: AutosaveState
   open(dir: string): Promise<void>
   close(): void
 }
@@ -41,6 +49,7 @@ const save = (dir: string, doc: Project) =>
 
 export const useProject = create<ProjectState>((set, get) => ({
   current: null,
+  autosave: { state: "saved", at: null },
 
   async open(dir) {
     const text = await call(commands.readTextFile(joinPath(dir, PROJECT_FILE)))
@@ -55,10 +64,18 @@ export const useProject = create<ProjectState>((set, get) => ({
     unsubscribe = documents.subscribe((doc) => {
       set({ current: { ...get().current!, doc } })
       clearTimeout(saveTimer)
-      saveTimer = setTimeout(() => void save(dir, doc), 300)
+      set({ autosave: { ...get().autosave, state: "saving" } })
+      saveTimer = setTimeout(() => {
+        // Only report "Saved" if no newer change is waiting: an older write finishing late must not say so.
+        const latest = () => get().current?.doc === doc
+        void save(dir, doc).then(
+          () => latest() && set({ autosave: { state: "saved", at: Date.now() } }),
+          () => latest() && set({ autosave: { ...get().autosave, state: "error" } }),
+        )
+      }, 300)
     })
 
-    set({ current: { dir, doc: project, documents, version, targetName: target.name } })
+    set({ current: { dir, doc: project, documents, version, targetName: target.name }, autosave: { state: "saved", at: null } })
     await useRecent.getState().remember({ dir, name: project.name, minecraftVersion: project.minecraftVersion })
     useNavigation.getState().go("project")
   },

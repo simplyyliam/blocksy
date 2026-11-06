@@ -1,12 +1,15 @@
 // Minimise / maximise / close for the custom titlebar (the native one is turned off in
-// tauri.conf.json so the top of the window follows the theme). Compact 28px buttons
-// with small icons, sized like the rest of the toolbar; close turns red on hover.
+// tauri.conf.json so the top of the window follows the theme). Like native Windows: three
+// 46px-wide buttons that fill the full titlebar height and touch the top and right edges, no
+// gaps, no corners. Close turns Windows red on hover and fills the top-right corner.
 import { Copy, Minus, Square, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getCurrentWindow } from "@tauri-apps/api/window"
-import { Button, cn } from "@blocksy/ui"
+import { cn } from "@blocksy/ui"
 
-const control = "size-7 text-fg-muted hover:text-fg [&_svg]:size-3.5!"
+// A plain button (not shadcn Button): shadcn's has padding, radius and a focus ring that would
+// stop it from filling the corner. 16px icons per the spec.
+const control = "grid h-full w-11.5 place-items-center text-fg-muted outline-none transition-colors hover:bg-surface-hover hover:text-fg focus-visible:bg-surface-hover [&_svg]:size-4"
 
 export function WindowControls() {
   const [maximized, setMaximized] = useState(false)
@@ -25,26 +28,21 @@ export function WindowControls() {
   }, [])
 
   return (
-    <div className="flex shrink-0 items-center gap-0.5 pr-2">
-      <Button variant="ghost" aria-label="Minimise" className={control} onClick={() => void getCurrentWindow().minimize()}>
-        <Minus strokeWidth={1.5} />
-      </Button>
-      <Button
-        variant="ghost"
-        aria-label={maximized ? "Restore" : "Maximise"}
-        className={control}
-        onClick={() => void getCurrentWindow().toggleMaximize()}
-      >
-        {maximized ? <Copy className="size-3! -scale-x-100" strokeWidth={1.5} /> : <Square className="size-3!" strokeWidth={1.5} />}
-      </Button>
-      <Button
-        variant="ghost"
+    <div className="flex h-full shrink-0 items-stretch">
+      <button type="button" aria-label="Minimise" className={control} onClick={() => void getCurrentWindow().minimize()}>
+        <Minus strokeWidth={1.25} />
+      </button>
+      <button type="button" aria-label={maximized ? "Restore" : "Maximise"} className={control} onClick={() => void getCurrentWindow().toggleMaximize()}>
+        {maximized ? <Copy className="size-3.5! -scale-x-100" strokeWidth={1.25} /> : <Square className="size-3.5!" strokeWidth={1.25} />}
+      </button>
+      <button
+        type="button"
         aria-label="Close"
-        className={cn(control, "hover:bg-danger hover:text-white")}
+        className={cn(control, "hover:bg-window-close hover:text-white focus-visible:bg-window-close focus-visible:text-white")}
         onClick={() => void getCurrentWindow().close()}
       >
-        <X strokeWidth={1.5} />
-      </Button>
+        <X strokeWidth={1.25} />
+      </button>
     </div>
   )
 }

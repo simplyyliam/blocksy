@@ -1,8 +1,8 @@
-// Building: what Gradle is doing right now, with a Stop button.
-import { Square } from "lucide-react"
+// Building: what Gradle is doing right now. Click to watch the build log.
+// Stopping a build is a title bar action (Stop), not a status item.
 import { Button, DotMatrix } from "@blocksy/ui"
-import { statusButton, statusItem } from "./chip"
-import { stopTask } from "../../shared/project-actions"
+import { statusButton } from "./chip"
+import { openDock } from "./open-dock"
 import { FIRST_BUILD_STEPS, useGradle } from "../../shared/stores/gradle"
 import type { StatusView } from "./types"
 
@@ -10,16 +10,10 @@ function BuildingView() {
   const step = useGradle((s) => s.stepNow)
   const label = step >= 0 ? FIRST_BUILD_STEPS[step]!.label : "Starting Gradle"
   return (
-    <>
-      <span className={statusItem}>
-        <DotMatrix state="loading" className="size-3.5 text-brand" />
-        Building · {label}
-      </span>
-      <Button variant="ghost" size="xs" className={statusButton} onClick={() => void stopTask()}>
-        <Square className="fill-current" strokeWidth={0} />
-        Stop
-      </Button>
-    </>
+    <Button variant="ghost" size="xs" className={statusButton} onClick={() => openDock("log")}>
+      <DotMatrix state="loading" className="size-3.5 text-brand" />
+      Building · {label}
+    </Button>
   )
 }
 

@@ -16,14 +16,17 @@ import { FirstBuild } from "../../features/first-build/first-build"
 import { CodeTab } from "../../features/project-editor/code-tab"
 import { InspectorCode } from "../../features/project-editor/inspector-code"
 import { FileDrop } from "../../features/project-editor/file-drop"
+import { BottomPanel } from "../../widgets/bottom-panel/bottom-panel"
+import { DocsView } from "../../features/project-editor/docs-view"
 import { History } from "../../features/project-editor/history"
+import { Library } from "../../features/project-editor/library"
 import { Overview } from "../../features/project-editor/overview"
 import { ProjectTree } from "../../features/project-editor/project-tree"
-import { ModeBar } from "../../features/project-editor/mode-bar"
+import { EditorToolbar } from "../../features/project-editor/editor-toolbar"
 import { TabStrip } from "../../features/project-editor/tab-strip"
 import { elementModules, registries } from "../../app/modules"
 import { useLayoutMemory } from "../../shared/layout-memory"
-import { HISTORY, useEditor } from "../../shared/stores/editor"
+import { DOCS, HISTORY, LIBRARY, useEditor } from "../../shared/stores/editor"
 import { playMinecraftSound } from "../../shared/minecraft-sounds"
 import { useGradle } from "../../shared/stores/gradle"
 import { useWorkspace } from "../../shared/vanilla/workspace"
@@ -125,12 +128,12 @@ export function ProjectPage() {
       collapsible
       collapsedSize={0}
       defaultSize={start.tree}
-      minSize={170}
+      minSize={200}
       maxSize={440}
       groupResizeBehavior="preserve-pixel-size"
       onResize={(size) => (size.inPixels === 0 ? useEditor.getState().treeOpen && setLayout({ treeOpen: false }) : setLayout({ treeOpen: true, treeWidth: Math.round(size.inPixels) }))}
     >
-      <div className="h-full border-r border-line-subtle bg-surface/60">
+      <div className="h-full overflow-hidden rounded-lg bg-surface">
         <ProjectTree />
       </div>
     </ResizablePanel>
@@ -151,7 +154,7 @@ export function ProjectPage() {
       {/* A tool panel: a slightly tinted background so the canvas stays the focus. */}
       <aside
         aria-label="Inspector"
-        className="h-full overflow-x-hidden overflow-y-auto border-l border-line-subtle bg-surface/60 [&_[data-slot=input]]:h-6.5 [&_[data-slot=select-trigger]]:h-6.5 [&_[data-slot=textarea]]:min-h-14 [&_[data-slot=checkbox]]:border-fg-faint [&_[data-slot=checkbox]]:bg-bg"
+        className="h-full overflow-x-hidden overflow-y-auto rounded-lg bg-surface [&_[data-slot=input]]:h-6.5 [&_[data-slot=select-trigger]]:h-6.5 [&_[data-slot=textarea]]:min-h-14 [&_[data-slot=checkbox]]:border-fg-faint [&_[data-slot=checkbox]]:bg-bg"
       >
         {module && props ? (
           <InspectorTabs
@@ -169,18 +172,22 @@ export function ProjectPage() {
   )
   const centre = (
     <ResizablePanel id="centre" key="centre" minSize={320}>
-      <div className="flex h-full min-h-0 flex-col">
-        <div className="flex items-end">
-          <TabStrip />
-          <ModeBar />
-        </div>
+      <div className="flex h-full min-h-0 flex-col gap-(--b-panel-gap)">
+        {/* One floating card: tabs, toolbar and the canvas. The bottom dock is a second card under it. */}
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg bg-surface">
+        <TabStrip />
+        <EditorToolbar />
         {/* The canvas: the work fills it; element tools float on it. */}
-        <section className="relative min-h-0 flex-1 overflow-hidden rounded-lg bg-surface" aria-label="Canvas">
+        <section className="relative min-h-0 flex-1 overflow-hidden" aria-label="Canvas">
           <div className="absolute inset-0 overflow-y-auto">
             {view === "code" ? (
               <CodeTab />
             ) : selected === HISTORY ? (
               <History />
+            ) : selected === LIBRARY ? (
+              <Library />
+            ) : selected === DOCS ? (
+              <DocsView />
             ) : module && props ? (
               // No key: switching between two blocks keeps the same 3D canvas (no new WebGL context).
               <module.Canvas {...props} />
@@ -189,18 +196,20 @@ export function ProjectPage() {
             )}
           </div>
         </section>
+        </div>
+        <BottomPanel />
       </div>
     </ResizablePanel>
   )
   const handle = (id: string, show: boolean) => (
-    <ResizableHandle key={id} disabled={!show} className={cn("w-px bg-transparent after:w-2 hover:bg-line focus-visible:bg-line", show ? "mx-1" : "mx-0 after:hidden")} />
+    <ResizableHandle key={id} disabled={!show} className={cn("bg-transparent after:w-2 hover:bg-line focus-visible:bg-line", show ? "w-(--b-panel-gap)" : "w-0 after:hidden")} />
   )
 
   // The inspector can swap sides; only then does the group remount.
   const left = inspectorSide === "left"
   return (
     <>
-      <ResizablePanelGroup key={groupKey} orientation="horizontal" id="project-editor" className="h-full min-h-0 pb-1">
+      <ResizablePanelGroup key={groupKey} orientation="horizontal" id="project-editor" className="h-full min-h-0">
         {left ? inspector : tree}
         {handle("h1", left ? showInspector : treeOpen)}
         {centre}
