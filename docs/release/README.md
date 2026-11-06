@@ -28,8 +28,8 @@ Don't read the other releases or unrelated sections. They're here for when they'
 | 7 | `plan/07-intellij-mcdev.md` | Expert tools ideas |
 | 8 | `plan/08-model-studio.md` | Model Studio and Animator (0.8, 0.9); 8.5 Blockbench feel |
 | 9 | `plan/09-node-graph.md` | Node canvas (0.5) |
-| 10 | `plan/10-gui-studio.md` | GUI Studio (0.10, 1.4) |
-| 11 | `plan/11-docs.md` | Docs work (0.5 demos, 0.9 credits, 0.12 full) |
+| 10 | `plan/10-gui-studio.md` | GUI Studio (0.11, 1.4) |
+| 11 | `plan/11-docs.md` | Docs work (0.5 demos, 0.9 credits, 0.14 full) |
 | 12 | `plan/12-roadmap.md` | Overview of all releases |
 | 14 | `plan/14-v1-real-test.md` | v1.0.0 |
 | 15 | `plan/15-after-1.0-and-risks.md` | Ideas after 1.0 |
@@ -50,9 +50,11 @@ Re-sequenced 2026-11-06 into playable slices: each release has a showcase Liam b
 | 0.7 Charging magic circle | `releases/v0.7.md` | Staff with charging circle, beam, mana | |
 | 0.8 Custom shapes | `releases/v0.8.md` | Own 3D altar and staff (Model Studio) | |
 | 0.9 Animated mob | `releases/v0.9.md` | Animated golem (Animator) | |
-| 0.10 Arcane infuser | `releases/v0.10.md` | Powered machine with screens | |
-| 0.11 Mana network | `releases/v0.11.md` | Ore to multiblock, on a server | |
-| 0.12 Ship it | `releases/v0.12.md` | Finished mod pushed to GitHub | |
+| 0.10 Arcane infuser | `releases/v0.10.md` | Powered, animated machine | |
+| 0.11 First screens | `releases/v0.11.md` | Re-skinned and custom screens (GUI Studio) | |
+| 0.12 Crystal ore and gear | `releases/v0.12.md` | Ore, tools, armor, config | |
+| 0.13 Mana network | `releases/v0.13.md` | Multiblock, conduits, EMI, server | |
+| 0.14 Ship it | `releases/v0.14.md` | Finished mod pushed to GitHub | |
 | 1.0 The real test | `plan/14-v1-real-test.md` | Block, item, full mod | |
 
 After 1.0 (advanced features moved, not deleted): `releases/v1.1.md` Effect Studio full, `v1.2.md` Combat and bosses, `v1.3.md` Gear and wearables,

@@ -12,7 +12,7 @@ When a release ships, move its notes to `docs/release/history/` and start fresh.
   Then v0.5 "Particle wand" (read `docs/release/releases/v0.5.md` and the sections its prompt names).
 - **Roadmap re-sequenced (2026-11-06, branch `docs/vertical-slices`, docs only):** v0.5 to v0.16 became playable slices, each with a
   showcase Liam builds himself: 0.5 Particle wand, 0.6 Glowing block, 0.7 Charging magic circle, 0.8 Custom shapes (Model Studio),
-  0.9 Animated mob (Animator), 0.10 Arcane infuser, 0.11 Mana network, 0.12 Ship it, then v1.0. Advanced features moved to v1.1 to v1.7.
+  0.9 Animated mob (Animator), 0.10 Arcane infuser, 0.11 First screens (GUI Studio), 0.12 Crystal ore and gear, 0.13 Mana network, 0.14 Ship it, then v1.0. Advanced features moved to v1.1 to v1.7.
   Overview: `docs/release/plan/12-roadmap.md`. Every item's new home: `docs/research/scope-after.md` (200 of 200, 0 missing).
   Old files: `docs/research/plan-backup-2/`. New rules 15 (showcase) and 16 (dogfooding) are in plan 2.2.
 - **Fix next** (dogfooding list; add what annoys Liam after building each showcase): empty so far.
