@@ -58,6 +58,20 @@ export const commands = {
 	/**  One file's text at a saved version, e.g. blocksy.json to restore the project from it. */
 	historyFile: (dir: string, id: string, path: string) => typedError<string, AppError>(__TAURI_INVOKE("history_file", { dir, id, path })),
 	/**
+	 *  Clones a public repository by URL (welcome window "Clone"). Private repos arrive with GitHub sign-in.
+	 *  `dest` must not exist or be an empty folder. Never prompts for a password.
+	 */
+	gitClone: (url: string, dest: string) => typedError<null, AppError>(__TAURI_INVOKE("git_clone", { url, dest })),
+	/**
+	 *  Opens a project: builds the editor (it then asks `take_editor_launch`), or, if the editor
+	 *  already exists, tells it with an `open-project` event. Then the welcome window closes.
+	 */
+	openEditor: (launch: EditorLaunch) => typedError<null, AppError>(__TAURI_INVOKE("open_editor", { launch })),
+	/**  Brings the welcome window back (File > Close Project) and closes the editor. */
+	showWelcome: () => typedError<null, AppError>(__TAURI_INVOKE("show_welcome")),
+	/**  The project the editor was opened for, once. `None` when there is nothing waiting. */
+	takeEditorLaunch: () => __TAURI_INVOKE<EditorLaunch | null>("take_editor_launch"),
+	/**
 	 *  One of Minecraft's sound files (or sounds.json), base64, from the local asset cache.
 	 *  `not_found` until a first build has downloaded Minecraft.
 	 */
@@ -99,6 +113,13 @@ export type AppError = {
 	code: ErrorCode,
 	/**  Plain-language message the UI can show as-is. */
 	message: string,
+};
+
+/**  What the editor window was opened for. */
+export type EditorLaunch = {
+	projectDir: string,
+	/**  True right after "Create": the editor starts the workspace setup (v0.4) straight away. */
+	prepare: boolean,
 };
 
 /**

@@ -1,9 +1,10 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "What the main window may do: Blocksy's own commands, folder/file pickers, opening links or folders in the OS, and the custom titlebar (drag, minimise, maximise, close).",
+  "description": "What the welcome and editor windows may do: Blocksy's own commands, folder/file pickers, opening links or folders in the OS, and the custom titlebar (drag, minimise, maximise, close).",
   "windows": [
-    "main"
+    "welcome",
+    "editor"
   ],
   "permissions": [
     "core:default",
@@ -14,6 +15,8 @@
     "core:window:allow-minimize",
     "core:window:allow-toggle-maximize",
     "core:window:allow-close",
-    "core:window:allow-is-maximized"
+    "core:window:allow-is-maximized",
+    "core:event:default",
+    "core:webview:allow-set-webview-zoom"
   ]
 }

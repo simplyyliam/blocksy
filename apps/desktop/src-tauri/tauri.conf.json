@@ -12,8 +12,22 @@
   "app": {
     "windows": [
       {
-        "label": "main",
+        "label": "welcome",
         "title": "Blocksy",
+        "width": 820,
+        "height": 600,
+        "center": true,
+        "resizable": false,
+        "maximizable": false,
+        "backgroundColor": "#ffffff",
+        "decorations": false,
+        "dragDropEnabled": true,
+        "shadow": true
+      },
+      {
+        "label": "editor",
+        "title": "Blocksy",
+        "create": false,
         "width": 1280,
         "height": 820,
         "minWidth": 960,

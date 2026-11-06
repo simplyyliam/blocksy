@@ -9,4 +9,5 @@ pub mod gradle;
 pub mod history;
 pub mod java;
 pub mod updater;
+pub mod window;
 pub mod workspace;
