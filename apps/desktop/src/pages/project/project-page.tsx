@@ -128,7 +128,7 @@ export function ProjectPage() {
       collapsible
       collapsedSize={0}
       defaultSize={start.tree}
-      minSize={170}
+      minSize={200}
       maxSize={440}
       groupResizeBehavior="preserve-pixel-size"
       onResize={(size) => (size.inPixels === 0 ? useEditor.getState().treeOpen && setLayout({ treeOpen: false }) : setLayout({ treeOpen: true, treeWidth: Math.round(size.inPixels) }))}

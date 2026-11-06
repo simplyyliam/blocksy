@@ -18,6 +18,7 @@ import {
   Separator, Sidebar, SidebarContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, Spinner,
 } from "@blocksy/ui"
 import { registries } from "../../app/modules"
+import { JdkSetup } from "../jdk-setup/jdk-setup"
 import { errorMessage } from "../../shared/api"
 import { prettyPath } from "../../shared/paths"
 import { useJava } from "../../shared/stores/java"
@@ -120,6 +121,7 @@ function JavaSection() {
     await java.detect(javaHome, java.required)
   }
   return (
+    <div className="flex flex-col gap-6">
     <Rows>
       {[
         <Row key="jdk" label="JDK" description={java.active ? java.active.home : `Needs Java ${java.required} or newer`}>
@@ -135,6 +137,9 @@ function JavaSection() {
         </Row>,
       ]}
     </Rows>
+    {/* The installs Blocksy found and how to get a JDK: it lives here now, not in the status bar. */}
+    <JdkSetup />
+    </div>
   )
 }
 

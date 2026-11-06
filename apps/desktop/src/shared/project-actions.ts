@@ -23,7 +23,9 @@ async function start(task: GradleTask): Promise<boolean> {
   const java = useJava.getState().active
   if (!project || starting || useGradle.getState().task !== null) return false
   if (!java) {
-    useNavigation.getState().go("jdk")
+    // No Java: the picker lives in Settings > Java, a dialog over the project (it never leaves it).
+    useNavigation.getState().setSettings(true, "java")
+    toast.error("Blocksy needs Java to build. Pick or install one in Settings.")
     return false
   }
   // No build/ folder yet means Gradle and Minecraft still need downloading.

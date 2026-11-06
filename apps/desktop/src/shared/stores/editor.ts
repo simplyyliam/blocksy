@@ -38,8 +38,8 @@ export interface PanelLayout {
 export const DEFAULT_LAYOUT: PanelLayout = {
   treeOpen: true,
   inspectorOpen: true,
-  treeWidth: 232,
-  inspectorWidth: 296,
+  treeWidth: 260,
+  inspectorWidth: 300,
   dockHeight: 240,
   inspectorSide: "right",
 }
