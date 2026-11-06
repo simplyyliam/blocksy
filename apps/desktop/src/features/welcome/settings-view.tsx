@@ -1,11 +1,11 @@
 // Settings in the welcome window: the same panel as the editor's Settings dialog
 // (theme, UI scale, Java, projects folder, updates).
-import { useState } from "react"
+import { useWelcome } from "../../shared/stores/welcome"
 import { SettingsPanel } from "../settings/settings-panel"
-import type { SettingsSectionId } from "../settings/settings-sections"
 
 export function SettingsView() {
-  const [section, setSection] = useState<SettingsSectionId>("general")
+  const section = useWelcome((s) => s.settingsSection)
+  const setSection = useWelcome((s) => s.setSettingsSection)
   return (
     <SettingsPanel
       section={section}

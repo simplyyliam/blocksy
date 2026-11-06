@@ -17,6 +17,7 @@ export {
 } from "./components/ui/dialog.tsx"
 export { Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel } from "./components/ui/field.tsx"
 export { Input } from "./components/ui/input.tsx"
+export { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "./components/ui/input-group.tsx"
 export { Label } from "./components/ui/label.tsx"
 export { Progress } from "./components/ui/progress.tsx"
 export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select.tsx"
