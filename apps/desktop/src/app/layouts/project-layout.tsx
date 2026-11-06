@@ -17,6 +17,7 @@ import { useGradle } from "../../shared/stores/gradle"
 import { useProject } from "../../shared/stores/project"
 import { useWorkspace } from "../../shared/vanilla/workspace"
 import { NewElementDialog } from "../../features/project-editor/new-element-dialog"
+import { ActivityBar } from "../../widgets/activity-bar/activity-bar"
 import { BottomPanel } from "../../widgets/bottom-panel/bottom-panel"
 import { Header } from "../../widgets/header/header"
 import { StatusBar } from "../../widgets/status-bar/statusbar"
@@ -54,10 +55,15 @@ export function ProjectLayout() {
     <MinecraftProvider assets={assets} status={status} onBuild={() => void buildMod()}>
     <div className="flex h-full min-h-0 flex-col">
       <Header />
-      <main className="page-enter min-h-0 flex-1 overflow-hidden px-2.5">
-        <Outlet />
-      </main>
-      <BottomPanel />
+      <div className="flex min-h-0 flex-1">
+        <ActivityBar />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <main className="page-enter min-h-0 flex-1 overflow-hidden pr-2.5">
+            <Outlet />
+          </main>
+          <BottomPanel />
+        </div>
+      </div>
       <StatusBar />
       <NewElementDialog />
     </div>

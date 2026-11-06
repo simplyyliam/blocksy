@@ -9,7 +9,15 @@ export const OVERVIEW = "@overview"
 /** v0.3: the History page (saved versions). "@" keeps it apart from element ids too. */
 export const HISTORY = "@history"
 
-/** OVERVIEW, HISTORY or an element id. */
+/** v0.4 shell: the vanilla Library (every vanilla block and item) and the Docs, as view tabs. */
+export const LIBRARY = "@library"
+export const DOCS = "@docs"
+
+/** The view tabs the activity bar opens. They are not elements. */
+export const VIEWS = [OVERVIEW, LIBRARY, HISTORY, DOCS] as const
+export const isView = (id: Selection) => (VIEWS as readonly string[]).includes(id)
+
+/** A view tab (OVERVIEW, LIBRARY, HISTORY, DOCS) or an element id. */
 export type Selection = string
 
 /** The bottom dock's tabs. */
@@ -101,7 +109,7 @@ export const useEditor = create<EditorState>((set, get) => ({
   },
   pruneTabs: (existing) =>
     set((s) => {
-      const keep = (t: string) => t === OVERVIEW || t === HISTORY || existing.has(t)
+      const keep = (t: string) => isView(t) || existing.has(t)
       if (s.tabs.every(keep)) return s
       const tabs = s.tabs.filter(keep)
       return { tabs, selected: tabs.includes(s.selected) ? s.selected : OVERVIEW }
