@@ -1,8 +1,7 @@
 // Start-up: everything that happens once after the first paint, in either window (ADR 0020).
 // The window renders immediately; settings, projects and Java fill in as they load.
 import { getVersion } from "@tauri-apps/api/app"
-import { getCurrentWebview } from "@tauri-apps/api/webview"
-import { applyTheme } from "@blocksy/ui"
+import { applySettings } from "../shared/apply-settings"
 import { useNavigation } from "../shared/stores/navigation"
 import { listenToGradle } from "../shared/stores/gradle"
 import { useJava } from "../shared/stores/java"
@@ -17,14 +16,6 @@ import { registries } from "./modules"
 /** The newest Java any supported Minecraft version needs (25 today). */
 export const requiredJava = () =>
   Math.max(...registries.loaderTargets.list().flatMap((t) => t.versions.map((v) => v.java)))
-
-/** Applies the saved theme and UI scale to this window. */
-export function applySettings() {
-  const { theme, uiScale } = useSettings.getState()
-  const found = registries.themes.get(theme)
-  if (found) applyTheme(found)
-  void getCurrentWebview().setZoom(uiScale).catch(() => {}) // not inside Tauri (browser preview)
-}
 
 /**
  * After an update, show "What's new" once. A fresh install only remembers the version
