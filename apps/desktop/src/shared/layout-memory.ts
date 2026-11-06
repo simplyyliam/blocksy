@@ -36,6 +36,9 @@ const pick = (): Saved => {
 
 const strings = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [])
 
+/** How long tab changes wait before they are written (panel changes use 600 ms). */
+const TAB_SAVE_MS = 3000
+
 /** Clamps stored sizes so a hand-edited or old file can't produce an unusable layout. */
 function sane(saved: Partial<Saved>): Partial<Saved> {
   const n = (v: unknown, min: number, max: number, fallback: number) =>
@@ -63,6 +66,12 @@ export function useLayoutMemory(dir: string | undefined): boolean {
   const [loadedDir, setLoadedDir] = useState<string | undefined>()
   useEffect(() => {
     if (!dir) return
+    // The bench opens a made-up project ("bench://project"). It must start the same way every run, so it neither
+    // reads nor writes a remembered layout (restoring its tabs from the last run changed what the bench measured).
+    if (dir.startsWith("bench://")) {
+      setLoadedDir(dir)
+      return
+    }
     let alive = true
     let ready = false
     let timer: ReturnType<typeof setTimeout> | undefined
@@ -72,14 +81,17 @@ export function useLayoutMemory(dir: string | undefined): boolean {
       const store = await loadJson<Store>(FILE, { byDir: {} })
       await saveJson(FILE, { byDir: { ...store.byDir, [dir]: pick() } })
     }
-    const queue = () => {
+    // Panel changes save after 600 ms. Tab changes (opening, closing, switching) save after 3 s: they come
+    // in bursts, and a write to disk right when an editor opens slowed the first 3D preview by half a
+    // second in the bench. The last moments are still saved when the project closes (see the cleanup).
+    const queue = (delay = 600) => {
       if (!ready) return
       clearTimeout(timer)
       dirty = true
       timer = setTimeout(() => {
         dirty = false
         void save().catch(() => {})
-      }, 600)
+      }, delay)
     }
 
     void loadJson<Store>(FILE, { byDir: {} }).then((store) => {
@@ -96,9 +108,12 @@ export function useLayoutMemory(dir: string | undefined): boolean {
     })
 
     // Layout and tab changes count (saves are debounced); typing in an element does not.
-    const sig = (s: PanelLayout & { tabs: string[]; pinned: string[]; selected: string }) =>
-      `${s.treeOpen}|${s.inspectorOpen}|${s.treeWidth}|${s.inspectorWidth}|${s.dockHeight}|${s.inspectorSide}|${s.tabs.join(",")}|${s.pinned.join(",")}|${s.selected}`
-    const stopEditor = useEditor.subscribe((s, prev) => sig(s) !== sig(prev) && queue())
+    const panels = (s: PanelLayout) => `${s.treeOpen}|${s.inspectorOpen}|${s.treeWidth}|${s.inspectorWidth}|${s.dockHeight}|${s.inspectorSide}`
+    const tabs = (s: { tabs: string[]; pinned: string[]; selected: string }) => `${s.tabs.join(",")}|${s.pinned.join(",")}|${s.selected}`
+    const stopEditor = useEditor.subscribe((s, prev) => {
+      if (panels(s) !== panels(prev)) queue()
+      else if (tabs(s) !== tabs(prev)) queue(TAB_SAVE_MS)
+    })
     const stopNav = useNavigation.subscribe((s, prev) => s.bottomPanelOpen !== prev.bottomPanelOpen && queue())
     return () => {
       alive = false
