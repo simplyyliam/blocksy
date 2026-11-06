@@ -19,7 +19,7 @@ import { FileDrop } from "../../features/project-editor/file-drop"
 import { History } from "../../features/project-editor/history"
 import { Overview } from "../../features/project-editor/overview"
 import { ProjectTree } from "../../features/project-editor/project-tree"
-import { ModeBar } from "../../features/project-editor/mode-bar"
+import { EditorToolbar } from "../../features/project-editor/editor-toolbar"
 import { TabStrip } from "../../features/project-editor/tab-strip"
 import { elementModules, registries } from "../../app/modules"
 import { useLayoutMemory } from "../../shared/layout-memory"
@@ -170,10 +170,8 @@ export function ProjectPage() {
   const centre = (
     <ResizablePanel id="centre" key="centre" minSize={320}>
       <div className="flex h-full min-h-0 flex-col">
-        <div className="flex items-end">
-          <TabStrip />
-          <ModeBar />
-        </div>
+        <TabStrip />
+        <EditorToolbar />
         {/* The canvas: the work fills it; element tools float on it. */}
         <section className="relative min-h-0 flex-1 overflow-hidden rounded-lg bg-surface" aria-label="Canvas">
           <div className="absolute inset-0 overflow-y-auto">
