@@ -6,9 +6,8 @@ When a release ships, move its notes to `docs/release/history/` and start fresh.
 ## Where we are (2026-11-06)
 
 - v0.4.0 "Editor refresh" is released (PR #3 merged). Notes for v0.1 to v0.3: `docs/release/history/checkpoint-v0.1-v0.3.md`.
-- Branch `feature/ide-shell` (PR "feat: IDE-style editor shell", not merged): IDE-style project shell, UI only. ADR 0019.
-- Branch `feature/welcome-window` (PR "feat: welcome window", not merged, branched from main so it does not include the shell
-  branch's files; merge order does not matter much): **two windows** (ADR 0020). A fixed 820 x 640 welcome window (Projects, Learn,
+- IDE-style editor shell (PR #4) is merged; bench results in `docs/perf/`. ADR 0019.
+- Branch `feature/welcome-window` (PR "feat: welcome window", not merged): **two windows** (ADR 0020). A fixed 820 x 640 welcome window (Projects, Learn,
   Community, Settings, New project, Clone) and the editor window. Opening or creating a project builds the editor and closes
   the welcome window; File > Close Project / New project / Open bring the welcome window back. Home page, icon rail, Docs and JDK
   pages and the old New project dialog are gone. All checks pass; tried in the real app (create, build, run, close, themes).
